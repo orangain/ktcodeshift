@@ -4,11 +4,25 @@
 package ktcodeshift
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class AppTest {
-    @Test fun appHasAGreeting() {
-        val classUnderTest = App()
-        assertNotNull(classUnderTest.greeting, "app should have a greeting")
+    @Test
+    fun transform() {
+        val changedSource = applyTransform(FlattenListTransform(), object : FileInfo {
+            override val path = "Test.kt"
+            override val source = """
+                package testing
+                
+                val a = listOf(listOf(1, 2), listOf(3))
+            """.trimIndent()
+        })
+
+        assertEquals("""
+            package testing
+                
+            val a = listOf(1, 2, 3)
+        """.trimIndent(), changedSource)
     }
 }
