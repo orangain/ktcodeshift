@@ -6,10 +6,11 @@
  * User Manual available at https://docs.gradle.org/7.4.2/userguide/building_java_projects.html
  * This project uses @Incubating APIs which are subject to change.
  */
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.6.21"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -27,8 +28,7 @@ dependencies {
 
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    implementation("com.github.cretz.kastree:kastree-ast-psi:0.4.0")
+    implementation("com.github.orangain.kastree:ast-psi:0.5.0")
 }
 
 testing {
@@ -44,4 +44,8 @@ testing {
 application {
     // Define the main class for the application.
     mainClass.set("ktcodeshift.AppKt")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
 }
