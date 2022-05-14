@@ -1,8 +1,7 @@
 package ktcodeshift
 
-import kotlinx.ast.common.AstSource
-import kotlinx.ast.common.ast.Ast
-import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
+import kastree.ast.Node
+import kastree.ast.psi.Parser
 
 interface Transform {
     fun transform(fileInfo: FileInfo, api: Api/*, options: Options*/): String
@@ -18,10 +17,8 @@ interface FileInfo {
 //}
 
 class Api {
-    fun parse(source: String): Ast {
-        val astSource = AstSource.String("file", source)
-        val ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(astSource)
-        return ast
+    fun parse(source: String): Node.File {
+        return Parser.parseFile(source)
     }
 }
 

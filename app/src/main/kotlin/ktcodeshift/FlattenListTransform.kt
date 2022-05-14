@@ -1,8 +1,10 @@
 package ktcodeshift
 
+import kastree.ast.Writer
+
 class FlattenListTransform : Transform {
     override fun transform(fileInfo: FileInfo, api: Api): String {
-        val ast = api.parse(fileInfo.source)
-        return ast.toString()
+        val file = api.parse(fileInfo.source)
+        return Writer.write(file)
     }
 }

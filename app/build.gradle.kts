@@ -28,8 +28,7 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("com.github.kotlinx.ast:common:v0.1.0")
-    implementation("com.github.kotlinx.ast:grammar-kotlin-parser-antlr-kotlin:v0.1.0")
+    implementation("com.github.cretz.kastree:kastree-ast-psi:0.4.0")
 }
 
 testing {
