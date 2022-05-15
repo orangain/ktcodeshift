@@ -10,3 +10,4 @@
 
 rootProject.name = "ktcodeshift"
 include("app")
+include("script-definition")
