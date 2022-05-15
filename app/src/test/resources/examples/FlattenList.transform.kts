@@ -1,8 +1,5 @@
 import kastree.ast.Node
-import ktcodeshift.Api
-import ktcodeshift.preVisit
-import ktcodeshift.toSource
-import ktcodeshift.transform
+import ktcodeshift.*
 
 transform { fileInfo ->
     Api
