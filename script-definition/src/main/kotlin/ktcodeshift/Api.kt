@@ -5,7 +5,7 @@ import kastree.ast.Node
 import kastree.ast.Writer
 import kastree.ast.psi.Parser
 
-class Api {
+object Api {
     fun parse(source: String): Node.File {
         return Parser.parseFile(source)
     }

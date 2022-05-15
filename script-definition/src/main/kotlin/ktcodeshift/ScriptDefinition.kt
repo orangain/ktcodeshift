@@ -14,22 +14,25 @@ import kotlin.script.experimental.jvm.jvm
     // File extension for the script type
     fileExtension = "transform.kts",
     // Compilation configuration for the script type
-    compilationConfiguration = TransformScriptConfiguration::class
+    compilationConfiguration = TransformScriptCompilationConfiguration::class
 )
 abstract class TransformScript
 
-object TransformScriptConfiguration: ScriptCompilationConfiguration({
+object TransformScriptCompilationConfiguration: ScriptCompilationConfiguration({
     // Implicit imports for all scripts of this type
     defaultImports(DependsOn::class, Repository::class)
     jvm {
         // Extract the whole classpath from context classloader and use it as dependencies
-        dependenciesFromCurrentContext(wholeClasspath = true)
+        dependenciesFromCurrentContext( wholeClasspath = true)
     }
     // Callbacks
     refineConfiguration {
         // Process specified annotations with the provided handler
         onAnnotations(DependsOn::class, Repository::class, handler = ::configureMavenDepsOnAnnotations)
     }
+})
+
+object TransformScriptEvaluationConfiguration: ScriptEvaluationConfiguration({
 })
 
 // Handler that reconfigures the compilation on the fly
