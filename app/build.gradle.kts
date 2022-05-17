@@ -38,4 +38,6 @@ testing {
 application {
     // Define the main class for the application.
     mainClass.set("ktcodeshift.AppKt")
+
+    tasks.run.get().workingDir = File(System.getProperty("user.dir"))
 }

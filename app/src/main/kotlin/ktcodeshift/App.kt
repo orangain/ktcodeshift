@@ -1,6 +1,7 @@
 package ktcodeshift
 
-import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.absolute
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
@@ -12,8 +13,8 @@ fun main(vararg args: String) {
         return
     }
 
-    val scriptFile = File(args[0])
-    val targetFile = File(args[1])
+    val scriptFile = Path(args[0]).absolute().toFile()
+    val targetFile = Path(args[1]).absolute().toFile()
     println("Loading script $scriptFile")
 
     val transform = evalScriptSource(scriptFile.toScriptSource())
