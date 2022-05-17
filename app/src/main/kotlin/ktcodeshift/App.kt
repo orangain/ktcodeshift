@@ -14,17 +14,21 @@ fun main(vararg args: String) {
     }
 
     val scriptFile = Path(args[0]).absolute().toFile()
-    val targetFile = Path(args[1]).absolute().toFile()
+    val targetDir = Path(args[1]).absolute().toFile()
     println("Loading script $scriptFile")
 
     val transform = evalScriptSource(scriptFile.toScriptSource())
 
-    println("Applying transform to $targetFile")
-    val changedSource = applyTransform(transform, object : FileInfo {
-        override val path = targetFile.absolutePath
-        override val source = targetFile.readText(Charsets.UTF_8)
-    })
-    println(changedSource)
+    targetDir.walk()
+        .filter { it.isFile && it.name.endsWith(".kt") }
+        .forEach { targetFile ->
+            println("Applying transform to $targetFile")
+            val changedSource = applyTransform(transform, object : FileInfo {
+                override val path = targetFile.absolutePath
+                override val source = targetFile.readText(Charsets.UTF_8)
+            })
+            println(changedSource)
+        }
 }
 
 fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
