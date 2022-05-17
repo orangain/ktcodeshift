@@ -2,6 +2,7 @@ package ktcodeshift
 
 import kotlin.io.path.Path
 import kotlin.io.path.absolute
+import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
@@ -37,7 +38,9 @@ fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
     val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<TransformScript>()
     val res = BasicJvmScriptingHost().eval(sourceCode, compilationConfiguration, null)
     res.reports.forEach {
-        println("[${it.severity}] : ${it.message}" + if (it.exception == null) "" else ": ${it.exception}")
+        if (it.severity >= ScriptDiagnostic.Severity.WARNING) {
+            println("[${it.severity}] : ${it.message}" + if (it.exception == null) "" else ": ${it.exception}")
+        }
     }
 
     val transform = transformFunction
