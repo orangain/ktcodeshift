@@ -1,13 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
+    // Add support for Kotlin.
     kotlin("jvm")
-
-    // Apply the application plugin to add support for building a CLI application in Java.
+    // Add support for building a CLI application in Java.
     application
-
+    // Add support for generating version number from Git status.
     id("com.palantir.git-version") version "0.15.0"
+    // Add support for list licenses of dependencies.
+    id("com.github.hierynomus.license") version "0.16.1"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -59,4 +60,9 @@ application {
     tasks.distZip {
         archiveVersion.set(project.version.toString())
     }
+}
+
+downloadLicenses {
+    includeProjectDependencies = true
+    dependencyConfiguration = "runtimeClasspath"
 }
