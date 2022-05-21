@@ -6,7 +6,12 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+
+    id("com.palantir.git-version") version "0.15.0"
 }
+
+val gitVersion: groovy.lang.Closure<String> by extra
+version = gitVersion()
 
 dependencies {
     // Align versions of all Kotlin components
@@ -48,5 +53,10 @@ application {
     tasks.distTar {
         compression = Compression.GZIP
         archiveExtension.set("tar.gz")
+        archiveVersion.set(project.version.toString())
+    }
+
+    tasks.distZip {
+        archiveVersion.set(project.version.toString())
     }
 }
