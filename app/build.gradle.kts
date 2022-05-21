@@ -39,6 +39,9 @@ application {
     // Define the main class for the application.
     mainClass.set("ktcodeshift.AppKt")
 
+    applicationName = "ktcodeshift"
+
+    // Inherit current directory when executed by `gradle run`
     tasks.run.get().workingDir = File(System.getProperty("user.dir"))
 }
 
