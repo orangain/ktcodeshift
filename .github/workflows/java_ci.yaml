@@ -38,14 +38,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: distributions
-      - name: Rename artifacts
-        run: |
-          echo Before:
-          ls
-          mv ktcodeshift.tar.gz ktcodeshift-${GITHUB_REF##*/}.tar.gz
-          mv ktcodeshift.zip ktcodeshift-${GITHUB_REF##*/}.zip
-          echo After:
-          ls
 
       - uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
