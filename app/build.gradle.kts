@@ -43,4 +43,10 @@ application {
 
     // Inherit current directory when executed by `gradle run`
     tasks.run.get().workingDir = File(System.getProperty("user.dir"))
+
+    // Create .tar.gz instead of .tar
+    tasks.distTar {
+        compression = Compression.GZIP
+        archiveExtension.set("tar.gz")
+    }
 }
