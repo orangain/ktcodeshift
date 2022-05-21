@@ -42,7 +42,7 @@ jobs:
         run: |
           echo Before:
           ls
-          mv ktcodeshift.tar ktcodeshift-${GITHUB_REF##*/}.tar
+          mv ktcodeshift.tar.gz ktcodeshift-${GITHUB_REF##*/}.tar.gz
           mv ktcodeshift.zip ktcodeshift-${GITHUB_REF##*/}.zip
           echo After:
           ls
@@ -52,6 +52,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            *.tar
+            *.tar.gz
             *.zip
 
