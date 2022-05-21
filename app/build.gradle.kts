@@ -44,13 +44,3 @@ application {
     // Inherit current directory when executed by `gradle run`
     tasks.run.get().workingDir = File(System.getProperty("user.dir"))
 }
-
-tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes["Main-Class"] = "ktcodeshift.AppKt"
-    }
-    configurations["runtimeClasspath"].forEach { file: File ->
-        from(zipTree(file.absoluteFile))
-    }
-}
