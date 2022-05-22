@@ -56,3 +56,16 @@ application {
         archiveExtension.set("tar.gz")
     }
 }
+
+distributions {
+    main {
+        contents {
+            into("") {
+                from("../LICENSE", "../README.md")
+            }
+            into("docs/dependency-license") {
+                from(tasks.generateLicenseReport)
+            }
+        }
+    }
+}
