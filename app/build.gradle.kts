@@ -54,10 +54,5 @@ application {
     tasks.distTar {
         compression = Compression.GZIP
         archiveExtension.set("tar.gz")
-        archiveVersion.set(project.version.toString())
-    }
-
-    tasks.distZip {
-        archiveVersion.set(project.version.toString())
     }
 }
