@@ -8,7 +8,7 @@ plugins {
     // Add support for generating version number from Git status.
     id("com.palantir.git-version") version "0.15.0"
     // Add support for list licenses of dependencies.
-    id("com.github.hierynomus.license") version "0.16.1"
+    id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -60,9 +60,4 @@ application {
     tasks.distZip {
         archiveVersion.set(project.version.toString())
     }
-}
-
-downloadLicenses {
-    includeProjectDependencies = true
-    dependencyConfiguration = "runtimeClasspath"
 }
