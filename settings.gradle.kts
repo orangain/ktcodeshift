@@ -9,5 +9,5 @@
  */
 
 rootProject.name = "ktcodeshift"
-include("app")
-include("script-definition")
+include("ktcodeshift-cli")
+include("ktcodeshift-dsl")
