@@ -39,18 +39,18 @@ testing {
     }
 }
 
-application {
-    // Define the main class for the application.
-    mainClass.set("ktcodeshift.AppKt")
-
-    applicationName = "ktcodeshift"
-}
-
 tasks.jar {
     // Include LICENSE file in jar.
     into("META-INF") {
         from("../LICENSE")
     }
+}
+
+application {
+    // Define the main class for the application.
+    mainClass.set("ktcodeshift.AppKt")
+
+    applicationName = "ktcodeshift"
 }
 
 // Inherit current directory when executed by `gradle run`
