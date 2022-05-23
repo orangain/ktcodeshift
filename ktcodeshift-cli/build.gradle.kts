@@ -54,3 +54,10 @@ application {
         archiveExtension.set("tar.gz")
     }
 }
+
+tasks.jar {
+    // Include LICENSE file in jar.
+    into("META-INF") {
+        from("../LICENSE")
+    }
+}
