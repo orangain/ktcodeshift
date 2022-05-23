@@ -41,6 +41,12 @@ testing {
 }
 
 tasks.jar {
+    manifest {
+        attributes(
+            mapOf("Implementation-Version" to project.version.toString())
+        )
+    }
+
     // Include LICENSE file in jar.
     into("META-INF") {
         from("../LICENSE")
