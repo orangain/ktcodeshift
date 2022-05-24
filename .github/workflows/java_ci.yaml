@@ -44,5 +44,6 @@ jobs:
           download-url: https://github.com/orangain/ktcodeshift/releases/download/${{ steps.extract-version.outputs.tag-name }}/ktcodeshift-${{ steps.extract-version.outputs.tag-name }}.tar.gz
           formula-name: ktcodeshift
           homebrew-tap: orangain/homebrew-tap
+          create-pullrequest: true
         env:
           COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
