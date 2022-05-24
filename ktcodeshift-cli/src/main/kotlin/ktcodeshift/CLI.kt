@@ -8,16 +8,29 @@ import java.util.concurrent.Callable
     name = "ktcodeshift",
     versionProvider = VersionProvider::class,
     mixinStandardHelpOptions = true,
-    description = ["Apply transforms."]
+    description = ["", "Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.", ""]
 )
 class CLI : Callable<Int?> {
-    @Parameters(arity = "1..*", description = ["The file whose checksum to calculate."])
+    @Parameters(
+        arity = "1..*",
+        paramLabel = "PATH",
+        description = ["Search target files in these paths."]
+    )
     lateinit var targetDirs: Array<File>
 
-    @Option(names = ["-t", "--transform"], required = true, description = ["Transform file"])
+    @Option(
+        names = ["-t", "--transform"],
+        required = true,
+        paramLabel = "TRANSFORM_PATH",
+        description = ["Transform file"]
+    )
     lateinit var transformFile: File
 
-    @Option(names = ["--extensions"], description = ["Target file extensions to be transformed (comma separated list)"])
+    @Option(
+        names = ["--extensions"],
+        paramLabel = "EXT",
+        description = ["Target file extensions to be transformed (comma separated list)", "(default: kt)"]
+    )
     var extensions: String = "kt"
 
     override fun call(): Int {
