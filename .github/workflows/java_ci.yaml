@@ -4,7 +4,6 @@ on: [ push ]
 
 permissions:
   contents: write
-  actions: read
 
 jobs:
   build:
@@ -46,4 +45,4 @@ jobs:
           formula-name: ktcodeshift
           homebrew-tap: orangain/homebrew-tap
         env:
-          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
