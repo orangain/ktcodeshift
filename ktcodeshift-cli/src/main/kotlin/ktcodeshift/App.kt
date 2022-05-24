@@ -1,49 +1,18 @@
 package ktcodeshift
 
-import kotlinx.cli.*
+import picocli.CommandLine
 import java.io.File
-import kotlin.io.path.Path
-import kotlin.io.path.absolute
 import kotlin.io.path.extension
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    val parser = ArgParser("ktcodeshift")
-    val version by parser.option(
-        ArgType.Boolean,
-        shortName = "v",
-        fullName = "version",
-        description = "Print version"
-    ).default(false)
-    val transformPath by parser.option(
-        ArgType.String,
-        shortName = "t",
-        fullName = "transform",
-        description = "Transform file"
-    ).default("tarnsform.kts")
-    val extensions by parser.option(
-        ArgType.String,
-        fullName = "extensions",
-        description = "Target file extensions to be transformed (comma separated list)"
-    ).default("kt").delimiter(",")
-    val targetPaths by parser.argument(ArgType.String, fullName = "PATH").vararg()
-
-    parser.parse(args)
-
-    if (version) {
-        println(object {}::class.java.getPackage().implementationVersion ?: "unknown")
-        return
-    }
-
-    process(
-        transformFile = Path(transformPath).absolute().toFile(),
-        targetDirs = targetPaths.map { Path(it).absolute().toFile() },
-        extensions = extensions.toSet(),
-    )
+    val exitCode = CommandLine(CLI()).execute(*args)
+    exitProcess(exitCode)
 }
 
 fun process(transformFile: File, targetDirs: List<File>, extensions: Set<String>) {
