@@ -23,7 +23,7 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew build
 
-      - name: Release on tag
+      - name: Create release on tag
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
@@ -32,11 +32,17 @@ jobs:
           files: |
             ktcodeshift-cli/build/distributions/*
 
+      - name: Extract version
+        id: extract-version
+        run: |
+          printf "::set-output name=%s::%s\n" tag-name "${GITHUB_REF#refs/tags/}"
+
       - name: Update formula on tag
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         uses: "mislav/bump-homebrew-formula-action@v2"
         with:
+          download-url: https://github.com/orangain/ktcodeshift/releases/download/${{ steps.extract-version.outputs.tag-name }}/ktcodeshift-${{ steps.extract-version.outputs.tag-name }}.tar.gz
           formula-name: ktcodeshift
           homebrew-tap: orangain/homebrew-tap
         env:
-          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
