@@ -6,12 +6,12 @@ transform { fileInfo ->
         .parse(fileInfo.source)
         .preVisit { v, p ->
             if (v is Node.ValueArgs && p is Node.Expr.Call && isListOf(p)) {
-                v.copy(args = v.args.flatMap { arg ->
-                    val expr = arg.expr
+                v.copy(elements = v.elements.flatMap { element ->
+                    val expr = element.expr
                     if (expr is Node.Expr.Call && isListOf(expr)) {
-                        expr.args?.args ?: listOf()
+                        expr.args?.elements ?: listOf()
                     } else {
-                        listOf(arg)
+                        listOf(element)
                     }
                 })
             } else {
