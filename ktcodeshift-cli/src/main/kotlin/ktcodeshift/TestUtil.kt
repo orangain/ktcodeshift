@@ -2,6 +2,7 @@ package ktcodeshift
 
 import kotlin.reflect.KClass
 import kotlin.script.experimental.host.UrlScriptSource
+import kotlin.test.assertEquals
 
 fun testTransform(testClass: KClass<*>, transformName: String, fixtureName: String = transformName) {
     val packageName = testClass.java.packageName
@@ -19,19 +20,5 @@ fun testTransform(testClass: KClass<*>, transformName: String, fixtureName: Stri
         override val source = inputSource
     })
 
-    assert(changedSource.trim() == outputSource.trim()) {
-        """
-changedSource does not match outputSource.
-
-changedSource:
----------------------------------------------------
-${changedSource.trim()}
----------------------------------------------------
-
-outputSource:
----------------------------------------------------
-${outputSource.trim()}
----------------------------------------------------
-""".trimIndent()
-    }
+    assertEquals(outputSource.trim(), changedSource.trim())
 }
