@@ -18,12 +18,12 @@ dependencies {
 
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.github.orangain.ktast:ast-psi:0.7.0")
     implementation("org.jetbrains.kotlin:kotlin-scripting-common")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
     implementation("info.picocli:picocli:4.6.3")
     implementation(project(":ktcodeshift-dsl")) // the script definition module
+    testImplementation("com.github.orangain.ktast:ast-psi:0.7.1")
 }
 
 tasks.withType<KotlinCompile> {
