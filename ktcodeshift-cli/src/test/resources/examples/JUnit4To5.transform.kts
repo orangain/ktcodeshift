@@ -16,7 +16,7 @@ transform { fileInfo ->
         .filter { v ->
             v.names.size == 3 && v.names.take(2).map { it.name } == listOf("org", "junit")
         }
-        .replaceWith { v, _ ->
+        .replaceWith { v ->
             v.copy(
                 names = v.names.take(2) + listOf(
                     Node.Expr.Name("jupiter"),
@@ -27,7 +27,7 @@ transform { fileInfo ->
         }
         .fileWithContext
         .find<Node.Modifier.AnnotationSet.Annotation>()
-        .replaceWith { v, _ ->
+        .replaceWith { v ->
             val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(Node.Expr::Name)
             if (name != null) {
                 v.copy(

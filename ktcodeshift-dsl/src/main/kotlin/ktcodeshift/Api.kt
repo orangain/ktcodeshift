@@ -55,6 +55,7 @@ data class NodeCollection<T : Node>(
         )
     }
 
+    fun replaceWith(fn: (T) -> Node?): NodeCollection<T> = replaceWith { v, _ -> fn(v) }
     fun replaceWith(fn: (T, Node) -> Node?): NodeCollection<T> {
         val nodeMap = IdentityHashMap<T, Boolean>()
         nodes.forEach { node ->
