@@ -34,4 +34,10 @@ class MyTestClass {
     fun testSomethingElse() {
         // another test case
     }
+
+    @Ignore
+    @Test
+    fun testSkipped() {
+        // skipped test case
+    }
 }

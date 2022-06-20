@@ -6,6 +6,7 @@ val annotationNameMap = mapOf(
     "After" to "AfterEach",
     "BeforeClass" to "BeforeAll",
     "AfterClass" to "AfterAll",
+    "Ignore" to "Disabled",
 )
 
 transform { fileInfo ->
