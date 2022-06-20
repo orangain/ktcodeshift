@@ -21,11 +21,9 @@ data class FileWithContext(
 
 fun FileWithContext.preVisit(fn: (Node?, Node) -> Node?): FileWithContext {
     val changedFileNode = MutableVisitor.preVisit(fileNode, extrasMap, fn)
-    println(fileNode === changedFileNode)
     return copy(fileNode = changedFileNode)
 }
 
 fun FileWithContext.toSource(): String {
-    println(extrasMap)
     return Writer.write(fileNode, extrasMap)
 }
