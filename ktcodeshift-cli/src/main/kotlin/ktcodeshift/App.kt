@@ -28,7 +28,7 @@ fun process(transformFile: File, targetDirs: List<File>, extensions: Set<String>
                     override val path = targetFile.absolutePath
                     override val source = targetFile.readText(Charsets.UTF_8)
                 })
-                println(changedSource)
+                println(changedSource) // TODO: Modify target file.
             }
     }
 }

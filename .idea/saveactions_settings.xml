@@ -12,6 +12,7 @@
     <option name="exclusions">
       <set>
         <option value=".*\.transform\.kts" />
+        <option value="__testfixtures__/.*" />
       </set>
     </option>
   </component>

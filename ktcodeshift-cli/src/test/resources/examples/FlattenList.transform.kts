@@ -1,17 +1,17 @@
-import kastree.ast.Node
+import ktast.ast.Node
 import ktcodeshift.*
 
 transform { fileInfo ->
     Api
         .parse(fileInfo.source)
-        .preVisit { v, _ ->
-            if (v is Node.Expr.Call && isListOf(v)) {
-                v.copy(args = v.args.flatMap { arg ->
-                    val expr = arg.expr
+        .preVisit { v, p ->
+            if (v is Node.ValueArgs && p is Node.Expr.Call && isListOf(p)) {
+                v.copy(elements = v.elements.flatMap { element ->
+                    val expr = element.expr
                     if (expr is Node.Expr.Call && isListOf(expr)) {
-                        expr.args
+                        expr.args?.elements ?: listOf()
                     } else {
-                        listOf(arg)
+                        listOf(element)
                     }
                 })
             } else {
