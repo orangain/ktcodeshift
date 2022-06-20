@@ -32,3 +32,8 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
                          Transform file
   -V, --version          Print version information and exit.
 ```
+
+## Examples
+
+Example transforms and their inputs/outputs are available
+under [ktcodeshift-cli/src/test/resources/examples/](ktcodeshift-cli/src/test/resources/examples/) directory.
