@@ -10,7 +10,8 @@ import java.util.concurrent.Callable
     mixinStandardHelpOptions = true,
     description = ["", "Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.", ""]
 )
-class CLI : Callable<Int?> {
+class CLI(private val process: (CLIArgs) -> Unit) :
+    Callable<Int?> {
     @Parameters(
         arity = "1..*",
         paramLabel = "PATH",
@@ -35,13 +36,21 @@ class CLI : Callable<Int?> {
 
     override fun call(): Int {
         process(
-            transformFile,
-            targetDirs.toList(),
-            extensions.split(",").toSet()
+            CLIArgs(
+                transformFile,
+                targetDirs.toList(),
+                extensions.split(",").toSet(),
+            )
         )
         return 0
     }
 }
+
+data class CLIArgs(
+    val transformFile: File,
+    val targetDirs: List<File>,
+    val extensions: Set<String>,
+)
 
 class VersionProvider : IVersionProvider {
     override fun getVersion(): Array<String> {

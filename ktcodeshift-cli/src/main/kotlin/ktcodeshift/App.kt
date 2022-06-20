@@ -1,7 +1,6 @@
 package ktcodeshift
 
 import picocli.CommandLine
-import java.io.File
 import kotlin.io.path.extension
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
@@ -11,17 +10,17 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    val exitCode = CommandLine(CLI()).execute(*args)
+    val exitCode = CommandLine(CLI(::process)).execute(*args)
     exitProcess(exitCode)
 }
 
-fun process(transformFile: File, targetDirs: List<File>, extensions: Set<String>) {
-    println("Loading script $transformFile")
-    val transform = evalScriptSource(transformFile.toScriptSource())
+fun process(args: CLIArgs) {
+    println("Loading script ${args.transformFile}")
+    val transform = evalScriptSource(args.transformFile.toScriptSource())
 
-    targetDirs.forEach { targetDir ->
+    args.targetDirs.forEach { targetDir ->
         targetDir.walk()
-            .filter { it.isFile && extensions.contains(it.toPath().extension) }
+            .filter { it.isFile && args.extensions.contains(it.toPath().extension) }
             .forEach { targetFile ->
                 println("Applying transform to $targetFile")
                 val changedSource = applyTransform(transform, object : FileInfo {
