@@ -25,7 +25,6 @@ transform { fileInfo ->
                 )
             )
         }
-        .fileWithContext
         .find<Node.Modifier.AnnotationSet.Annotation>()
         .replaceWith { v ->
             val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(Node.Expr::Name)

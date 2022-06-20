@@ -61,8 +61,8 @@ data class NodeCollection<T : Node>(
         )
     }
 
-    fun replaceWith(fn: (T) -> Node?): NodeCollection<T> = replaceWith { v, _ -> fn(v) }
-    fun replaceWith(fn: (T, Node) -> Node?): NodeCollection<T> {
+    fun replaceWith(fn: (T) -> Node?): FileWithContext = replaceWith { v, _ -> fn(v) }
+    fun replaceWith(fn: (T, Node) -> Node?): FileWithContext {
         val nodeMap = IdentityHashMap<T, Boolean>()
         nodeAndParents.forEach { nodeMap[it.node] = true }
         val newFileNode = MutableVisitor.preVisit(fileWithContext.fileNode, fileWithContext.extrasMap) { v, parent ->
@@ -72,13 +72,9 @@ data class NodeCollection<T : Node>(
                 v
             }
         }
-        return copy(
-            fileWithContext = FileWithContext(
-                fileNode = newFileNode,
-                extrasMap = fileWithContext.extrasMap,
-            )
+        return FileWithContext(
+            fileNode = newFileNode,
+            extrasMap = fileWithContext.extrasMap,
         )
     }
-
-    fun toSource() = fileWithContext.toSource()
 }
