@@ -35,32 +35,36 @@ inline fun <reified T : Node> FileWithContext.find(): NodeCollection<T> = find(T
 fun <T : Node> FileWithContext.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
 
 fun <T : Node> FileWithContext.find(javaClass: Class<T>): NodeCollection<T> {
-    val nodes = mutableListOf<T>()
-    MutableVisitor.preVisit(fileNode, extrasMap) { v, _ ->
+    val nodes = mutableListOf<NodeAndParent<T>>()
+    MutableVisitor.preVisit(fileNode, extrasMap) { v, parent ->
         if (v != null && v::class.java == javaClass) {
-            nodes.add(v as T)
+            nodes.add(NodeAndParent(v as T, parent))
         }
         v
     }
     return NodeCollection(nodes.toList(), this)
 }
 
+data class NodeAndParent<T : Node>(
+    val node: T,
+    val parent: Node,
+)
+
 data class NodeCollection<T : Node>(
-    val nodes: List<T>,
+    val nodeAndParents: List<NodeAndParent<T>>,
     val fileWithContext: FileWithContext,
 ) {
-    fun filter(predicate: (T) -> Boolean): NodeCollection<T> {
+    fun filter(predicate: (T) -> Boolean): NodeCollection<T> = filter { v, _ -> predicate(v) }
+    fun filter(predicate: (T, Node) -> Boolean): NodeCollection<T> {
         return copy(
-            nodes = nodes.filter(predicate)
+            nodeAndParents = nodeAndParents.filter { predicate(it.node, it.parent) }
         )
     }
 
     fun replaceWith(fn: (T) -> Node?): NodeCollection<T> = replaceWith { v, _ -> fn(v) }
     fun replaceWith(fn: (T, Node) -> Node?): NodeCollection<T> {
         val nodeMap = IdentityHashMap<T, Boolean>()
-        nodes.forEach { node ->
-            nodeMap[node] = true
-        }
+        nodeAndParents.forEach { nodeMap[it.node] = true }
         val newFileNode = MutableVisitor.preVisit(fileWithContext.fileNode, fileWithContext.extrasMap) { v, parent ->
             if (nodeMap.contains(v)) {
                 fn(v as T, parent)

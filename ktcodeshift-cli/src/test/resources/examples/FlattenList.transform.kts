@@ -5,19 +5,16 @@ transform { fileInfo ->
     Api
         .parse(fileInfo.source)
         .find<Node.ValueArgs>()
-        .replaceWith { v, p ->
-            if (p is Node.Expr.Call && isListOf(p)) {
-                v.copy(elements = v.elements.flatMap { element ->
-                    val expr = element.expr
-                    if (expr is Node.Expr.Call && isListOf(expr)) {
-                        expr.args?.elements ?: listOf()
-                    } else {
-                        listOf(element)
-                    }
-                })
-            } else {
-                v
-            }
+        .filter { _, p -> p is Node.Expr.Call && isListOf(p) }
+        .replaceWith { v ->
+            v.copy(elements = v.elements.flatMap { element ->
+                val expr = element.expr
+                if (expr is Node.Expr.Call && isListOf(expr)) {
+                    expr.args?.elements ?: listOf()
+                } else {
+                    listOf(element)
+                }
+            })
         }
         .toSource()
 }
