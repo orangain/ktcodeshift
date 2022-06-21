@@ -15,21 +15,42 @@ fun main(args: Array<String>) {
 }
 
 fun process(args: CLIArgs) {
-    println("Loading script ${args.transformFile}")
+    println("Loading transform script ${args.transformFile}")
     val transform = evalScriptSource(args.transformFile.toScriptSource())
-
-    args.targetDirs.forEach { targetDir ->
+    val transformResults = args.targetDirs.flatMap { targetDir ->
         targetDir.walk()
             .filter { it.isFile && args.extensions.contains(it.toPath().extension) }
-            .forEach { targetFile ->
-                println("Applying transform to $targetFile")
-                val changedSource = applyTransform(transform, object : FileInfo {
-                    override val path = targetFile.absolutePath
-                    override val source = targetFile.readText(Charsets.UTF_8)
-                })
-                println(changedSource) // TODO: Modify target file.
+            .map { targetFile ->
+                println("Processing $targetFile")
+                val originalSource = targetFile.readText(Charsets.UTF_8)
+                val changedSource = try {
+                    applyTransform(transform, object : FileInfo {
+                        override val path = targetFile.absolutePath
+                        override val source = originalSource
+                    })
+                } catch (ex: Exception) {
+                    return@map TransformResult.FAILED
+                }
+
+                if (changedSource == originalSource) {
+                    TransformResult.UNMODIFIED
+                } else {
+                    println(changedSource) // TODO: Modify target file.
+                    TransformResult.SUCCEEDED
+                }
             }
     }
+        .groupingBy { it }
+        .eachCount()
+
+    println("Results:")
+    println("${transformResults[TransformResult.FAILED] ?: 0} errors")
+    println("${transformResults[TransformResult.UNMODIFIED] ?: 0} unmodified")
+    println("${transformResults[TransformResult.SUCCEEDED] ?: 0} ok")
+}
+
+enum class TransformResult {
+    SUCCEEDED, UNMODIFIED, FAILED
 }
 
 fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
