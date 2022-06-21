@@ -19,11 +19,12 @@ it. `ktcodeshift` command is available in the `bin` directory.
 ## Usage
 
 ```
-Usage: ktcodeshift [-hV] [--extensions=EXT] -t=TRANSFORM_PATH PATH...
+Usage: ktcodeshift [-dhV] [--extensions=EXT] -t=TRANSFORM_PATH PATH...
 
 Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
 
       PATH...            Search target files in these paths.
+  -d, --dry              dry run (no changes are made to files)
       --extensions=EXT   Target file extensions to be transformed (comma
                            separated list)
                          (default: kt)

@@ -1,7 +1,6 @@
 package ktcodeshift
 
 import picocli.CommandLine
-import java.io.File
 import kotlin.io.path.extension
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
@@ -11,26 +10,53 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    val exitCode = CommandLine(CLI()).execute(*args)
+    val exitCode = CommandLine(CLI(::process)).execute(*args)
     exitProcess(exitCode)
 }
 
-fun process(transformFile: File, targetDirs: List<File>, extensions: Set<String>) {
-    println("Loading script $transformFile")
-    val transform = evalScriptSource(transformFile.toScriptSource())
-
-    targetDirs.forEach { targetDir ->
+fun process(args: CLIArgs) {
+    println("Loading transform script ${args.transformFile}")
+    val transform = evalScriptSource(args.transformFile.toScriptSource())
+    if (args.dryRun) {
+        println("Running in dry mode, no files will be written!")
+    }
+    val transformResults = args.targetDirs.flatMap { targetDir ->
         targetDir.walk()
-            .filter { it.isFile && extensions.contains(it.toPath().extension) }
-            .forEach { targetFile ->
-                println("Applying transform to $targetFile")
-                val changedSource = applyTransform(transform, object : FileInfo {
-                    override val path = targetFile.absolutePath
-                    override val source = targetFile.readText(Charsets.UTF_8)
-                })
-                println(changedSource) // TODO: Modify target file.
+            .filter { it.isFile && args.extensions.contains(it.toPath().extension) }
+            .map { targetFile ->
+                println("Processing $targetFile")
+                val charset = Charsets.UTF_8
+                val originalSource = targetFile.readText(charset)
+                val changedSource = try {
+                    applyTransform(transform, object : FileInfo {
+                        override val path = targetFile.absolutePath
+                        override val source = originalSource
+                    })
+                } catch (ex: Exception) {
+                    return@map TransformResult.FAILED
+                }
+
+                if (changedSource == originalSource) {
+                    TransformResult.UNMODIFIED
+                } else {
+                    if (!args.dryRun) {
+                        targetFile.writeText(changedSource, charset)
+                    }
+                    TransformResult.SUCCEEDED
+                }
             }
     }
+        .groupingBy { it }
+        .eachCount()
+
+    println("Results:")
+    println("${transformResults[TransformResult.FAILED] ?: 0} errors")
+    println("${transformResults[TransformResult.UNMODIFIED] ?: 0} unmodified")
+    println("${transformResults[TransformResult.SUCCEEDED] ?: 0} ok")
+}
+
+enum class TransformResult {
+    SUCCEEDED, UNMODIFIED, FAILED
 }
 
 fun evalScriptSource(sourceCode: SourceCode): TransformFunction {

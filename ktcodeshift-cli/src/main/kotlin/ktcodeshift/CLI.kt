@@ -10,7 +10,8 @@ import java.util.concurrent.Callable
     mixinStandardHelpOptions = true,
     description = ["", "Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.", ""]
 )
-class CLI : Callable<Int?> {
+class CLI(private val process: (CLIArgs) -> Unit) :
+    Callable<Int?> {
     @Parameters(
         arity = "1..*",
         paramLabel = "PATH",
@@ -27,6 +28,12 @@ class CLI : Callable<Int?> {
     lateinit var transformFile: File
 
     @Option(
+        names = ["-d", "--dry"],
+        description = ["dry run (no changes are made to files)"]
+    )
+    var dryRun: Boolean = false
+
+    @Option(
         names = ["--extensions"],
         paramLabel = "EXT",
         description = ["Target file extensions to be transformed (comma separated list)", "(default: kt)"]
@@ -35,13 +42,23 @@ class CLI : Callable<Int?> {
 
     override fun call(): Int {
         process(
-            transformFile,
-            targetDirs.toList(),
-            extensions.split(",").toSet()
+            CLIArgs(
+                transformFile = transformFile,
+                targetDirs = targetDirs.toList(),
+                dryRun = dryRun,
+                extensions = extensions.split(",").toSet(),
+            )
         )
         return 0
     }
 }
+
+data class CLIArgs(
+    val transformFile: File,
+    val targetDirs: List<File>,
+    val dryRun: Boolean,
+    val extensions: Set<String>,
+)
 
 class VersionProvider : IVersionProvider {
     override fun getVersion(): Array<String> {
