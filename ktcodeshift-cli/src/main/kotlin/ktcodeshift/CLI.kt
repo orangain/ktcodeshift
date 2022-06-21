@@ -28,6 +28,12 @@ class CLI(private val process: (CLIArgs) -> Unit) :
     lateinit var transformFile: File
 
     @Option(
+        names = ["-d", "--dry"],
+        description = ["dry run (no changes are made to files)"]
+    )
+    var dryRun: Boolean = false
+
+    @Option(
         names = ["--extensions"],
         paramLabel = "EXT",
         description = ["Target file extensions to be transformed (comma separated list)", "(default: kt)"]
@@ -37,9 +43,10 @@ class CLI(private val process: (CLIArgs) -> Unit) :
     override fun call(): Int {
         process(
             CLIArgs(
-                transformFile,
-                targetDirs.toList(),
-                extensions.split(",").toSet(),
+                transformFile = transformFile,
+                targetDirs = targetDirs.toList(),
+                dryRun = dryRun,
+                extensions = extensions.split(",").toSet(),
             )
         )
         return 0
@@ -49,6 +56,7 @@ class CLI(private val process: (CLIArgs) -> Unit) :
 data class CLIArgs(
     val transformFile: File,
     val targetDirs: List<File>,
+    val dryRun: Boolean,
     val extensions: Set<String>,
 )
 

@@ -17,6 +17,9 @@ fun main(args: Array<String>) {
 fun process(args: CLIArgs) {
     println("Loading transform script ${args.transformFile}")
     val transform = evalScriptSource(args.transformFile.toScriptSource())
+    if (args.dryRun) {
+        println("Running in dry mode, no files will be written!")
+    }
     val transformResults = args.targetDirs.flatMap { targetDir ->
         targetDir.walk()
             .filter { it.isFile && args.extensions.contains(it.toPath().extension) }
@@ -36,7 +39,9 @@ fun process(args: CLIArgs) {
                 if (changedSource == originalSource) {
                     TransformResult.UNMODIFIED
                 } else {
-                    targetFile.writeText(changedSource, charset)
+                    if (!args.dryRun) {
+                        targetFile.writeText(changedSource, charset)
+                    }
                     TransformResult.SUCCEEDED
                 }
             }
