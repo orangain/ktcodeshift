@@ -22,7 +22,8 @@ fun process(args: CLIArgs) {
             .filter { it.isFile && args.extensions.contains(it.toPath().extension) }
             .map { targetFile ->
                 println("Processing $targetFile")
-                val originalSource = targetFile.readText(Charsets.UTF_8)
+                val charset = Charsets.UTF_8
+                val originalSource = targetFile.readText(charset)
                 val changedSource = try {
                     applyTransform(transform, object : FileInfo {
                         override val path = targetFile.absolutePath
@@ -35,7 +36,7 @@ fun process(args: CLIArgs) {
                 if (changedSource == originalSource) {
                     TransformResult.UNMODIFIED
                 } else {
-                    println(changedSource) // TODO: Modify target file.
+                    targetFile.writeText(changedSource, charset)
                     TransformResult.SUCCEEDED
                 }
             }
