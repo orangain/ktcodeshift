@@ -1,7 +1,11 @@
 # ktcodeshift [![Java CI](https://github.com/orangain/ktcodeshift/actions/workflows/java_ci.yaml/badge.svg)](https://github.com/orangain/ktcodeshift/actions/workflows/java_ci.yaml)
 
 ktcodeshift is a toolkit for running codemods over multiple Kotlin files inspired
-by [jscodeshift](https://github.com/facebook/jscodeshift).
+by [jscodeshift](https://github.com/facebook/jscodeshift). It provides:
+
+- A runner, which executes the provided transform for each file passed to it. It also outputs a summary of how many files have (not) been transformed.
+- A wrapper around [ktast](https://github.com/orangain/ktast), providing a different API. ktast is a Kotlin AST library and also tries to preserve the style of original code as much as possible.
+
 
 ## Setup
 
