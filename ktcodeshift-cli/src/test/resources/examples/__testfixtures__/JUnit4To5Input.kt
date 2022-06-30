@@ -40,4 +40,14 @@ class MyTestClass {
     fun testSkipped() {
         // skipped test case
     }
+
+    @Test(expected = IllegalStateException::class)
+    fun testRaises() {
+        check(1 == 2)
+    }
+
+    @Test(expected = java.lang.IllegalArgumentException::class)
+    fun testRaises2() {
+        require(1 == 2)
+    }
 }
