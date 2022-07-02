@@ -65,26 +65,22 @@ transform { fileInfo ->
                 ),
                 body = block(
                     block = blockExpression(
-                        statements = listOf(
-                            callExpression(
-                                expr = nameExpression("Assertions.assertThrows"),
-                                typeArgs = typeArgs(
-                                    elements = listOf(
-                                        type(
-                                            typeRef = typeRef(
-                                                type = exceptionType,
-                                            )
-                                        )
-                                    ),
-                                ),
-                                lambdaArgs = listOf(
-                                    lambdaArg(
-                                        func = lambdaExpression(
-                                            body = body(originalStatements),
-                                        ),
+                        callExpression(
+                            expr = nameExpression("Assertions.assertThrows"),
+                            typeArgs = typeArgs(
+                                type(
+                                    typeRef = typeRef(
+                                        type = exceptionType,
                                     )
-                                ),
-                            )
+                                )
+                            ),
+                            lambdaArgs = listOf(
+                                lambdaArg(
+                                    func = lambdaExpression(
+                                        body = body(originalStatements),
+                                    ),
+                                )
+                            ),
                         )
                     )
                 )

@@ -43,16 +43,14 @@ transform { fileInfo ->
                             pieces = type.pieces.map {
                                 it.copy(
                                     typeArgs = typeArgs(
-                                        elements = listOf(
-                                            typeArg.copy(
-                                                typeRef = typeArg.typeRef.copy(
-                                                    type = toFqNameType(
-                                                        typeArg.typeRef.type as Node.Type.Simple,
-                                                        nestedNames
-                                                    ),
+                                        typeArg.copy(
+                                            typeRef = typeArg.typeRef.copy(
+                                                type = toFqNameType(
+                                                    typeArg.typeRef.type!!.asSimpleType(),
+                                                    nestedNames
                                                 ),
-                                            )
-                                        ),
+                                            ),
+                                        )
                                     )
                                 )
                             },
@@ -96,10 +94,7 @@ transform { fileInfo ->
                                         val fqType = when (val type = p.typeRef?.type) {
                                             is Node.Type.Simple -> toFqNameType(type, nestedNames)
                                             is Node.Type.Nullable -> type.copy(
-                                                type = toFqNameType(
-                                                    type.type as Node.Type.Simple,
-                                                    nestedNames
-                                                )
+                                                type = toFqNameType(type.type.asSimpleType(), nestedNames)
                                             )
                                             else -> type
                                         }
@@ -118,7 +113,6 @@ transform { fileInfo ->
                                             elements = params.map { p ->
                                                 valueArg(
                                                     name = p.name,
-                                                    asterisk = false,
                                                     expr = p.name,
                                                 )
                                             },
@@ -143,12 +137,10 @@ transform { fileInfo ->
                                             val varargFunc = func(
                                                 name = nameExpression(functionName),
                                                 params = functionParams(
-                                                    elements = listOf(
-                                                        param(
-                                                            mods = modifiers(listOf(lit(Node.Modifier.Keyword.VARARG))),
-                                                            name = nameExpression(firstParam.name.name),
-                                                            typeRef = typeRef(type = listElementType),
-                                                        )
+                                                    param(
+                                                        mods = modifiers(lit(Node.Modifier.Keyword.VARARG)),
+                                                        name = nameExpression(firstParam.name.name),
+                                                        typeRef = typeRef(type = listElementType),
                                                     )
                                                 ),
                                                 body = expr(
@@ -156,11 +148,8 @@ transform { fileInfo ->
                                                     expr = callExpression(
                                                         expr = nameExpression(functionName),
                                                         args = valueArgs(
-                                                            listOf(
-                                                                valueArg(
-                                                                    asterisk = false,
-                                                                    expr = nameExpression("${firstParam.name.name}.toList()"),
-                                                                )
+                                                            valueArg(
+                                                                expr = nameExpression("${firstParam.name.name}.toList()"),
                                                             )
                                                         )
                                                     )
