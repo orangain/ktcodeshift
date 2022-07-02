@@ -3,8 +3,10 @@ import ktast.ast.Visitor
 import ktast.ast.Writer
 import ktcodeshift.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
+import java.nio.charset.StandardCharsets
 
 transform { fileInfo ->
+    val stringBuilder = StringBuilder()
     Api
         .parse(fileInfo.source)
         .also { ctx ->
@@ -29,7 +31,7 @@ transform { fileInfo ->
 
             println(fqNames)
             println("-".repeat(40))
-            println("import ktast.ast.Node")
+            stringBuilder.appendLine("import ktast.ast.Node")
 
             fun toFqNameType(type: Node.Type.Simple, nestedNames: List<String>): Node.Type.Simple {
 
@@ -125,7 +127,7 @@ transform { fileInfo ->
                                 )
                             )
 //                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
-                            println(Writer.write(func))
+                            stringBuilder.appendLine(Writer.write(func))
                             val firstParam = func.params?.elements?.firstOrNull()
                             if (firstParam != null && listOf(
                                     "elements",
@@ -164,7 +166,7 @@ transform { fileInfo ->
                                                     )
                                                 )
                                             )
-                                            println(Writer.write(varargFunc))
+                                            stringBuilder.appendLine(Writer.write(varargFunc))
                                         }
                                     }
                                 }
@@ -181,6 +183,10 @@ transform { fileInfo ->
             }.visit(ctx.fileNode)
         }
         .toSource()
+        .also {
+            java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
+                .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
+        }
 }
 
 fun toFunctionName(nestedNames: List<String>): String {
