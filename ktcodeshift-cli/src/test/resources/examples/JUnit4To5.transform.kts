@@ -19,19 +19,19 @@ transform { fileInfo ->
         .replaceWith { v ->
             v.copy(
                 names = v.names.take(2) + listOf(
-                    Node.Expr.Name("jupiter"),
-                    Node.Expr.Name("api"),
-                    Node.Expr.Name(v.names[2].name.let { annotationNameMap[it] ?: it }),
+                    nameExpression("jupiter"),
+                    nameExpression("api"),
+                    nameExpression(v.names[2].name.let { annotationNameMap[it] ?: it }),
                 )
             )
         }
         .find<Node.Modifier.AnnotationSet.Annotation>()
         .replaceWith { v ->
-            val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(Node.Expr::Name)
+            val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(::nameExpression)
             if (name != null) {
                 v.copy(
-                    constructorCallee = Node.ConstructorCallee(
-                        type = Node.Type.Simple(
+                    constructorCallee = constructorCallee(
+                        type = simpleType(
                             pieces = v.constructorCallee.type.pieces.dropLast(1) + v.constructorCallee.type.pieces.last()
                                 .copy(name = name)
                         )
@@ -62,34 +62,22 @@ transform { fileInfo ->
                         }
                     }
                 ),
-                body = Node.Decl.Func.Body.Block(
-                    block = Node.Expr.Block(
+                body = block(
+                    block = blockExpression(
                         statements = listOf(
-                            Node.Expr.Call(
-                                expr = Node.Expr.Name("Assertions.assertThrows"),
-                                typeArgs = Node.TypeArgs(
-                                    elements = listOf(Node.TypeArg.Type(
-                                        mods = null,
-                                        typeRef = Node.TypeRef(
-                                            lPar = null,
-                                            mods = null,
-                                            innerLPar = null,
-                                            innerMods = null,
+                            callExpression(
+                                expr = nameExpression("Assertions.assertThrows"),
+                                typeArgs = typeArgs(
+                                    elements = listOf(type(
+                                        typeRef = typeRef(
                                             type = exceptionType,
-                                            innerRPar = null,
-                                            rPar = null,
                                         )
                                     )),
-                                    trailingComma = null,
                                 ),
-                                args = null,
                                 lambdaArgs = listOf(
-                                    Node.Expr.Call.LambdaArg(
-                                    anns = listOf(),
-                                    label = null,
-                                    func = Node.Expr.Lambda(
-                                        params = null,
-                                        body = Node.Expr.Lambda.Body(originalStatements),
+                                    lambdaArg(
+                                    func = lambdaExpression(
+                                        body = body(originalStatements),
                                     ),
                                 )),
                             )
