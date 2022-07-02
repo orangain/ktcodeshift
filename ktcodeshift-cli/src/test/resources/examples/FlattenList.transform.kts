@@ -1,5 +1,8 @@
 import ktast.ast.Node
-import ktcodeshift.*
+import ktcodeshift.Api
+import ktcodeshift.find
+import ktcodeshift.toSource
+import ktcodeshift.transform
 
 transform { fileInfo ->
     Api

@@ -49,7 +49,8 @@ transform { fileInfo ->
         .replaceWith { v ->
             val annotation = getAnnotationByName(v.annotations, "Test")
             val arg = getValueArgByName(annotation?.args, "expected")
-            val exceptionType = ((arg?.expr as Node.Expr.DoubleColonRef.Class).recv as Node.Expr.DoubleColonRef.Recv.Type).type
+            val exceptionType =
+                ((arg?.expr as Node.Expr.DoubleColonRef.Class).recv as Node.Expr.DoubleColonRef.Recv.Type).type
             val originalStatements = (v.body as Node.Decl.Func.Body.Block).block.statements
 
             v.copy(
@@ -68,18 +69,21 @@ transform { fileInfo ->
                             callExpression(
                                 expr = nameExpression("Assertions.assertThrows"),
                                 typeArgs = typeArgs(
-                                    elements = listOf(type(
-                                        typeRef = typeRef(
-                                            type = exceptionType,
+                                    elements = listOf(
+                                        type(
+                                            typeRef = typeRef(
+                                                type = exceptionType,
+                                            )
                                         )
-                                    )),
+                                    ),
                                 ),
                                 lambdaArgs = listOf(
                                     lambdaArg(
-                                    func = lambdaExpression(
-                                        body = body(originalStatements),
-                                    ),
-                                )),
+                                        func = lambdaExpression(
+                                            body = body(originalStatements),
+                                        ),
+                                    )
+                                ),
                             )
                         )
                     )
@@ -89,7 +93,10 @@ transform { fileInfo ->
         .toSource()
 }
 
-fun getAnnotationByName(annotations: List<Node.Modifier.AnnotationSet.Annotation>, name: String): Node.Modifier.AnnotationSet.Annotation? {
+fun getAnnotationByName(
+    annotations: List<Node.Modifier.AnnotationSet.Annotation>,
+    name: String
+): Node.Modifier.AnnotationSet.Annotation? {
     return annotations.find { it.constructorCallee.type.pieces.last().name.name == name }
 }
 

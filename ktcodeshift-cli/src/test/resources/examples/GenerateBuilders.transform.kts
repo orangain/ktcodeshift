@@ -39,13 +39,20 @@ transform { fileInfo ->
                         val typeArg = typeArgs.elements[0] as Node.TypeArg.Type
                         return simpleType(
                             pieces = type.pieces.map {
-                                it.copy(typeArgs = typeArgs(
-                                    elements = listOf(typeArg.copy(
-                                        typeRef = typeArg.typeRef.copy(
-                                            type = toFqNameType(typeArg.typeRef.type as Node.Type.Simple, nestedNames),
+                                it.copy(
+                                    typeArgs = typeArgs(
+                                        elements = listOf(
+                                            typeArg.copy(
+                                                typeRef = typeArg.typeRef.copy(
+                                                    type = toFqNameType(
+                                                        typeArg.typeRef.type as Node.Type.Simple,
+                                                        nestedNames
+                                                    ),
+                                                ),
+                                            )
                                         ),
-                                    )),
-                                ))
+                                    )
+                                )
                             },
                         )
                     }
@@ -86,12 +93,17 @@ transform { fileInfo ->
                                     elements = params.map { p ->
                                         val fqType = when (val type = p.typeRef?.type) {
                                             is Node.Type.Simple -> toFqNameType(type, nestedNames)
-                                            is Node.Type.Nullable -> type.copy(type = toFqNameType(type.type as Node.Type.Simple, nestedNames))
+                                            is Node.Type.Nullable -> type.copy(
+                                                type = toFqNameType(
+                                                    type.type as Node.Type.Simple,
+                                                    nestedNames
+                                                )
+                                            )
                                             else -> type
                                         }
                                         param(
                                             name = p.name,
-                                            typeRef = p.typeRef?.copy(type=fqType),
+                                            typeRef = p.typeRef?.copy(type = fqType),
                                             initializer = initializerOf(fqType),
                                         )
                                     },
@@ -115,7 +127,12 @@ transform { fileInfo ->
 //                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
                             println(Writer.write(func))
                             val firstParam = func.params?.elements?.firstOrNull()
-                            if (firstParam != null && listOf("elements", "statements", "decls").contains(firstParam.name.name)) {
+                            if (firstParam != null && listOf(
+                                    "elements",
+                                    "statements",
+                                    "decls"
+                                ).contains(firstParam.name.name)
+                            ) {
                                 val firstParamType = firstParam.typeRef?.type?.asSimpleTypeOrNull()
                                 if (firstParamType != null) {
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
@@ -128,7 +145,7 @@ transform { fileInfo ->
                                                         param(
                                                             mods = modifiers(listOf(lit(Node.Modifier.Keyword.VARARG))),
                                                             name = nameExpression(firstParam.name.name),
-                                                            typeRef = typeRef(type=listElementType),
+                                                            typeRef = typeRef(type = listElementType),
                                                         )
                                                     )
                                                 ),
