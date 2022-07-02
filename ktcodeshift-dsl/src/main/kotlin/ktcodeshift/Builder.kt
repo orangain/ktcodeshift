@@ -21,6 +21,10 @@ fun packageDirective(
 ) = Node.Package(mods = mods, packageKeyword = packageKeyword, names = names)
 
 fun importDirectives(elements: List<Node.Import> = listOf()) = Node.Imports(elements = elements)
+fun importDirectives(vararg elements: Node.Import) {
+    importDirectives(elements.toList())
+}
+
 fun importDirective(
     importKeyword: Node.Keyword.Import = Node.Keyword.Import(),
     names: List<Node.Expr.Name> = listOf(),
@@ -104,6 +108,10 @@ fun func(
 fun functionParams(elements: List<Node.Decl.Func.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.Decl.Func.Params(elements = elements, trailingComma = trailingComma)
 
+fun functionParams(vararg elements: Node.Decl.Func.Param) {
+    functionParams(elements.toList())
+}
+
 fun param(
     mods: Node.Modifiers? = null,
     valOrVar: Node.Keyword.ValOrVar? = null,
@@ -178,6 +186,10 @@ fun set(
 fun params(elements: List<Node.Decl.Func.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.Decl.Property.Accessor.Params(elements = elements, trailingComma = trailingComma)
 
+fun params(vararg elements: Node.Decl.Func.Param) {
+    params(elements.toList())
+}
+
 fun typeAlias(
     mods: Node.Modifiers? = null,
     name: Node.Expr.Name,
@@ -215,6 +227,10 @@ fun initializer(equals: Node.Keyword.Equal = Node.Keyword.Equal(), expr: Node.Ex
 fun typeParams(elements: List<Node.TypeParam> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.TypeParams(elements = elements, trailingComma = trailingComma)
 
+fun typeParams(vararg elements: Node.TypeParam) {
+    typeParams(elements.toList())
+}
+
 fun typeParam(mods: Node.Modifiers? = null, name: Node.Expr.Name, typeRef: Node.TypeRef? = null) =
     Node.TypeParam(mods = mods, name = name, typeRef = typeRef)
 
@@ -230,10 +246,18 @@ fun contextReceivers(
     trailingComma: Node.Keyword.Comma? = null
 ) = Node.Type.Func.ContextReceivers(elements = elements, trailingComma = trailingComma)
 
+fun contextReceivers(vararg elements: Node.Type.Func.ContextReceiver) {
+    contextReceivers(elements.toList())
+}
+
 fun contextReceiver(typeRef: Node.TypeRef) = Node.Type.Func.ContextReceiver(typeRef = typeRef)
 fun receiver(typeRef: Node.TypeRef) = Node.Type.Func.Receiver(typeRef = typeRef)
 fun params(elements: List<Node.Type.Func.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.Type.Func.Params(elements = elements, trailingComma = trailingComma)
+
+fun params(vararg elements: Node.Type.Func.Param) {
+    params(elements.toList())
+}
 
 fun param(name: Node.Expr.Name? = null, typeRef: Node.TypeRef) = Node.Type.Func.Param(name = name, typeRef = typeRef)
 fun simpleType(pieces: List<Node.Type.Simple.Piece> = listOf()) = Node.Type.Simple(pieces = pieces)
@@ -250,6 +274,10 @@ fun nullableType(
 fun dynamicType(_unused_: Boolean) = Node.Type.Dynamic(_unused_ = _unused_)
 fun typeArgs(elements: List<Node.TypeArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.TypeArgs(elements = elements, trailingComma = trailingComma)
+
+fun typeArgs(vararg elements: Node.TypeArg) {
+    typeArgs(elements.toList())
+}
 
 fun asterisk(asterisk: Node.Keyword.Asterisk = Node.Keyword.Asterisk()) = Node.TypeArg.Asterisk(asterisk = asterisk)
 fun type(mods: Node.Modifiers? = null, typeRef: Node.TypeRef) = Node.TypeArg.Type(mods = mods, typeRef = typeRef)
@@ -274,6 +302,10 @@ fun typeRef(
 fun constructorCallee(type: Node.Type.Simple) = Node.ConstructorCallee(type = type)
 fun valueArgs(elements: List<Node.ValueArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.ValueArgs(elements = elements, trailingComma = trailingComma)
+
+fun valueArgs(vararg elements: Node.ValueArg) {
+    valueArgs(elements.toList())
+}
 
 fun valueArg(name: Node.Expr.Name? = null, asterisk: Boolean, expr: Node.Expr) =
     Node.ValueArg(name = name, asterisk = asterisk, expr = expr)
@@ -350,6 +382,10 @@ fun lambdaExpression(params: Node.Expr.Lambda.Params? = null, body: Node.Expr.La
 fun params(elements: List<Node.Expr.Lambda.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.Expr.Lambda.Params(elements = elements, trailingComma = trailingComma)
 
+fun params(vararg elements: Node.Expr.Lambda.Param) {
+    params(elements.toList())
+}
+
 fun single(name: Node.Expr.Name, typeRef: Node.TypeRef? = null) =
     Node.Expr.Lambda.Param.Single(name = name, typeRef = typeRef)
 
@@ -358,6 +394,10 @@ fun multi(vars: Node.Expr.Lambda.Param.Multi.Variables, destructTypeRef: Node.Ty
 
 fun variables(elements: List<Node.Expr.Lambda.Param.Single> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.Expr.Lambda.Param.Multi.Variables(elements = elements, trailingComma = trailingComma)
+
+fun variables(vararg elements: Node.Expr.Lambda.Param.Single) {
+    variables(elements.toList())
+}
 
 fun body(statements: List<Node.Statement> = listOf()) = Node.Expr.Lambda.Body(statements = statements)
 fun thisExpression(label: String? = null) = Node.Expr.This(label = label)
@@ -416,6 +456,10 @@ fun anonFuncExpression(func: Node.Decl.Func) = Node.Expr.AnonFunc(func = func)
 fun propertyExpression(decl: Node.Decl.Property) = Node.Expr.Property(decl = decl)
 fun blockExpression(statements: List<Node.Statement> = listOf()) = Node.Expr.Block(statements = statements)
 fun modifiers(elements: List<Node.Modifier> = listOf()) = Node.Modifiers(elements = elements)
+fun modifiers(vararg elements: Node.Modifier) {
+    modifiers(elements.toList())
+}
+
 fun annotationSet(
     atSymbol: Node.Keyword.At? = null,
     target: Node.Modifier.AnnotationSet.Target? = null,
@@ -442,6 +486,10 @@ fun typeConstraints(
 fun typeConstraintList(elements: List<Node.PostModifier.TypeConstraints.TypeConstraint> = listOf()) =
     Node.PostModifier.TypeConstraints.TypeConstraintList(elements = elements)
 
+fun typeConstraintList(vararg elements: Node.PostModifier.TypeConstraints.TypeConstraint) {
+    typeConstraintList(elements.toList())
+}
+
 fun typeConstraint(anns: List<Node.Modifier.AnnotationSet> = listOf(), name: Node.Expr.Name, typeRef: Node.TypeRef) =
     Node.PostModifier.TypeConstraints.TypeConstraint(anns = anns, name = name, typeRef = typeRef)
 
@@ -454,6 +502,10 @@ fun contractEffects(
     elements: List<Node.PostModifier.Contract.ContractEffect> = listOf(),
     trailingComma: Node.Keyword.Comma? = null
 ) = Node.PostModifier.Contract.ContractEffects(elements = elements, trailingComma = trailingComma)
+
+fun contractEffects(vararg elements: Node.PostModifier.Contract.ContractEffect) {
+    contractEffects(elements.toList())
+}
 
 fun contractEffect(expr: Node.Expr) = Node.PostModifier.Contract.ContractEffect(expr = expr)
 fun valOrVar(token: Node.Keyword.ValOrVarToken) = Node.Keyword.ValOrVar(token = token)

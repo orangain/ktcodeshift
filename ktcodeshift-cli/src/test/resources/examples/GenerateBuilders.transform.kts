@@ -78,9 +78,10 @@ transform { fileInfo ->
 
                         if (v.isDataClass) {
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
+                            val functionName = toFunctionName(nestedNames)
 
                             val func = func(
-                                name = nameExpression(toFunctionName(nestedNames)),
+                                name = nameExpression(functionName),
                                 params = functionParams(
                                     elements = params.map { p ->
                                         val fqType = when (val type = p.typeRef?.type) {
@@ -113,6 +114,43 @@ transform { fileInfo ->
                             )
 //                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
                             println(Writer.write(func))
+                            val firstParam = func.params?.elements?.firstOrNull()
+                            if (firstParam != null && firstParam.name.name == "elements") {
+                                val firstParamType = firstParam.typeRef?.type?.asSimpleTypeOrNull()
+                                if (firstParamType != null) {
+                                    if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
+                                        val listElementType = firstParamType.pieces.first().typeArgs!!.elements[0].type
+                                        if (listElementType != null) {
+                                            val varargFunc = func(
+                                                name = nameExpression(functionName),
+                                                params = functionParams(
+                                                    elements = listOf(
+                                                        param(
+                                                            mods = modifiers(listOf(lit(Node.Modifier.Keyword.VARARG))),
+                                                            name = nameExpression("elements"),
+                                                            typeRef = typeRef(type=listElementType),
+                                                        )
+                                                    )
+                                                ),
+                                                body = block(
+                                                    blockExpression(listOf(
+                                                        callExpression(
+                                                            expr = nameExpression(functionName),
+                                                            args = valueArgs(listOf(
+                                                                valueArg(
+                                                                    asterisk = false,
+                                                                    expr = nameExpression("elements.toList()"),
+                                                                )
+                                                            ))
+                                                        )
+                                                    ))
+                                                )
+                                            )
+                                            println(Writer.write(varargFunc))
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         super.visit(v, parent)
