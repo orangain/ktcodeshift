@@ -87,7 +87,7 @@ transform { fileInfo ->
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
                             val functionName = toFunctionName(nestedNames)
 
-                            val func = func(
+                            val func = function(
                                 name = nameExpression(functionName),
                                 params = functionParams(
                                     elements = params.map { p ->
@@ -98,15 +98,14 @@ transform { fileInfo ->
                                             )
                                             else -> type
                                         }
-                                        param(
+                                        functionParam(
                                             name = p.name,
                                             typeRef = p.typeRef?.copy(type = fqType),
                                             initializer = initializerOf(fqType),
                                         )
                                     },
                                 ),
-                                body = expr(
-                                    equals = Node.Keyword.Equal(),
+                                body = functionExpressionBody(
                                     expr = callExpression(
                                         expr = nameExpression(nestedNames.joinToString(".")),
                                         args = valueArgs(
@@ -135,17 +134,16 @@ transform { fileInfo ->
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
                                         val listElementType = firstParamType.pieces.first().typeArgs!!.elements[0].type
                                         if (listElementType != null) {
-                                            val varargFunc = func(
+                                            val varargFunc = function(
                                                 name = nameExpression(functionName),
                                                 params = functionParams(
-                                                    param(
+                                                    functionParam(
                                                         mods = modifiers(lit(Node.Modifier.Keyword.VARARG)),
                                                         name = nameExpression(firstParam.name.name),
                                                         typeRef = typeRef(type = listElementType),
                                                     )
                                                 ),
-                                                body = expr(
-                                                    equals = Node.Keyword.Equal(),
+                                                body = functionExpressionBody(
                                                     expr = callExpression(
                                                         expr = nameExpression(functionName),
                                                         args = valueArgs(

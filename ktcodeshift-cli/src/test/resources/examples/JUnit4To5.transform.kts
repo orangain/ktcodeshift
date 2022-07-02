@@ -63,7 +63,7 @@ transform { fileInfo ->
                         }
                     }
                 ),
-                body = block(
+                body = functionBlockBody(
                     block = blockExpression(
                         callExpression(
                             expr = nameExpression("Assertions.assertThrows"),
