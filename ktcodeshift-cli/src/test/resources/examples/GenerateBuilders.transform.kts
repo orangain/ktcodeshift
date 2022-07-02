@@ -77,7 +77,7 @@ transform { fileInfo ->
                         val name = v.name?.name.orEmpty()
                         nestedNames.add(name)
 
-                        if (v.mods?.elements.orEmpty().any { it is Node.Modifier.Lit && it.keyword == Node.Modifier.Keyword.DATA }) {
+                        if (v.isDataClass) {
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
 
                             val func = func(

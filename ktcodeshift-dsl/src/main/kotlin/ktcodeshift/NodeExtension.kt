@@ -10,3 +10,6 @@ val Node.WithModifiers.annotations: List<Node.Modifier.AnnotationSet.Annotation>
 
 val Node.WithModifiers.literalModifiers: List<Node.Modifier.Lit>
     get() = mods?.elements.orEmpty().mapNotNull { it as? Node.Modifier.Lit }
+
+val Node.Decl.Structured.isDataClass: Boolean
+    get() = literalModifiers.contains(Node.Modifier.Lit(Node.Modifier.Keyword.DATA))
