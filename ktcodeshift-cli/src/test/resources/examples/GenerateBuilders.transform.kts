@@ -201,10 +201,12 @@ fun initializerOf(type: Node.Type?): Node.Initializer? {
     val expr = if (type is Node.Type.Nullable) {
         Node.Expr.Name("null")
     } else if (type is Node.Type.Simple) {
-        if (type.pieces.size == 1 && type.pieces[0].name.name == "List") {
+        val fqName = type.pieces.joinToString(".") { it.name.name }
+        if (fqName == "List") {
             Node.Expr.Name("listOf()")
+        } else if (fqName == "Boolean") {
+            Node.Expr.Name("false")
         } else {
-            val fqName = type.pieces.joinToString(".") { it.name.name }
             if (fqName.startsWith("Node.Keyword.") && !(fqName.contains(".ValOrVar") || fqName.contains(".Declaration"))) {
                 Node.Expr.Name("$fqName()")
             } else {

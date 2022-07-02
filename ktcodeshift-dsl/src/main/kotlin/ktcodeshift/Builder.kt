@@ -72,7 +72,7 @@ fun primaryConstructor(
 
 fun body(
     enumEntries: List<Node.EnumEntry> = listOf(),
-    hasTrailingCommaInEnumEntries: Boolean,
+    hasTrailingCommaInEnumEntries: Boolean = false,
     decls: List<Node.Decl> = listOf()
 ) = Node.Decl.Structured.Body(
     enumEntries = enumEntries,
@@ -271,7 +271,7 @@ fun nullableType(
     rPar: Node.Keyword.RPar? = null
 ) = Node.Type.Nullable(lPar = lPar, mods = mods, type = type, rPar = rPar)
 
-fun dynamicType(_unused_: Boolean) = Node.Type.Dynamic(_unused_ = _unused_)
+fun dynamicType(_unused_: Boolean = false) = Node.Type.Dynamic(_unused_ = _unused_)
 fun typeArgs(elements: List<Node.TypeArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.TypeArgs(elements = elements, trailingComma = trailingComma)
 
@@ -307,7 +307,7 @@ fun valueArgs(vararg elements: Node.ValueArg) {
     valueArgs(elements.toList())
 }
 
-fun valueArg(name: Node.Expr.Name? = null, asterisk: Boolean, expr: Node.Expr) =
+fun valueArg(name: Node.Expr.Name? = null, asterisk: Boolean = false, expr: Node.Expr) =
     Node.ValueArg(name = name, asterisk = asterisk, expr = expr)
 
 fun container(expr: Node.Expr) = Node.Container(expr = expr)
@@ -342,7 +342,7 @@ fun whileExpression(
     whileKeyword: Node.Keyword.While = Node.Keyword.While(),
     condition: Node.Container,
     body: Node.Container,
-    doWhile: Boolean
+    doWhile: Boolean = false
 ) = Node.Expr.While(whileKeyword = whileKeyword, condition = condition, body = body, doWhile = doWhile)
 
 fun binaryOpExpression(lhs: Node.Expr, oper: Node.Expr.BinaryOp.Oper, rhs: Node.Expr) =
@@ -350,7 +350,7 @@ fun binaryOpExpression(lhs: Node.Expr, oper: Node.Expr.BinaryOp.Oper, rhs: Node.
 
 fun infix(str: String) = Node.Expr.BinaryOp.Oper.Infix(str = str)
 fun token(token: Node.Expr.BinaryOp.Token) = Node.Expr.BinaryOp.Oper.Token(token = token)
-fun unaryOpExpression(expr: Node.Expr, oper: Node.Expr.UnaryOp.Oper, prefix: Boolean) =
+fun unaryOpExpression(expr: Node.Expr, oper: Node.Expr.UnaryOp.Oper, prefix: Boolean = false) =
     Node.Expr.UnaryOp(expr = expr, oper = oper, prefix = prefix)
 
 fun oper(token: Node.Expr.UnaryOp.Token) = Node.Expr.UnaryOp.Oper(token = token)
@@ -367,7 +367,7 @@ fun type(type: Node.Type.Simple, questionMarks: List<Node.Keyword.Question> = li
     Node.Expr.DoubleColonRef.Recv.Type(type = type, questionMarks = questionMarks)
 
 fun parenExpression(expr: Node.Expr) = Node.Expr.Paren(expr = expr)
-fun stringTmplExpression(elems: List<Node.Expr.StringTmpl.Elem> = listOf(), raw: Boolean) =
+fun stringTmplExpression(elems: List<Node.Expr.StringTmpl.Elem> = listOf(), raw: Boolean = false) =
     Node.Expr.StringTmpl(elems = elems, raw = raw)
 
 fun regular(str: String) = Node.Expr.StringTmpl.Elem.Regular(str = str)
@@ -421,8 +421,8 @@ fun whenEntryElse(elseKeyword: Node.Keyword.Else = Node.Keyword.Else(), body: No
     Node.Expr.When.Entry.Else(elseKeyword = elseKeyword, body = body)
 
 fun whenConditionExpr(expr: Node.Expr) = Node.Expr.When.Cond.Expr(expr = expr)
-fun whenConditionIn(expr: Node.Expr, not: Boolean) = Node.Expr.When.Cond.In(expr = expr, not = not)
-fun whenConditionIs(typeRef: Node.TypeRef, not: Boolean) = Node.Expr.When.Cond.Is(typeRef = typeRef, not = not)
+fun whenConditionIn(expr: Node.Expr, not: Boolean = false) = Node.Expr.When.Cond.In(expr = expr, not = not)
+fun whenConditionIs(typeRef: Node.TypeRef, not: Boolean = false) = Node.Expr.When.Cond.Is(typeRef = typeRef, not = not)
 fun objectExpression(decl: Node.Decl.Structured) = Node.Expr.Object(decl = decl)
 fun throwExpression(expr: Node.Expr) = Node.Expr.Throw(expr = expr)
 fun returnExpression(label: String? = null, expr: Node.Expr? = null) = Node.Expr.Return(label = label, expr = expr)
