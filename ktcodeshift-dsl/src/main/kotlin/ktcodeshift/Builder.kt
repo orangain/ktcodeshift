@@ -400,6 +400,10 @@ fun variables(vararg elements: Node.Expr.Lambda.Param.Single) {
 }
 
 fun body(statements: List<Node.Statement> = listOf()) = Node.Expr.Lambda.Body(statements = statements)
+fun body(vararg statements: Node.Statement) {
+    body(statements.toList())
+}
+
 fun thisExpression(label: String? = null) = Node.Expr.This(label = label)
 fun superExpression(typeArg: Node.TypeRef? = null, label: String? = null) =
     Node.Expr.Super(typeArg = typeArg, label = label)
@@ -455,6 +459,10 @@ fun arrayAccessExpression(
 fun anonFuncExpression(func: Node.Decl.Func) = Node.Expr.AnonFunc(func = func)
 fun propertyExpression(decl: Node.Decl.Property) = Node.Expr.Property(decl = decl)
 fun blockExpression(statements: List<Node.Statement> = listOf()) = Node.Expr.Block(statements = statements)
+fun blockExpression(vararg statements: Node.Statement) {
+    blockExpression(statements.toList())
+}
+
 fun modifiers(elements: List<Node.Modifier> = listOf()) = Node.Modifiers(elements = elements)
 fun modifiers(vararg elements: Node.Modifier) {
     modifiers(elements.toList())

@@ -115,7 +115,7 @@ transform { fileInfo ->
 //                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
                             println(Writer.write(func))
                             val firstParam = func.params?.elements?.firstOrNull()
-                            if (firstParam != null && firstParam.name.name == "elements") {
+                            if (firstParam != null && listOf("elements", "statements", "decls").contains(firstParam.name.name)) {
                                 val firstParamType = firstParam.typeRef?.type?.asSimpleTypeOrNull()
                                 if (firstParamType != null) {
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
@@ -127,7 +127,7 @@ transform { fileInfo ->
                                                     elements = listOf(
                                                         param(
                                                             mods = modifiers(listOf(lit(Node.Modifier.Keyword.VARARG))),
-                                                            name = nameExpression("elements"),
+                                                            name = nameExpression(firstParam.name.name),
                                                             typeRef = typeRef(type=listElementType),
                                                         )
                                                     )
@@ -139,7 +139,7 @@ transform { fileInfo ->
                                                             args = valueArgs(listOf(
                                                                 valueArg(
                                                                     asterisk = false,
-                                                                    expr = nameExpression("elements.toList()"),
+                                                                    expr = nameExpression("${firstParam.name.name}.toList()"),
                                                                 )
                                                             ))
                                                         )
