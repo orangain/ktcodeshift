@@ -33,6 +33,7 @@ fun process(args: CLIArgs) {
                         override val source = originalSource
                     })
                 } catch (ex: Exception) {
+                    ex.printStackTrace()
                     return@map TransformResult.FAILED
                 }
 
