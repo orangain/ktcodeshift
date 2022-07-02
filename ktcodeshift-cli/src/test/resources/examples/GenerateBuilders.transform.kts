@@ -132,18 +132,19 @@ transform { fileInfo ->
                                                         )
                                                     )
                                                 ),
-                                                body = block(
-                                                    blockExpression(listOf(
-                                                        callExpression(
-                                                            expr = nameExpression(functionName),
-                                                            args = valueArgs(listOf(
+                                                body = expr(
+                                                    equals = Node.Keyword.Equal(),
+                                                    expr = callExpression(
+                                                        expr = nameExpression(functionName),
+                                                        args = valueArgs(
+                                                            listOf(
                                                                 valueArg(
                                                                     asterisk = false,
                                                                     expr = nameExpression("${firstParam.name.name}.toList()"),
                                                                 )
-                                                            ))
+                                                            )
                                                         )
-                                                    ))
+                                                    )
                                                 )
                                             )
                                             println(Writer.write(varargFunc))
