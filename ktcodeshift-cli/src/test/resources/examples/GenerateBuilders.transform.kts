@@ -138,7 +138,7 @@ transform { fileInfo ->
                                                 name = nameExpression(functionName),
                                                 params = functionParams(
                                                     functionParam(
-                                                        mods = modifiers(lit(Node.Modifier.Keyword.VARARG)),
+                                                        mods = modifiers(literalModifier(Node.Modifier.Keyword.VARARG)),
                                                         name = nameExpression(firstParam.name.name),
                                                         typeRef = typeRef(type = listElementType),
                                                     )
