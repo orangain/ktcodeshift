@@ -78,7 +78,7 @@ fun body(
 )
 
 fun init(mods: Node.Modifiers? = null, block: Node.Expr.Block) = Node.Decl.Init(mods = mods, block = block)
-fun func(
+fun function(
     mods: Node.Modifiers? = null,
     funKeyword: Node.Keyword.Fun = Node.Keyword.Fun(),
     typeParams: Node.TypeParams? = null,
@@ -106,7 +106,7 @@ fun functionParams(elements: List<Node.Decl.Func.Param> = listOf(), trailingComm
     Node.Decl.Func.Params(elements = elements, trailingComma = trailingComma)
 
 fun functionParams(vararg elements: Node.Decl.Func.Param) = functionParams(elements.toList())
-fun param(
+fun functionParam(
     mods: Node.Modifiers? = null,
     valOrVar: Node.Keyword.ValOrVar? = null,
     name: Node.Expr.Name,
@@ -114,8 +114,8 @@ fun param(
     initializer: Node.Initializer? = null
 ) = Node.Decl.Func.Param(mods = mods, valOrVar = valOrVar, name = name, typeRef = typeRef, initializer = initializer)
 
-fun block(block: Node.Expr.Block) = Node.Decl.Func.Body.Block(block = block)
-fun expr(equals: Node.Keyword.Equal = Node.Keyword.Equal(), expr: Node.Expr) =
+fun functionBlockBody(block: Node.Expr.Block) = Node.Decl.Func.Body.Block(block = block)
+fun functionExpressionBody(equals: Node.Keyword.Equal = Node.Keyword.Equal(), expr: Node.Expr) =
     Node.Decl.Func.Body.Expr(equals = equals, expr = expr)
 
 fun property(
@@ -243,6 +243,7 @@ fun params(elements: List<Node.Type.Func.Param> = listOf(), trailingComma: Node.
 fun params(vararg elements: Node.Type.Func.Param) = params(elements.toList())
 fun param(name: Node.Expr.Name? = null, typeRef: Node.TypeRef) = Node.Type.Func.Param(name = name, typeRef = typeRef)
 fun simpleType(pieces: List<Node.Type.Simple.Piece> = listOf()) = Node.Type.Simple(pieces = pieces)
+fun simpleType(vararg pieces: Node.Type.Simple.Piece) = simpleType(pieces.toList())
 fun piece(name: Node.Expr.Name, typeArgs: Node.TypeArgs? = null) =
     Node.Type.Simple.Piece(name = name, typeArgs = typeArgs)
 

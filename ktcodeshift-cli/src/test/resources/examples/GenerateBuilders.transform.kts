@@ -126,7 +126,8 @@ transform { fileInfo ->
                             if (firstParam != null && listOf(
                                     "elements",
                                     "statements",
-                                    "decls"
+                                    "decls",
+                                    "pieces",
                                 ).contains(firstParam.name.name)
                             ) {
                                 val firstParamType = firstParam.typeRef?.type?.asSimpleTypeOrNull()
@@ -204,7 +205,11 @@ fun toFunctionName(nestedNames: List<String>): String {
         "Node.Package" -> "packageDirective"
         "Node.Imports" -> "importDirectives"
         "Node.Import" -> "importDirective"
+        "Node.Decl.Func" -> "function"
         "Node.Decl.Func.Params" -> "functionParams"
+        "Node.Decl.Func.Param" -> "functionParam"
+        "Node.Decl.Func.Body.Block" -> "functionBlockBody"
+        "Node.Decl.Func.Body.Expr" -> "functionExpressionBody"
         "Node.Expr.DoubleColonRef.Class" -> "doubleColonClassLiteral"
         else -> name.decapitalizeSmart()
     }
