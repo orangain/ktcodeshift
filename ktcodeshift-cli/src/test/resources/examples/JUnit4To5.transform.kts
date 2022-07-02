@@ -43,11 +43,11 @@ transform { fileInfo ->
         }
         .find<Node.Decl.Func>()
         .filter { v ->
-            val annotation = getAnnotationByName(v.mods, "Test")
+            val annotation = getAnnotationByName(v.annotations, "Test")
             getValueArgByName(annotation?.args, "expected") != null
         }
         .replaceWith { v ->
-            val annotation = getAnnotationByName(v.mods, "Test")
+            val annotation = getAnnotationByName(v.annotations, "Test")
             val arg = getValueArgByName(annotation?.args, "expected")
             val exceptionType = ((arg?.expr as Node.Expr.DoubleColonRef.Class).recv as Node.Expr.DoubleColonRef.Recv.Type).type
             val originalStatements = (v.body as Node.Decl.Func.Body.Block).block.statements
@@ -89,20 +89,8 @@ transform { fileInfo ->
         .toSource()
 }
 
-fun getAnnotationByName(modifiers: Node.Modifiers?, name: String): Node.Modifier.AnnotationSet.Annotation? {
-    if (modifiers == null) {
-        return null
-    }
-
-    modifiers.elements.forEach { e ->
-        if (e is Node.Modifier.AnnotationSet) {
-            val annotation = e.anns.find { it.constructorCallee.type.pieces.last().name.name == name }
-            if (annotation != null) {
-                return annotation
-            }
-        }
-    }
-    return null
+fun getAnnotationByName(annotations: List<Node.Modifier.AnnotationSet.Annotation>, name: String): Node.Modifier.AnnotationSet.Annotation? {
+    return annotations.find { it.constructorCallee.type.pieces.last().name.name == name }
 }
 
 fun getValueArgByName(args: Node.ValueArgs?, name: String): Node.ValueArg? {
