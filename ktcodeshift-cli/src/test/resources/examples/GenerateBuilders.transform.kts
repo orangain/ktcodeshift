@@ -45,7 +45,6 @@ transform { fileInfo ->
                                             type = toFqNameType(typeArg.typeRef.type as Node.Type.Simple, nestedNames),
                                         ),
                                     )),
-                                    trailingComma = null,
                                 ))
                             },
                         )
@@ -59,7 +58,7 @@ transform { fileInfo ->
                     val names = mutableNestedNames + pieceNames
                     if (fqNames.contains(names)) {
                         return simpleType(
-                            pieces = names.map { piece(name = nameExpression(it), typeArgs = null) }
+                            pieces = names.map { piece(name = nameExpression(it)) }
                         )
                     }
                     if (mutableNestedNames.isEmpty()) {
