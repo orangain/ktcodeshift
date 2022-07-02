@@ -19,19 +19,19 @@ transform { fileInfo ->
         .replaceWith { v ->
             v.copy(
                 names = v.names.take(2) + listOf(
-                    Node.Expr.Name("jupiter"),
-                    Node.Expr.Name("api"),
-                    Node.Expr.Name(v.names[2].name.let { annotationNameMap[it] ?: it }),
+                    nameExpression("jupiter"),
+                    nameExpression("api"),
+                    nameExpression(v.names[2].name.let { annotationNameMap[it] ?: it }),
                 )
             )
         }
         .find<Node.Modifier.AnnotationSet.Annotation>()
         .replaceWith { v ->
-            val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(Node.Expr::Name)
+            val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(::nameExpression)
             if (name != null) {
                 v.copy(
-                    constructorCallee = Node.ConstructorCallee(
-                        type = Node.Type.Simple(
+                    constructorCallee = constructorCallee(
+                        type = simpleType(
                             pieces = v.constructorCallee.type.pieces.dropLast(1) + v.constructorCallee.type.pieces.last()
                                 .copy(name = name)
                         )
@@ -43,13 +43,14 @@ transform { fileInfo ->
         }
         .find<Node.Decl.Func>()
         .filter { v ->
-            val annotation = getAnnotationByName(v.mods, "Test")
+            val annotation = getAnnotationByName(v.annotations, "Test")
             getValueArgByName(annotation?.args, "expected") != null
         }
         .replaceWith { v ->
-            val annotation = getAnnotationByName(v.mods, "Test")
+            val annotation = getAnnotationByName(v.annotations, "Test")
             val arg = getValueArgByName(annotation?.args, "expected")
-            val exceptionType = ((arg?.expr as Node.Expr.DoubleColonRef.Class).recv as Node.Expr.DoubleColonRef.Recv.Type).type
+            val exceptionType =
+                ((arg?.expr as Node.Expr.DoubleColonRef.Class).recv as Node.Expr.DoubleColonRef.Recv.Type).type
             val originalStatements = (v.body as Node.Decl.Func.Body.Block).block.statements
 
             v.copy(
@@ -62,37 +63,24 @@ transform { fileInfo ->
                         }
                     }
                 ),
-                body = Node.Decl.Func.Body.Block(
-                    block = Node.Expr.Block(
-                        statements = listOf(
-                            Node.Expr.Call(
-                                expr = Node.Expr.Name("Assertions.assertThrows"),
-                                typeArgs = Node.TypeArgs(
-                                    elements = listOf(Node.TypeArg.Type(
-                                        mods = null,
-                                        typeRef = Node.TypeRef(
-                                            lPar = null,
-                                            mods = null,
-                                            innerLPar = null,
-                                            innerMods = null,
-                                            type = exceptionType,
-                                            innerRPar = null,
-                                            rPar = null,
-                                        )
-                                    )),
-                                    trailingComma = null,
-                                ),
-                                args = null,
-                                lambdaArgs = listOf(
-                                    Node.Expr.Call.LambdaArg(
-                                    anns = listOf(),
-                                    label = null,
-                                    func = Node.Expr.Lambda(
-                                        params = null,
-                                        body = Node.Expr.Lambda.Body(originalStatements),
+                body = functionBlockBody(
+                    block = blockExpression(
+                        callExpression(
+                            expr = nameExpression("Assertions.assertThrows"),
+                            typeArgs = typeArgs(
+                                type(
+                                    typeRef = typeRef(
+                                        type = exceptionType,
+                                    )
+                                )
+                            ),
+                            lambdaArgs = listOf(
+                                lambdaArg(
+                                    func = lambdaExpression(
+                                        body = body(originalStatements),
                                     ),
-                                )),
-                            )
+                                )
+                            ),
                         )
                     )
                 )
@@ -101,20 +89,11 @@ transform { fileInfo ->
         .toSource()
 }
 
-fun getAnnotationByName(modifiers: Node.Modifiers?, name: String): Node.Modifier.AnnotationSet.Annotation? {
-    if (modifiers == null) {
-        return null
-    }
-
-    modifiers.elements.forEach { e ->
-        if (e is Node.Modifier.AnnotationSet) {
-            val annotation = e.anns.find { it.constructorCallee.type.pieces.last().name.name == name }
-            if (annotation != null) {
-                return annotation
-            }
-        }
-    }
-    return null
+fun getAnnotationByName(
+    annotations: List<Node.Modifier.AnnotationSet.Annotation>,
+    name: String
+): Node.Modifier.AnnotationSet.Annotation? {
+    return annotations.find { it.constructorCallee.type.pieces.last().name.name == name }
 }
 
 fun getValueArgByName(args: Node.ValueArgs?, name: String): Node.ValueArg? {
