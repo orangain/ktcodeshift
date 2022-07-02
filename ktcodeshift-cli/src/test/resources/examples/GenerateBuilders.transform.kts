@@ -209,6 +209,7 @@ fun toFunctionName(nestedNames: List<String>): String {
         "Node.Decl.Func.Body.Block" -> "functionBlockBody"
         "Node.Decl.Func.Body.Expr" -> "functionExpressionBody"
         "Node.Expr.DoubleColonRef.Class" -> "doubleColonClassLiteral"
+        "Node.Modifier.Lit" -> "literalModifier"
         else -> name.decapitalizeSmart()
     }
 }

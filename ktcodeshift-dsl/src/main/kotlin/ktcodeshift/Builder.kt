@@ -447,7 +447,7 @@ fun annotationSet(
 fun annotation(constructorCallee: Node.ConstructorCallee, args: Node.ValueArgs? = null) =
     Node.Modifier.AnnotationSet.Annotation(constructorCallee = constructorCallee, args = args)
 
-fun lit(keyword: Node.Modifier.Keyword) = Node.Modifier.Lit(keyword = keyword)
+fun literalModifier(keyword: Node.Modifier.Keyword) = Node.Modifier.Lit(keyword = keyword)
 fun typeConstraints(
     whereKeyword: Node.Keyword.Where = Node.Keyword.Where(),
     constraints: Node.PostModifier.TypeConstraints.TypeConstraintList
