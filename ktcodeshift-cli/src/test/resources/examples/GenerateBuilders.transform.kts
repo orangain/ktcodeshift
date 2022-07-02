@@ -37,9 +37,9 @@ transform { fileInfo ->
                     val typeArgs = type.pieces[0].typeArgs
                     if (typeArgs != null && typeArgs.elements.size == 1) {
                         val typeArg = typeArgs.elements[0] as Node.TypeArg.Type
-                        return Node.Type.Simple(
+                        return simpleType(
                             pieces = type.pieces.map {
-                                it.copy(typeArgs = Node.TypeArgs(
+                                it.copy(typeArgs = typeArgs(
                                     elements = listOf(typeArg.copy(
                                         typeRef = typeArg.typeRef.copy(
                                             type = toFqNameType(typeArg.typeRef.type as Node.Type.Simple, nestedNames),
@@ -58,8 +58,8 @@ transform { fileInfo ->
                 while (true) {
                     val names = mutableNestedNames + pieceNames
                     if (fqNames.contains(names)) {
-                        return Node.Type.Simple(
-                            pieces = names.map { Node.Type.Simple.Piece(name = Node.Expr.Name(it), typeArgs = null) }
+                        return simpleType(
+                            pieces = names.map { piece(name = nameExpression(it), typeArgs = null) }
                         )
                     }
                     if (mutableNestedNames.isEmpty()) {
@@ -80,48 +80,35 @@ transform { fileInfo ->
                         if (v.mods?.elements.orEmpty().any { it is Node.Modifier.Lit && it.keyword == Node.Modifier.Keyword.DATA }) {
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
 
-                            val func = Node.Decl.Func(
-                                mods = null,
-                                funKeyword = Node.Keyword.Fun(),
-                                typeParams = null,
-                                receiverTypeRef = null,
-                                name = Node.Expr.Name(toFunctionName(nestedNames)),
-                                postTypeParams = null,
-                                params = Node.Decl.Func.Params(
+                            val func = func(
+                                name = nameExpression(toFunctionName(nestedNames)),
+                                params = functionParams(
                                     elements = params.map { p ->
                                         val fqType = when (val type = p.typeRef?.type) {
                                             is Node.Type.Simple -> toFqNameType(type, nestedNames)
                                             is Node.Type.Nullable -> type.copy(type = toFqNameType(type.type as Node.Type.Simple, nestedNames))
                                             else -> type
                                         }
-                                        Node.Decl.Func.Param(
-                                            mods = null,
-                                            valOrVar = null,
+                                        param(
                                             name = p.name,
                                             typeRef = p.typeRef?.copy(type=fqType),
                                             initializer = initializerOf(fqType),
                                         )
                                     },
-                                    trailingComma = null,
                                 ),
-                                typeRef = null,
-                                postMods = listOf(),
-                                body = Node.Decl.Func.Body.Expr(
+                                body = expr(
                                     equals = Node.Keyword.Equal(),
-                                    expr = Node.Expr.Call(
-                                        expr = Node.Expr.Name(nestedNames.joinToString(".")),
-                                        typeArgs = null,
-                                        args = Node.ValueArgs(
+                                    expr = callExpression(
+                                        expr = nameExpression(nestedNames.joinToString(".")),
+                                        args = valueArgs(
                                             elements = params.map { p ->
-                                                Node.ValueArg(
+                                                valueArg(
                                                     name = p.name,
                                                     asterisk = false,
                                                     expr = p.name,
                                                 )
                                             },
-                                            trailingComma = null,
                                         ),
-                                        lambdaArgs = listOf(),
                                     )
                                 )
                             )
