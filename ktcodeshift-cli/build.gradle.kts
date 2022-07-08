@@ -24,7 +24,7 @@ dependencies {
     implementation("info.picocli:picocli:4.6.3")
     implementation(project(":ktcodeshift-dsl")) // the script definition module
     implementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("com.github.orangain.ktast:ast-psi:0.7.2")
+    testImplementation("com.github.orangain.ktast:ast-psi:main-SNAPSHOT")
 }
 
 tasks.withType<KotlinCompile> {
