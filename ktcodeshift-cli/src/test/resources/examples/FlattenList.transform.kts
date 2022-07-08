@@ -8,11 +8,11 @@ transform { fileInfo ->
     Api
         .parse(fileInfo.source)
         .find<Node.ValueArgs>()
-        .filter { _, p -> p is Node.Expr.Call && isListOf(p) }
+        .filter { _, p -> p is Node.Expression.Call && isListOf(p) }
         .replaceWith { v ->
             v.copy(elements = v.elements.flatMap { element ->
-                val expr = element.expr
-                if (expr is Node.Expr.Call && isListOf(expr)) {
+                val expr = element.expression
+                if (expr is Node.Expression.Call && isListOf(expr)) {
                     expr.args?.elements ?: listOf()
                 } else {
                     listOf(element)
@@ -22,7 +22,7 @@ transform { fileInfo ->
         .toSource()
 }
 
-fun isListOf(call: Node.Expr.Call): Boolean {
-    val expr = call.expr
-    return expr is Node.Expr.Name && expr.name == "listOf"
+fun isListOf(call: Node.Expression.Call): Boolean {
+    val expr = call.expression as? Node.Expression.Name ?: return false
+    return expr.name == "listOf"
 }
