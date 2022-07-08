@@ -98,16 +98,13 @@ transform { fileInfo ->
                                             )
                                             else -> type
                                         }
-                                        val defaultValue = defaultValueOf(fqType)
                                         functionParam(
                                             name = p.name,
                                             typeRef = p.typeRef?.copy(type = fqType),
-                                            equals = if (defaultValue != null) Node.Keyword.Equal() else null,
-                                            defaultValue = defaultValue,
+                                            defaultValue = defaultValueOf(fqType),
                                         )
                                     },
                                 ),
-                                equals = Node.Keyword.Equal(),
                                 body = callExpression(
                                     expression = nameExpression(nestedNames.joinToString(".")),
                                     args = valueArgs(
@@ -144,7 +141,6 @@ transform { fileInfo ->
                                                         typeRef = typeRef(type = listElementType),
                                                     )
                                                 ),
-                                                equals = Node.Keyword.Equal(),
                                                 body = callExpression(
                                                     expression = nameExpression(functionName),
                                                     args = valueArgs(
