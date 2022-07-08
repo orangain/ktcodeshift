@@ -123,7 +123,7 @@ fun functionDeclaration(
     params = params,
     typeRef = typeRef,
     postModifiers = postModifiers,
-    equals = equals,
+    equals = if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals,
     body = body
 )
 
@@ -145,7 +145,7 @@ fun functionParam(
     valOrVar = valOrVar,
     name = name,
     typeRef = typeRef,
-    equals = equals,
+    equals = if (equals == null && defaultValue != null) Node.Keyword.Equal() else equals,
     defaultValue = defaultValue
 )
 
@@ -173,7 +173,7 @@ fun propertyDeclaration(
     trailingComma = trailingComma,
     rPar = rPar,
     typeConstraints = typeConstraints,
-    equals = equals,
+    equals = if (equals == null && initializer != null) Node.Keyword.Equal() else equals,
     initializer = initializer,
     delegate = delegate,
     accessors = accessors
@@ -198,7 +198,7 @@ fun getter(
     getKeyword = getKeyword,
     typeRef = typeRef,
     postModifiers = postModifiers,
-    equals = equals,
+    equals = if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals,
     body = body
 )
 
@@ -214,7 +214,7 @@ fun setter(
     setKeyword = setKeyword,
     params = params,
     postModifiers = postModifiers,
-    equals = equals,
+    equals = if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals,
     body = body
 )
 
