@@ -98,11 +98,12 @@ transform { fileInfo ->
                                             )
                                             else -> type
                                         }
+                                        val defaultValue = defaultValueOf(fqType)
                                         functionParam(
                                             name = p.name,
                                             typeRef = p.typeRef?.copy(type = fqType),
-                                            equals = Node.Keyword.Equal(),
-                                            defaultValue = initializerOf(fqType),
+                                            equals = if (defaultValue != null) Node.Keyword.Equal() else null,
+                                            defaultValue = defaultValue,
                                         )
                                     },
                                 ),
@@ -113,7 +114,7 @@ transform { fileInfo ->
                                         elements = params.map { p ->
                                             valueArg(
                                                 name = p.name,
-                                                expression = p.name,
+                                                expression = expressionOf(functionName, p.name),
                                             )
                                         },
                                     ),
@@ -222,7 +223,7 @@ fun toFunctionName(nestedNames: List<String>): String {
     }
 }
 
-fun initializerOf(type: Node.Type?): Node.Expression? {
+fun defaultValueOf(type: Node.Type?): Node.Expression? {
     return if (type is Node.Type.Nullable) {
         nameExpression("null")
     } else if (type is Node.Type.Simple) {
@@ -241,4 +242,19 @@ fun initializerOf(type: Node.Type?): Node.Expression? {
     } else {
         null
     }
+}
+
+fun expressionOf(functionName: String, paramName: Node.Expression.Name): Node.Expression {
+    if (paramName.name == "equals") {
+        val expressionText = when (functionName) {
+            "functionDeclaration", "getter", "setter" -> "if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals"
+            "functionParam" -> "if (equals == null && defaultValue != null) Node.Keyword.Equal() else equals"
+            "propertyDeclaration" -> "if (equals == null && initializer != null) Node.Keyword.Equal() else equals"
+            else -> null
+        }
+        if (expressionText != null) {
+            return nameExpression(expressionText)
+        }
+    }
+    return paramName
 }
