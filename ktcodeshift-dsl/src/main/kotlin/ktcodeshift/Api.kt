@@ -17,11 +17,11 @@ object Api {
 }
 
 data class FileWithContext(
-    val fileNode: Node.File,
+    val fileNode: Node.KotlinFile,
     val extrasMap: ConverterWithMutableExtras,
 )
 
-fun FileWithContext.preVisit(fn: (Node?, Node) -> Node?): FileWithContext {
+fun FileWithContext.preVisit(fn: (Node, Node?) -> Node): FileWithContext {
     val changedFileNode = MutableVisitor.preVisit(fileNode, extrasMap, fn)
     return copy(fileNode = changedFileNode)
 }
@@ -37,7 +37,7 @@ fun <T : Node> FileWithContext.find(kClass: KClass<T>): NodeCollection<T> = find
 fun <T : Node> FileWithContext.find(javaClass: Class<T>): NodeCollection<T> {
     val nodes = mutableListOf<NodeAndParent<T>>()
     MutableVisitor.preVisit(fileNode, extrasMap) { v, parent ->
-        if (v != null && v::class.java == javaClass) {
+        if (v::class.java == javaClass) {
             nodes.add(NodeAndParent(v as T, parent))
         }
         v
@@ -47,7 +47,7 @@ fun <T : Node> FileWithContext.find(javaClass: Class<T>): NodeCollection<T> {
 
 data class NodeAndParent<T : Node>(
     val node: T,
-    val parent: Node,
+    val parent: Node?,
 )
 
 data class NodeCollection<T : Node>(
@@ -55,14 +55,14 @@ data class NodeCollection<T : Node>(
     val fileWithContext: FileWithContext,
 ) {
     fun filter(predicate: (T) -> Boolean): NodeCollection<T> = filter { v, _ -> predicate(v) }
-    fun filter(predicate: (T, Node) -> Boolean): NodeCollection<T> {
+    fun filter(predicate: (T, Node?) -> Boolean): NodeCollection<T> {
         return copy(
             nodeAndParents = nodeAndParents.filter { predicate(it.node, it.parent) }
         )
     }
 
-    fun replaceWith(fn: (T) -> Node?): FileWithContext = replaceWith { v, _ -> fn(v) }
-    fun replaceWith(fn: (T, Node) -> Node?): FileWithContext {
+    fun replaceWith(fn: (T) -> Node): FileWithContext = replaceWith { v, _ -> fn(v) }
+    fun replaceWith(fn: (T, Node?) -> Node): FileWithContext {
         val nodeMap = IdentityHashMap<T, Boolean>()
         nodeAndParents.forEach { nodeMap[it.node] = true }
         val newFileNode = MutableVisitor.preVisit(fileWithContext.fileNode, fileWithContext.extrasMap) { v, parent ->
