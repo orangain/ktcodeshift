@@ -74,6 +74,16 @@ transform { fileInfo ->
                     mutableNestedNames.removeLast()
                 }
 
+                if (pieceNames == listOf("Receiver")) {
+                    return simpleType(
+                        pieces = listOf(
+                            piece(name = nameExpression("Node")),
+                            piece(name = nameExpression("Expression")),
+                            piece(name = nameExpression("DoubleColon")),
+                        ) + type.pieces
+                    )
+                }
+
                 return type
             }
 
