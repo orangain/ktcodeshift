@@ -14,8 +14,8 @@ transform { fileInfo ->
             val fqNames = mutableSetOf<List<String>>()
 
             object : Visitor() {
-                override fun visit(v: Node?, parent: Node) {
-                    if (v is Node.Decl.Structured) {
+                override fun visit(v: Node, parent: Node?) {
+                    if (v is Node.Declaration.Class) {
                         val name = v.name?.name.orEmpty()
                         nestedNames.add(name)
 
@@ -38,15 +38,15 @@ transform { fileInfo ->
                 if (type.pieces.size == 1 && type.pieces[0].name.name == "List") {
                     val typeArgs = type.pieces[0].typeArgs
                     if (typeArgs != null && typeArgs.elements.size == 1) {
-                        val typeArg = typeArgs.elements[0] as Node.TypeArg.Type
+                        val typeArg = typeArgs.elements[0]
                         return simpleType(
                             pieces = type.pieces.map {
                                 it.copy(
                                     typeArgs = typeArgs(
                                         typeArg.copy(
-                                            typeRef = typeArg.typeRef.copy(
+                                            typeRef = typeArg.typeRef?.copy(
                                                 type = toFqNameType(
-                                                    typeArg.typeRef.type!!.asSimpleType(),
+                                                    typeArg.typeRef!!.type!!.asSimpleType(),
                                                     nestedNames
                                                 ),
                                             ),
@@ -78,8 +78,8 @@ transform { fileInfo ->
             }
 
             object : Visitor() {
-                override fun visit(v: Node?, parent: Node) {
-                    if (v is Node.Decl.Structured) {
+                override fun visit(v: Node, parent: Node?) {
+                    if (v is Node.Declaration.Class) {
                         val name = v.name?.name.orEmpty()
                         nestedNames.add(name)
 
@@ -87,7 +87,7 @@ transform { fileInfo ->
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
                             val functionName = toFunctionName(nestedNames)
 
-                            val func = function(
+                            val func = functionDeclaration(
                                 name = nameExpression(functionName),
                                 params = functionParams(
                                     elements = params.map { p ->
@@ -101,22 +101,22 @@ transform { fileInfo ->
                                         functionParam(
                                             name = p.name,
                                             typeRef = p.typeRef?.copy(type = fqType),
-                                            initializer = initializerOf(fqType),
+                                            equals = Node.Keyword.Equal(),
+                                            defaultValue = initializerOf(fqType),
                                         )
                                     },
                                 ),
-                                body = functionExpressionBody(
-                                    expr = callExpression(
-                                        expr = nameExpression(nestedNames.joinToString(".")),
-                                        args = valueArgs(
-                                            elements = params.map { p ->
-                                                valueArg(
-                                                    name = p.name,
-                                                    expr = p.name,
-                                                )
-                                            },
-                                        ),
-                                    )
+                                equals = Node.Keyword.Equal(),
+                                body = callExpression(
+                                    expression = nameExpression(nestedNames.joinToString(".")),
+                                    args = valueArgs(
+                                        elements = params.map { p ->
+                                            valueArg(
+                                                name = p.name,
+                                                expression = p.name,
+                                            )
+                                        },
+                                    ),
                                 )
                             )
 //                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
@@ -134,22 +134,21 @@ transform { fileInfo ->
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
                                         val listElementType = firstParamType.pieces.first().typeArgs!!.elements[0].type
                                         if (listElementType != null) {
-                                            val varargFunc = function(
+                                            val varargFunc = functionDeclaration(
                                                 name = nameExpression(functionName),
                                                 params = functionParams(
                                                     functionParam(
-                                                        mods = modifiers(literalModifier(Node.Modifier.Keyword.VARARG)),
+                                                        modifiers = modifiers(keywordModifier(Node.Modifier.Keyword.Token.VARARG)),
                                                         name = nameExpression(firstParam.name.name),
                                                         typeRef = typeRef(type = listElementType),
                                                     )
                                                 ),
-                                                body = functionExpressionBody(
-                                                    expr = callExpression(
-                                                        expr = nameExpression(functionName),
-                                                        args = valueArgs(
-                                                            valueArg(
-                                                                expr = nameExpression("${firstParam.name.name}.toList()"),
-                                                            )
+                                                equals = Node.Keyword.Equal(),
+                                                body = callExpression(
+                                                    expression = nameExpression(functionName),
+                                                    args = valueArgs(
+                                                        valueArg(
+                                                            expression = nameExpression("${firstParam.name.name}.toList()"),
                                                         )
                                                     )
                                                 )
@@ -223,18 +222,18 @@ fun toFunctionName(nestedNames: List<String>): String {
     }
 }
 
-fun initializerOf(type: Node.Type?): Node.Initializer? {
-    val expr = if (type is Node.Type.Nullable) {
-        Node.Expr.Name("null")
+fun initializerOf(type: Node.Type?): Node.Expression? {
+    return if (type is Node.Type.Nullable) {
+        nameExpression("null")
     } else if (type is Node.Type.Simple) {
         val fqName = type.pieces.joinToString(".") { it.name.name }
         if (fqName == "List") {
-            Node.Expr.Name("listOf()")
+            nameExpression("listOf()")
         } else if (fqName == "Boolean") {
-            Node.Expr.Name("false")
+            nameExpression("false")
         } else {
             if (fqName.startsWith("Node.Keyword.") && !(fqName.contains(".ValOrVar") || fqName.contains(".Declaration"))) {
-                Node.Expr.Name("$fqName()")
+                nameExpression("$fqName()")
             } else {
                 null
             }
@@ -242,6 +241,4 @@ fun initializerOf(type: Node.Type?): Node.Initializer? {
     } else {
         null
     }
-
-    return expr?.let { Node.Initializer(Node.Keyword.Equal(), it) }
 }
