@@ -184,32 +184,41 @@ fun toFunctionName(nestedNames: List<String>): String {
         val prefix = "$parent."
         return fqName.startsWith(prefix) && nestedNames.size == prefix.count { it == '.' } + 1
     }
-    if (isChildOf("Node.Decl.Property.Variable")) {
-        return "variable"
+    if (isChildOf("Node.Declaration")) {
+        return "${name.decapitalizeSmart()}Declaration"
     }
     if (isChildOf("Node.Type")) {
         return "${name.decapitalizeSmart()}Type"
     }
-    if (isChildOf("Node.Expr")) {
+    if (isChildOf("Node.Expression")) {
         return "${name.decapitalizeSmart()}Expression"
     }
-    if (isChildOf("Node.Expr.When.Entry")) {
-        return "whenEntry$name"
+    if (isChildOf("Node.Expression.When.Branch")) {
+        return "${name.decapitalizeSmart()}Branch"
     }
-    if (isChildOf("Node.Expr.When.Cond")) {
-        return "whenCondition$name"
+    if (isChildOf("Node.Expression.When.Condition")) {
+        return "${name.decapitalizeSmart()}Condition"
+    }
+    if (isChildOf("Node.Expression.DoubleColon.Receiver")) {
+        return "${name.decapitalizeSmart()}DoubleColonReceiver"
+    }
+    if (isChildOf("Node.Declaration.Class.Parent")) {
+        return "${name.decapitalizeSmart()}Parent"
     }
     return when (fqName) {
-        "Node.Package" -> "packageDirective"
-        "Node.Imports" -> "importDirectives"
-        "Node.Import" -> "importDirective"
-        "Node.Decl.Func" -> "function"
-        "Node.Decl.Func.Params" -> "functionParams"
-        "Node.Decl.Func.Param" -> "functionParam"
-        "Node.Decl.Func.Body.Block" -> "functionBlockBody"
-        "Node.Decl.Func.Body.Expr" -> "functionExpressionBody"
-        "Node.Expr.DoubleColonRef.Class" -> "doubleColonClassLiteral"
-        "Node.Modifier.Lit" -> "literalModifier"
+        "Node.Declaration.Class.Body" -> "classBody"
+        "Node.Declaration.Function.Params" -> "functionParams"
+        "Node.Declaration.Function.Param" -> "functionParam"
+        "Node.Type.Function.Receiver" -> "functionTypeReceiver"
+        "Node.Type.Function.Params" -> "functionTypeParams"
+        "Node.Type.Function.Param" -> "functionTypeParam"
+        "Node.Expression.Lambda.Params" -> "lambdaParams"
+        "Node.Expression.Lambda.Param" -> "lambdaParam"
+        "Node.Expression.Binary.Operator" -> "binaryOperator"
+        "Node.Expression.Unary.Operator" -> "unaryOperator"
+        "Node.Expression.BinaryType.Operator" -> "binaryTypeOperator"
+        "Node.Modifier.AnnotationSet.Target" -> "annotationSetTarget"
+        "Node.Modifier.Keyword" -> "keywordModifier"
         else -> name.decapitalizeSmart()
     }
 }
