@@ -90,7 +90,7 @@ fun primaryConstructor(
     params = params
 )
 
-fun body(
+fun classBody(
     enumEntries: List<Node.EnumEntry> = listOf(),
     hasTrailingCommaInEnumEntries: Boolean = false,
     declarations: List<Node.Declaration> = listOf()
@@ -273,7 +273,7 @@ fun contextReceivers(
 
 fun contextReceivers(vararg elements: Node.Type.Function.ContextReceiver) = contextReceivers(elements.toList())
 fun contextReceiver(typeRef: Node.TypeRef) = Node.Type.Function.ContextReceiver(typeRef = typeRef)
-fun receiver(typeRef: Node.TypeRef) = Node.Type.Function.Receiver(typeRef = typeRef)
+fun functionTypeReceiver(typeRef: Node.TypeRef) = Node.Type.Function.Receiver(typeRef = typeRef)
 fun functionTypeParams(elements: List<Node.Type.Function.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.Type.Function.Params(elements = elements, trailingComma = trailingComma)
 
@@ -520,7 +520,9 @@ fun annotationSet(
     rBracket = rBracket
 )
 
-fun target(token: Node.Modifier.AnnotationSet.Target.Token) = Node.Modifier.AnnotationSet.Target(token = token)
+fun annotationSetTarget(token: Node.Modifier.AnnotationSet.Target.Token) =
+    Node.Modifier.AnnotationSet.Target(token = token)
+
 fun annotation(type: Node.Type.Simple, args: Node.ValueArgs? = null) =
     Node.Modifier.AnnotationSet.Annotation(type = type, args = args)
 
