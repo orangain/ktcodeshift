@@ -1,7 +1,10 @@
 import ktast.ast.Node
 import ktast.ast.Visitor
 import ktast.ast.Writer
-import ktcodeshift.*
+import ktcodeshift.Api
+import ktcodeshift.isDataClass
+import ktcodeshift.toSource
+import ktcodeshift.transform
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
 
@@ -47,7 +50,7 @@ transform { fileInfo ->
                                         typeArg.copy(
                                             typeRef = typeArg.typeRef?.copy(
                                                 type = toFqNameType(
-                                                    typeArg.type as Node.Type.Simple,
+                                                    typeArg.typeRef?.type as Node.Type.Simple,
                                                     nestedNames
                                                 ),
                                             ),
@@ -141,7 +144,8 @@ transform { fileInfo ->
                                 val firstParamType = firstParam.typeRef?.type as? Node.Type.Simple
                                 if (firstParamType != null) {
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
-                                        val listElementType = firstParamType.pieces.first().typeArgs!!.elements[0].type
+                                        val listElementType =
+                                            firstParamType.pieces.first().typeArgs!!.elements[0].typeRef?.type
                                         if (listElementType != null) {
                                             val varargFunc = functionDeclaration(
                                                 name = nameExpression(functionName),
