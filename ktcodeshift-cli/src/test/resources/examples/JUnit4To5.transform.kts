@@ -72,7 +72,7 @@ transform { fileInfo ->
                             )
                         ),
                         lambdaArg = lambdaArg(
-                            func = lambdaExpression(
+                            expression = lambdaExpression(
                                 body = body(originalStatements),
                             ),
                         ),

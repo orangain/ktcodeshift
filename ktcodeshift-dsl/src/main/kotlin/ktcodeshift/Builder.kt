@@ -487,8 +487,8 @@ fun callExpression(
 fun lambdaArg(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     label: String? = null,
-    func: Node.Expression.Lambda
-) = Node.Expression.Call.LambdaArg(annotationSets = annotationSets, label = label, func = func)
+    expression: Node.Expression.Lambda
+) = Node.Expression.Call.LambdaArg(annotationSets = annotationSets, label = label, expression = expression)
 
 fun arrayAccessExpression(
     expression: Node.Expression,
