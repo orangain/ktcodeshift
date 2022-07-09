@@ -1,7 +1,10 @@
 import ktast.ast.Node
 import ktast.ast.Visitor
 import ktast.ast.Writer
-import ktcodeshift.*
+import ktcodeshift.Api
+import ktcodeshift.isDataClass
+import ktcodeshift.toSource
+import ktcodeshift.transform
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
 
@@ -14,8 +17,8 @@ transform { fileInfo ->
             val fqNames = mutableSetOf<List<String>>()
 
             object : Visitor() {
-                override fun visit(v: Node?, parent: Node) {
-                    if (v is Node.Decl.Structured) {
+                override fun visit(v: Node, parent: Node?) {
+                    if (v is Node.Declaration.Class) {
                         val name = v.name?.name.orEmpty()
                         nestedNames.add(name)
 
@@ -35,18 +38,19 @@ transform { fileInfo ->
 
             fun toFqNameType(type: Node.Type.Simple, nestedNames: List<String>): Node.Type.Simple {
 
+                // e.g. Make List<Expression> to List<Node.Expression>
                 if (type.pieces.size == 1 && type.pieces[0].name.name == "List") {
                     val typeArgs = type.pieces[0].typeArgs
                     if (typeArgs != null && typeArgs.elements.size == 1) {
-                        val typeArg = typeArgs.elements[0] as Node.TypeArg.Type
+                        val typeArg = typeArgs.elements[0]
                         return simpleType(
                             pieces = type.pieces.map {
                                 it.copy(
                                     typeArgs = typeArgs(
                                         typeArg.copy(
-                                            typeRef = typeArg.typeRef.copy(
+                                            typeRef = typeArg.typeRef?.copy(
                                                 type = toFqNameType(
-                                                    typeArg.typeRef.type!!.asSimpleType(),
+                                                    typeArg.typeRef?.type as Node.Type.Simple,
                                                     nestedNames
                                                 ),
                                             ),
@@ -74,12 +78,22 @@ transform { fileInfo ->
                     mutableNestedNames.removeLast()
                 }
 
+                if (pieceNames == listOf("Receiver")) {
+                    return simpleType(
+                        pieces = listOf(
+                            piece(name = nameExpression("Node")),
+                            piece(name = nameExpression("Expression")),
+                            piece(name = nameExpression("DoubleColon")),
+                        ) + type.pieces
+                    )
+                }
+
                 return type
             }
 
             object : Visitor() {
-                override fun visit(v: Node?, parent: Node) {
-                    if (v is Node.Decl.Structured) {
+                override fun visit(v: Node, parent: Node?) {
+                    if (v is Node.Declaration.Class) {
                         val name = v.name?.name.orEmpty()
                         nestedNames.add(name)
 
@@ -87,36 +101,34 @@ transform { fileInfo ->
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
                             val functionName = toFunctionName(nestedNames)
 
-                            val func = function(
+                            val func = functionDeclaration(
                                 name = nameExpression(functionName),
                                 params = functionParams(
                                     elements = params.map { p ->
                                         val fqType = when (val type = p.typeRef?.type) {
                                             is Node.Type.Simple -> toFqNameType(type, nestedNames)
                                             is Node.Type.Nullable -> type.copy(
-                                                type = toFqNameType(type.type.asSimpleType(), nestedNames)
+                                                type = toFqNameType(type.type as Node.Type.Simple, nestedNames)
                                             )
                                             else -> type
                                         }
                                         functionParam(
                                             name = p.name,
                                             typeRef = p.typeRef?.copy(type = fqType),
-                                            initializer = initializerOf(fqType),
+                                            defaultValue = defaultValueOf(fqType),
                                         )
                                     },
                                 ),
-                                body = functionExpressionBody(
-                                    expr = callExpression(
-                                        expr = nameExpression(nestedNames.joinToString(".")),
-                                        args = valueArgs(
-                                            elements = params.map { p ->
-                                                valueArg(
-                                                    name = p.name,
-                                                    expr = p.name,
-                                                )
-                                            },
-                                        ),
-                                    )
+                                body = callExpression(
+                                    expression = nameExpression(nestedNames.joinToString(".")),
+                                    args = valueArgs(
+                                        elements = params.map { p ->
+                                            valueArg(
+                                                name = p.name,
+                                                expression = expressionOf(functionName, p.name),
+                                            )
+                                        },
+                                    ),
                                 )
                             )
 //                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
@@ -129,27 +141,26 @@ transform { fileInfo ->
                                     "pieces",
                                 ).contains(firstParam.name.name)
                             ) {
-                                val firstParamType = firstParam.typeRef?.type?.asSimpleTypeOrNull()
+                                val firstParamType = firstParam.typeRef?.type as? Node.Type.Simple
                                 if (firstParamType != null) {
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
-                                        val listElementType = firstParamType.pieces.first().typeArgs!!.elements[0].type
+                                        val listElementType =
+                                            firstParamType.pieces.first().typeArgs!!.elements[0].typeRef?.type
                                         if (listElementType != null) {
-                                            val varargFunc = function(
+                                            val varargFunc = functionDeclaration(
                                                 name = nameExpression(functionName),
                                                 params = functionParams(
                                                     functionParam(
-                                                        mods = modifiers(literalModifier(Node.Modifier.Keyword.VARARG)),
+                                                        modifiers = modifiers(keywordModifier(Node.Modifier.Keyword.Token.VARARG)),
                                                         name = nameExpression(firstParam.name.name),
                                                         typeRef = typeRef(type = listElementType),
                                                     )
                                                 ),
-                                                body = functionExpressionBody(
-                                                    expr = callExpression(
-                                                        expr = nameExpression(functionName),
-                                                        args = valueArgs(
-                                                            valueArg(
-                                                                expr = nameExpression("${firstParam.name.name}.toList()"),
-                                                            )
+                                                body = callExpression(
+                                                    expression = nameExpression(functionName),
+                                                    args = valueArgs(
+                                                        valueArg(
+                                                            expression = nameExpression("${firstParam.name.name}.toList()"),
                                                         )
                                                     )
                                                 )
@@ -184,48 +195,57 @@ fun toFunctionName(nestedNames: List<String>): String {
         val prefix = "$parent."
         return fqName.startsWith(prefix) && nestedNames.size == prefix.count { it == '.' } + 1
     }
-    if (isChildOf("Node.Decl.Property.Variable")) {
-        return "variable"
+    if (isChildOf("Node.Declaration")) {
+        return "${name.decapitalizeSmart()}Declaration"
     }
     if (isChildOf("Node.Type")) {
         return "${name.decapitalizeSmart()}Type"
     }
-    if (isChildOf("Node.Expr")) {
+    if (isChildOf("Node.Expression")) {
         return "${name.decapitalizeSmart()}Expression"
     }
-    if (isChildOf("Node.Expr.When.Entry")) {
-        return "whenEntry$name"
+    if (isChildOf("Node.Expression.When.Branch")) {
+        return "${name.decapitalizeSmart()}Branch"
     }
-    if (isChildOf("Node.Expr.When.Cond")) {
-        return "whenCondition$name"
+    if (isChildOf("Node.Expression.When.Condition")) {
+        return "${name.decapitalizeSmart()}Condition"
+    }
+    if (isChildOf("Node.Expression.DoubleColon.Receiver")) {
+        return "${name.decapitalizeSmart()}DoubleColonReceiver"
+    }
+    if (isChildOf("Node.Declaration.Class.Parent")) {
+        return "${name.decapitalizeSmart()}Parent"
     }
     return when (fqName) {
-        "Node.Package" -> "packageDirective"
-        "Node.Imports" -> "importDirectives"
-        "Node.Import" -> "importDirective"
-        "Node.Decl.Func" -> "function"
-        "Node.Decl.Func.Params" -> "functionParams"
-        "Node.Decl.Func.Param" -> "functionParam"
-        "Node.Decl.Func.Body.Block" -> "functionBlockBody"
-        "Node.Decl.Func.Body.Expr" -> "functionExpressionBody"
-        "Node.Expr.DoubleColonRef.Class" -> "doubleColonClassLiteral"
-        "Node.Modifier.Lit" -> "literalModifier"
+        "Node.Declaration.Class.Body" -> "classBody"
+        "Node.Declaration.Function.Params" -> "functionParams"
+        "Node.Declaration.Function.Param" -> "functionParam"
+        "Node.Type.Function.Receiver" -> "functionTypeReceiver"
+        "Node.Type.Function.Params" -> "functionTypeParams"
+        "Node.Type.Function.Param" -> "functionTypeParam"
+        "Node.Expression.Lambda.Params" -> "lambdaParams"
+        "Node.Expression.Lambda.Param" -> "lambdaParam"
+        "Node.Expression.Binary.Operator" -> "binaryOperator"
+        "Node.Expression.Unary.Operator" -> "unaryOperator"
+        "Node.Expression.BinaryType.Operator" -> "binaryTypeOperator"
+        "Node.Modifier.AnnotationSet.Target" -> "annotationSetTarget"
+        "Node.Modifier.Keyword" -> "keywordModifier"
         else -> name.decapitalizeSmart()
     }
 }
 
-fun initializerOf(type: Node.Type?): Node.Initializer? {
-    val expr = if (type is Node.Type.Nullable) {
-        Node.Expr.Name("null")
+fun defaultValueOf(type: Node.Type?): Node.Expression? {
+    return if (type is Node.Type.Nullable) {
+        nameExpression("null")
     } else if (type is Node.Type.Simple) {
         val fqName = type.pieces.joinToString(".") { it.name.name }
         if (fqName == "List") {
-            Node.Expr.Name("listOf()")
+            nameExpression("listOf()")
         } else if (fqName == "Boolean") {
-            Node.Expr.Name("false")
+            nameExpression("false")
         } else {
             if (fqName.startsWith("Node.Keyword.") && !(fqName.contains(".ValOrVar") || fqName.contains(".Declaration"))) {
-                Node.Expr.Name("$fqName()")
+                nameExpression("$fqName()")
             } else {
                 null
             }
@@ -233,6 +253,19 @@ fun initializerOf(type: Node.Type?): Node.Initializer? {
     } else {
         null
     }
+}
 
-    return expr?.let { Node.Initializer(Node.Keyword.Equal(), it) }
+fun expressionOf(functionName: String, paramName: Node.Expression.Name): Node.Expression {
+    if (paramName.name == "equals") {
+        val expressionText = when (functionName) {
+            "functionDeclaration", "getter", "setter" -> "if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals"
+            "functionParam" -> "if (equals == null && defaultValue != null) Node.Keyword.Equal() else equals"
+            "propertyDeclaration" -> "if (equals == null && initializer != null) Node.Keyword.Equal() else equals"
+            else -> null
+        }
+        if (expressionText != null) {
+            return nameExpression(expressionText)
+        }
+    }
+    return paramName
 }

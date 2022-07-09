@@ -12,7 +12,7 @@ val annotationNameMap = mapOf(
 transform { fileInfo ->
     Api
         .parse(fileInfo.source)
-        .find<Node.Import>()
+        .find<Node.ImportDirective>()
         .filter { v ->
             v.names.size == 3 && v.names.take(2).map { it.name } == listOf("org", "junit")
         }
@@ -27,21 +27,19 @@ transform { fileInfo ->
         }
         .find<Node.Modifier.AnnotationSet.Annotation>()
         .replaceWith { v ->
-            val name = annotationNameMap[v.constructorCallee.type.pieces.last().name.name]?.let(::nameExpression)
+            val name = annotationNameMap[v.type.pieces.last().name.name]?.let(::nameExpression)
             if (name != null) {
                 v.copy(
-                    constructorCallee = constructorCallee(
-                        type = simpleType(
-                            pieces = v.constructorCallee.type.pieces.dropLast(1) + v.constructorCallee.type.pieces.last()
-                                .copy(name = name)
-                        )
+                    type = simpleType(
+                        pieces = v.type.pieces.dropLast(1) + v.type.pieces.last()
+                            .copy(name = name)
                     )
                 )
             } else {
                 v
             }
         }
-        .find<Node.Decl.Func>()
+        .find<Node.Declaration.Function>()
         .filter { v ->
             val annotation = getAnnotationByName(v.annotations, "Test")
             getValueArgByName(annotation?.args, "expected") != null
@@ -50,38 +48,34 @@ transform { fileInfo ->
             val annotation = getAnnotationByName(v.annotations, "Test")
             val arg = getValueArgByName(annotation?.args, "expected")
             val exceptionType =
-                ((arg?.expr as Node.Expr.DoubleColonRef.Class).recv as Node.Expr.DoubleColonRef.Recv.Type).type
-            val originalStatements = (v.body as Node.Decl.Func.Body.Block).block.statements
+                ((arg?.expression as Node.Expression.ClassLiteral).lhs as Node.Expression.DoubleColon.Receiver.Type).type
+            val originalStatements = (v.body as Node.Expression.Block).statements
 
             v.copy(
-                mods = v.mods!!.copy(
-                    elements = v.mods!!.elements.map {
-                        if (it is Node.Modifier.AnnotationSet && it.anns.contains(annotation)) {
-                            it.copy(anns = listOf(annotation!!.copy(args = null)))
+                modifiers = v.modifiers!!.copy(
+                    elements = v.modifiers!!.elements.map {
+                        if (it is Node.Modifier.AnnotationSet && it.annotations.contains(annotation)) {
+                            it.copy(annotations = listOf(annotation!!.copy(args = null)))
                         } else {
                             it
                         }
                     }
                 ),
-                body = functionBlockBody(
-                    block = blockExpression(
-                        callExpression(
-                            expr = nameExpression("Assertions.assertThrows"),
-                            typeArgs = typeArgs(
-                                type(
-                                    typeRef = typeRef(
-                                        type = exceptionType,
-                                    )
+                body = blockExpression(
+                    callExpression(
+                        expression = nameExpression("Assertions.assertThrows"),
+                        typeArgs = typeArgs(
+                            typeArg(
+                                typeRef = typeRef(
+                                    type = exceptionType,
                                 )
+                            )
+                        ),
+                        lambdaArg = lambdaArg(
+                            expression = lambdaExpression(
+                                body = body(originalStatements),
                             ),
-                            lambdaArgs = listOf(
-                                lambdaArg(
-                                    func = lambdaExpression(
-                                        body = body(originalStatements),
-                                    ),
-                                )
-                            ),
-                        )
+                        ),
                     )
                 )
             )
@@ -93,7 +87,7 @@ fun getAnnotationByName(
     annotations: List<Node.Modifier.AnnotationSet.Annotation>,
     name: String
 ): Node.Modifier.AnnotationSet.Annotation? {
-    return annotations.find { it.constructorCallee.type.pieces.last().name.name == name }
+    return annotations.find { it.type.pieces.last().name.name == name }
 }
 
 fun getValueArgByName(args: Node.ValueArgs?, name: String): Node.ValueArg? {
