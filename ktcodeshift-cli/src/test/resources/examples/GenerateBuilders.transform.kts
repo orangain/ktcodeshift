@@ -35,6 +35,7 @@ transform { fileInfo ->
 
             fun toFqNameType(type: Node.Type.Simple, nestedNames: List<String>): Node.Type.Simple {
 
+                // e.g. Make List<Expression> to List<Node.Expression>
                 if (type.pieces.size == 1 && type.pieces[0].name.name == "List") {
                     val typeArgs = type.pieces[0].typeArgs
                     if (typeArgs != null && typeArgs.elements.size == 1) {
@@ -46,7 +47,7 @@ transform { fileInfo ->
                                         typeArg.copy(
                                             typeRef = typeArg.typeRef?.copy(
                                                 type = toFqNameType(
-                                                    typeArg.typeRef!!.type!!.asSimpleType(),
+                                                    typeArg.type as Node.Type.Simple,
                                                     nestedNames
                                                 ),
                                             ),
@@ -104,7 +105,7 @@ transform { fileInfo ->
                                         val fqType = when (val type = p.typeRef?.type) {
                                             is Node.Type.Simple -> toFqNameType(type, nestedNames)
                                             is Node.Type.Nullable -> type.copy(
-                                                type = toFqNameType(type.type.asSimpleType(), nestedNames)
+                                                type = toFqNameType(type.type as Node.Type.Simple, nestedNames)
                                             )
                                             else -> type
                                         }
@@ -137,7 +138,7 @@ transform { fileInfo ->
                                     "pieces",
                                 ).contains(firstParam.name.name)
                             ) {
-                                val firstParamType = firstParam.typeRef?.type?.asSimpleTypeOrNull()
+                                val firstParamType = firstParam.typeRef?.type as? Node.Type.Simple
                                 if (firstParamType != null) {
                                     if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
                                         val listElementType = firstParamType.pieces.first().typeArgs!!.elements[0].type
