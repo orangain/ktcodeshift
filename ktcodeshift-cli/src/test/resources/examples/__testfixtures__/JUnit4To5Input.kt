@@ -25,16 +25,6 @@ class MyTestClass {
         // things to do after each test
     }
 
-    @Test
-    fun testSomething() {
-        // an actual test case
-    }
-
-    @Test
-    fun testSomethingElse() {
-        // another test case
-    }
-
     @Ignore
     @Test
     fun testSkipped() {
@@ -49,5 +39,15 @@ class MyTestClass {
     @Test(expected = java.lang.IllegalArgumentException::class)
     fun testRaises2() {
         require(1 == 2)
+    }
+
+    @Test
+    fun testSomething() {
+        // an actual test case
+    }
+
+    @Test
+    fun testSomethingElse() {
+        // another test case
     }
 }
