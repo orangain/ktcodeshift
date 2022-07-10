@@ -30,9 +30,7 @@ transform { fileInfo ->
             val name = annotationNameMap[v.type.name.name]?.let(::nameExpression)
             if (name != null) {
                 v.copy(
-                    type = v.type.copy(
-                        name = name,
-                    )
+                    type = v.type.copy(name = name),
                 )
             } else {
                 v
