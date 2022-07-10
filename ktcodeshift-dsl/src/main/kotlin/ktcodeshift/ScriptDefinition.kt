@@ -18,12 +18,12 @@ import kotlin.script.experimental.jvm.jvm
 )
 abstract class TransformScript
 
-object TransformScriptCompilationConfiguration: ScriptCompilationConfiguration({
+object TransformScriptCompilationConfiguration : ScriptCompilationConfiguration({
     // Implicit imports for all scripts of this type
     defaultImports(DependsOn::class, Repository::class)
     jvm {
         // Extract the whole classpath from context classloader and use it as dependencies
-        dependenciesFromCurrentContext( wholeClasspath = true)
+        dependenciesFromCurrentContext(wholeClasspath = true)
     }
     // Callbacks
     refineConfiguration {
@@ -32,7 +32,7 @@ object TransformScriptCompilationConfiguration: ScriptCompilationConfiguration({
     }
 })
 
-object TransformScriptEvaluationConfiguration: ScriptEvaluationConfiguration({
+object TransformScriptEvaluationConfiguration : ScriptEvaluationConfiguration({
 })
 
 // Handler that reconfigures the compilation on the fly

@@ -1,6 +1,6 @@
 package examples
 
-import ktcodeshift.testTransform
+import ktcodeshift.*
 import kotlin.test.Test
 
 class TransformTest {
@@ -9,4 +9,7 @@ class TransformTest {
 
     @Test
     fun testJUnit4To5() = testTransform(this::class, "JUnit4To5")
+
+    @Test
+    fun testRenameVariable() = testTransform(this::class, "RenameVariable")
 }

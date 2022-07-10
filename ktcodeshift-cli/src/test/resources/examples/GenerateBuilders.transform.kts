@@ -1,10 +1,7 @@
 import ktast.ast.Node
 import ktast.ast.Visitor
 import ktast.ast.Writer
-import ktcodeshift.Api
-import ktcodeshift.isDataClass
-import ktcodeshift.toSource
-import ktcodeshift.transform
+import ktcodeshift.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
 
