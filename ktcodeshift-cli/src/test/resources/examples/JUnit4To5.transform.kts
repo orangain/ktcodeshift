@@ -27,12 +27,11 @@ transform { fileInfo ->
         }
         .find<Node.Modifier.AnnotationSet.Annotation>()
         .replaceWith { v ->
-            val name = annotationNameMap[v.type.pieces.last().name.name]?.let(::nameExpression)
+            val name = annotationNameMap[v.type.name.name]?.let(::nameExpression)
             if (name != null) {
                 v.copy(
-                    type = simpleType(
-                        pieces = v.type.pieces.dropLast(1) + v.type.pieces.last()
-                            .copy(name = name)
+                    type = v.type.copy(
+                        name = name,
                     )
                 )
             } else {
@@ -87,7 +86,7 @@ fun getAnnotationByName(
     annotations: List<Node.Modifier.AnnotationSet.Annotation>,
     name: String
 ): Node.Modifier.AnnotationSet.Annotation? {
-    return annotations.find { it.type.pieces.last().name.name == name }
+    return annotations.find { it.type.name.name == name }
 }
 
 fun getValueArgByName(args: Node.ValueArgs?, name: String): Node.ValueArg? {
