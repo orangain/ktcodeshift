@@ -70,7 +70,7 @@ transform { fileInfo ->
                         ),
                         lambdaArg = lambdaArg(
                             expression = lambdaExpression(
-                                body = body(originalStatements),
+                                body = lambdaBody(originalStatements),
                             ),
                         ),
                     )
