@@ -136,16 +136,9 @@ transform { fileInfo ->
                                     ),
                                 )
                             )
-//                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
                             stringBuilder.appendLine(Writer.write(func))
                             val firstParam = func.params?.elements?.firstOrNull()
-                            if (firstParam != null && listOf(
-                                    "elements",
-                                    "statements",
-                                    "decls",
-                                    "pieces",
-                                ).contains(firstParam.name.name)
-                            ) {
+                            if (firstParam != null && listOf("elements", "statements").contains(firstParam.name.name)) {
                                 val firstParamType = firstParam.typeRef?.type as? Node.Type.Simple
                                 if (firstParamType != null) {
                                     if (firstParamType.name.name == "List") {
