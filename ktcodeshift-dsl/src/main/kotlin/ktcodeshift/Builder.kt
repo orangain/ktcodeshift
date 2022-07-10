@@ -431,8 +431,8 @@ fun lambdaParam(
 fun variable(modifiers: Node.Modifiers? = null, name: Node.Expression.Name, typeRef: Node.TypeRef? = null) =
     Node.Expression.Lambda.Param.Variable(modifiers = modifiers, name = name, typeRef = typeRef)
 
-fun body(statements: List<Node.Statement> = listOf()) = Node.Expression.Lambda.Body(statements = statements)
-fun body(vararg statements: Node.Statement) = body(statements.toList())
+fun lambdaBody(statements: List<Node.Statement> = listOf()) = Node.Expression.Lambda.Body(statements = statements)
+fun lambdaBody(vararg statements: Node.Statement) = lambdaBody(statements.toList())
 fun thisExpression(label: String? = null) = Node.Expression.This(label = label)
 fun superExpression(typeArg: Node.TypeRef? = null, label: String? = null) =
     Node.Expression.Super(typeArg = typeArg, label = label)

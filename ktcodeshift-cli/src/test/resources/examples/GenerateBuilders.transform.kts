@@ -222,6 +222,7 @@ fun toFunctionName(nestedNames: List<String>): String {
         "Node.Type.Function.Param" -> "functionTypeParam"
         "Node.Expression.Lambda.Params" -> "lambdaParams"
         "Node.Expression.Lambda.Param" -> "lambdaParam"
+        "Node.Expression.Lambda.Body" -> "lambdaBody"
         "Node.Expression.Binary.Operator" -> "binaryOperator"
         "Node.Expression.Unary.Operator" -> "unaryOperator"
         "Node.Expression.BinaryType.Operator" -> "binaryTypeOperator"
