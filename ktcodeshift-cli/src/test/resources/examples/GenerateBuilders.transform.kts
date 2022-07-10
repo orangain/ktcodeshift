@@ -8,21 +8,26 @@ import ktcodeshift.transform
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
 
+data class FullyQualifiedName(
+    val qualifiers: List<String>,
+    val name: String,
+)
+
 transform { fileInfo ->
     val stringBuilder = StringBuilder()
     Api
         .parse(fileInfo.source)
         .also { ctx ->
             val nestedNames = mutableListOf<String>()
-            val fqNames = mutableSetOf<List<String>>()
+            val fqNames = mutableSetOf<FullyQualifiedName>()
 
             object : Visitor() {
                 override fun visit(v: Node, parent: Node?) {
                     if (v is Node.Declaration.Class) {
                         val name = v.name?.name.orEmpty()
-                        nestedNames.add(name)
+                        fqNames.add(FullyQualifiedName(nestedNames.toList(), name))
 
-                        fqNames.add(nestedNames.toList())
+                        nestedNames.add(name)
 
                         super.visit(v, parent)
                         nestedNames.removeLast()
@@ -39,37 +44,36 @@ transform { fileInfo ->
             fun toFqNameType(type: Node.Type.Simple, nestedNames: List<String>): Node.Type.Simple {
 
                 // e.g. Make List<Expression> to List<Node.Expression>
-                if (type.pieces.size == 1 && type.pieces[0].name.name == "List") {
-                    val typeArgs = type.pieces[0].typeArgs
+                if (type.name.name == "List") {
+                    val typeArgs = type.typeArgs
                     if (typeArgs != null && typeArgs.elements.size == 1) {
                         val typeArg = typeArgs.elements[0]
-                        return simpleType(
-                            pieces = type.pieces.map {
-                                it.copy(
-                                    typeArgs = typeArgs(
-                                        typeArg.copy(
-                                            typeRef = typeArg.typeRef?.copy(
-                                                type = toFqNameType(
-                                                    typeArg.typeRef?.type as Node.Type.Simple,
-                                                    nestedNames
-                                                ),
-                                            ),
-                                        )
-                                    )
+                        return type.copy(
+                            typeArgs = typeArgs(
+                                typeArg.copy(
+                                    typeRef = typeArg.typeRef?.copy(
+                                        type = toFqNameType(
+                                            typeArg.typeRef?.type as Node.Type.Simple,
+                                            nestedNames
+                                        ),
+                                    ),
                                 )
-                            },
+                            )
                         )
                     }
                 }
 
                 val mutableNestedNames = nestedNames.toMutableList()
-                val pieceNames = type.pieces.map { it.name.name }
 
                 while (true) {
-                    val names = mutableNestedNames + pieceNames
-                    if (fqNames.contains(names)) {
+                    val fqName = FullyQualifiedName(
+                        qualifiers = mutableNestedNames + type.qualifiers.map { it.name.name },
+                        name = type.name.name,
+                    )
+                    if (fqNames.contains(fqName)) {
                         return simpleType(
-                            pieces = names.map { piece(name = nameExpression(it)) }
+                            qualifiers = fqName.qualifiers.map { qualifier(nameExpression(it)) },
+                            name = type.name,
                         )
                     }
                     if (mutableNestedNames.isEmpty()) {
@@ -78,13 +82,14 @@ transform { fileInfo ->
                     mutableNestedNames.removeLast()
                 }
 
-                if (pieceNames == listOf("Receiver")) {
+                if (type.qualifiers.isEmpty() && type.name.name == "Receiver") {
                     return simpleType(
-                        pieces = listOf(
-                            piece(name = nameExpression("Node")),
-                            piece(name = nameExpression("Expression")),
-                            piece(name = nameExpression("DoubleColon")),
-                        ) + type.pieces
+                        qualifiers = listOf(
+                            qualifier(name = nameExpression("Node")),
+                            qualifier(name = nameExpression("Expression")),
+                            qualifier(name = nameExpression("DoubleColon")),
+                        ),
+                        name = type.name,
                     )
                 }
 
@@ -114,7 +119,7 @@ transform { fileInfo ->
                                         }
                                         functionParam(
                                             name = p.name,
-                                            typeRef = p.typeRef?.copy(type = fqType),
+                                            typeRef = fqType?.let { p.typeRef!!.copy(type = it) } ?: p.typeRef,
                                             defaultValue = defaultValueOf(fqType),
                                         )
                                     },
@@ -131,21 +136,13 @@ transform { fileInfo ->
                                     ),
                                 )
                             )
-//                            println(nestedNames.joinToString(".") + "\t" + toFunctionName(nestedNames))
                             stringBuilder.appendLine(Writer.write(func))
                             val firstParam = func.params?.elements?.firstOrNull()
-                            if (firstParam != null && listOf(
-                                    "elements",
-                                    "statements",
-                                    "decls",
-                                    "pieces",
-                                ).contains(firstParam.name.name)
-                            ) {
+                            if (firstParam != null && listOf("elements", "statements").contains(firstParam.name.name)) {
                                 val firstParamType = firstParam.typeRef?.type as? Node.Type.Simple
                                 if (firstParamType != null) {
-                                    if (firstParamType.pieces.firstOrNull()?.name?.name == "List") {
-                                        val listElementType =
-                                            firstParamType.pieces.first().typeArgs!!.elements[0].typeRef?.type
+                                    if (firstParamType.name.name == "List") {
+                                        val listElementType = firstParamType.typeArgs!!.elements[0].typeRef?.type
                                         if (listElementType != null) {
                                             val varargFunc = functionDeclaration(
                                                 name = nameExpression(functionName),
@@ -225,6 +222,7 @@ fun toFunctionName(nestedNames: List<String>): String {
         "Node.Type.Function.Param" -> "functionTypeParam"
         "Node.Expression.Lambda.Params" -> "lambdaParams"
         "Node.Expression.Lambda.Param" -> "lambdaParam"
+        "Node.Expression.Lambda.Body" -> "lambdaBody"
         "Node.Expression.Binary.Operator" -> "binaryOperator"
         "Node.Expression.Unary.Operator" -> "unaryOperator"
         "Node.Expression.BinaryType.Operator" -> "binaryTypeOperator"
@@ -238,7 +236,7 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
     return if (type is Node.Type.Nullable) {
         nameExpression("null")
     } else if (type is Node.Type.Simple) {
-        val fqName = type.pieces.joinToString(".") { it.name.name }
+        val fqName = (type.qualifiers.map { it.name.name } + type.name.name).joinToString(".")
         if (fqName == "List") {
             nameExpression("listOf()")
         } else if (fqName == "Boolean") {

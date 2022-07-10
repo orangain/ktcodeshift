@@ -260,11 +260,22 @@ fun typeParam(modifiers: Node.Modifiers? = null, name: Node.Expression.Name, typ
     Node.TypeParam(modifiers = modifiers, name = name, typeRef = typeRef)
 
 fun functionType(
+    lPar: Node.Keyword.LPar? = null,
+    modifiers: Node.Modifiers? = null,
     contextReceivers: Node.Type.Function.ContextReceivers? = null,
     receiver: Node.Type.Function.Receiver? = null,
     params: Node.Type.Function.Params? = null,
-    typeRef: Node.TypeRef
-) = Node.Type.Function(contextReceivers = contextReceivers, receiver = receiver, params = params, typeRef = typeRef)
+    returnTypeRef: Node.TypeRef,
+    rPar: Node.Keyword.RPar? = null
+) = Node.Type.Function(
+    lPar = lPar,
+    modifiers = modifiers,
+    contextReceivers = contextReceivers,
+    receiver = receiver,
+    params = params,
+    returnTypeRef = returnTypeRef,
+    rPar = rPar
+)
 
 fun contextReceivers(
     elements: List<Node.Type.Function.ContextReceiver> = listOf(),
@@ -281,10 +292,14 @@ fun functionTypeParams(vararg elements: Node.Type.Function.Param) = functionType
 fun functionTypeParam(name: Node.Expression.Name? = null, typeRef: Node.TypeRef) =
     Node.Type.Function.Param(name = name, typeRef = typeRef)
 
-fun simpleType(pieces: List<Node.Type.Simple.Piece> = listOf()) = Node.Type.Simple(pieces = pieces)
-fun simpleType(vararg pieces: Node.Type.Simple.Piece) = simpleType(pieces.toList())
-fun piece(name: Node.Expression.Name, typeArgs: Node.TypeArgs? = null) =
-    Node.Type.Simple.Piece(name = name, typeArgs = typeArgs)
+fun simpleType(
+    qualifiers: List<Node.Type.Simple.Qualifier> = listOf(),
+    name: Node.Expression.Name,
+    typeArgs: Node.TypeArgs? = null
+) = Node.Type.Simple(qualifiers = qualifiers, name = name, typeArgs = typeArgs)
+
+fun qualifier(name: Node.Expression.Name, typeArgs: Node.TypeArgs? = null) =
+    Node.Type.Simple.Qualifier(name = name, typeArgs = typeArgs)
 
 fun nullableType(
     lPar: Node.Keyword.LPar? = null,
@@ -304,20 +319,9 @@ fun typeArg(modifiers: Node.Modifiers? = null, typeRef: Node.TypeRef? = null, as
 fun typeRef(
     lPar: Node.Keyword.LPar? = null,
     modifiers: Node.Modifiers? = null,
-    innerLPar: Node.Keyword.LPar? = null,
-    innerMods: Node.Modifiers? = null,
-    type: Node.Type? = null,
-    innerRPar: Node.Keyword.RPar? = null,
+    type: Node.Type,
     rPar: Node.Keyword.RPar? = null
-) = Node.TypeRef(
-    lPar = lPar,
-    modifiers = modifiers,
-    innerLPar = innerLPar,
-    innerMods = innerMods,
-    type = type,
-    innerRPar = innerRPar,
-    rPar = rPar
-)
+) = Node.TypeRef(lPar = lPar, modifiers = modifiers, type = type, rPar = rPar)
 
 fun valueArgs(elements: List<Node.ValueArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
     Node.ValueArgs(elements = elements, trailingComma = trailingComma)
@@ -427,8 +431,8 @@ fun lambdaParam(
 fun variable(modifiers: Node.Modifiers? = null, name: Node.Expression.Name, typeRef: Node.TypeRef? = null) =
     Node.Expression.Lambda.Param.Variable(modifiers = modifiers, name = name, typeRef = typeRef)
 
-fun body(statements: List<Node.Statement> = listOf()) = Node.Expression.Lambda.Body(statements = statements)
-fun body(vararg statements: Node.Statement) = body(statements.toList())
+fun lambdaBody(statements: List<Node.Statement> = listOf()) = Node.Expression.Lambda.Body(statements = statements)
+fun lambdaBody(vararg statements: Node.Statement) = lambdaBody(statements.toList())
 fun thisExpression(label: String? = null) = Node.Expression.This(label = label)
 fun superExpression(typeArg: Node.TypeRef? = null, label: String? = null) =
     Node.Expression.Super(typeArg = typeArg, label = label)
