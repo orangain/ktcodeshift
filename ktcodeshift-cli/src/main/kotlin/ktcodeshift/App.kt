@@ -72,7 +72,13 @@ fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
             val source = d.sourcePath?.let { "$it:" }.orEmpty()
             val locationString = d.location?.start?.let { "${it.line}:${it.col}: " }.orEmpty()
             val extra = d.exception?.let { ": $it" }.orEmpty()
-            println("$source$locationString${d.severity}: ${d.message}$extra")
+            val messageLine = "$source$locationString${d.severity}: ${d.message}$extra"
+            when (d.severity) {
+                ScriptDiagnostic.Severity.ERROR,
+                ScriptDiagnostic.Severity.FATAL -> println(CommandLine.Help.Ansi.AUTO.string("@|bold,red $messageLine |@"))
+                ScriptDiagnostic.Severity.WARNING -> println(CommandLine.Help.Ansi.AUTO.string("@|yellow $messageLine |@"))
+                else -> println(messageLine)
+            }
         }
 
     val transform = transformFunction
