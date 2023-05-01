@@ -65,11 +65,15 @@ fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
 
     val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<TransformScript>()
     val res = BasicJvmScriptingHost().eval(sourceCode, compilationConfiguration, null)
-    res.reports.forEach {
-        if (it.severity >= ScriptDiagnostic.Severity.WARNING) {
-            println("[${it.severity}] : ${it.message}" + if (it.exception == null) "" else ": ${it.exception}")
+    res.reports
+        .asSequence()
+        .filter { d -> d.severity >= ScriptDiagnostic.Severity.WARNING }
+        .forEach { d ->
+            val source = d.sourcePath?.let { "$it:" }.orEmpty()
+            val locationString = d.location?.start?.let { "${it.line}:${it.col}: " }.orEmpty()
+            val extra = d.exception?.let { ": $it" }.orEmpty()
+            println("$source$locationString${d.severity}: ${d.message}$extra")
         }
-    }
 
     val transform = transformFunction
     if (transform == null && res.reports.any { it.severity >= ScriptDiagnostic.Severity.ERROR }) {
