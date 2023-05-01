@@ -1,3 +1,10 @@
+/*
+You can generate ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt using the following command:
+
+ktcodeshift -t ktcodeshift-cli/src/test/resources/examples/GenerateBuilders.transform.kts ../ktast/ast/src/commonMain/kotlin/ktast/ast/Node.kt
+
+*/
+
 import ktast.ast.Node
 import ktast.ast.Visitor
 import ktast.ast.Writer
