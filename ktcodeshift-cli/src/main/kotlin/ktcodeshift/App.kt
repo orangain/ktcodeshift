@@ -72,6 +72,9 @@ fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
     }
 
     val transform = transformFunction
+    if (transform == null && res.reports.any { it.severity >= ScriptDiagnostic.Severity.ERROR }) {
+        exitProcess(1)
+    }
     checkNotNull(transform) { "transform is not defined." }
     return transform
 }
