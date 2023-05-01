@@ -3,11 +3,16 @@
 ktcodeshift is a toolkit for running codemods over multiple Kotlin files inspired
 by [jscodeshift](https://github.com/facebook/jscodeshift). It provides:
 
-- A runner, which executes the provided transform for each file passed to it. It also outputs a summary of how many files have (not) been transformed.
-- A wrapper around [ktast](https://github.com/orangain/ktast), providing a different API. ktast is a Kotlin AST library and also tries to preserve the style of original code as much as possible.
-
+- A runner, which executes the provided transform for each file passed to it. It also outputs a summary of how many
+  files have (not) been transformed.
+- A wrapper around [ktast](https://github.com/orangain/ktast), providing a different API. ktast is a Kotlin AST library
+  and also tries to preserve the style of original code as much as possible.
 
 ## Setup
+
+### Prerequisites
+
+- Java 11 or later is required.
 
 ### macOS
 
@@ -38,7 +43,38 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
   -V, --version          Print version information and exit.
 ```
 
+## Transform file
+
+A transform file is a Kotlin script file that defines a lambda function `transform`. The `transform` function takes
+information about the file as an argument and returns the modified source code.
+
+```kts
+import ktast.ast.Node
+import ktcodeshift.*
+
+transform { fileInfo ->
+    Api
+        .parse(fileInfo.source)
+        .find<Node.Expression.Name>()
+        .filter { v, parent ->
+            parent is Node.Declaration.Property.Variable && v.name == "foo"
+        }
+        .replaceWith { v ->
+            v.copy(name = "bar")
+        }
+        .toSource()
+}
+```
+
+The following API documents will be helpful to write a transform file.
+
+- https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/index.html
+- https://orangain.github.io/ktast/main/api/ast/ktast.ast/index.html
+
 ## Examples
 
-Example transforms and their inputs/outputs are available
+Example transform files are available
 under [ktcodeshift-cli/src/test/resources/examples/](ktcodeshift-cli/src/test/resources/examples/) directory.
+[\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) also contains pair of their input
+and
+output.
