@@ -438,11 +438,18 @@ fun superExpression(typeArg: Node.TypeRef? = null, label: String? = null) =
     Node.Expression.Super(typeArg = typeArg, label = label)
 
 fun whenExpression(
-    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    whenKeyword: Node.Keyword.When = Node.Keyword.When(),
+    lPar: Node.Keyword.LPar? = null,
     expression: Node.Expression? = null,
-    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    rPar: Node.Keyword.RPar? = null,
     branches: List<Node.Expression.When.Branch> = listOf()
-) = Node.Expression.When(lPar = lPar, expression = expression, rPar = rPar, branches = branches)
+) = Node.Expression.When(
+    whenKeyword = whenKeyword,
+    lPar = lPar,
+    expression = expression,
+    rPar = rPar,
+    branches = branches
+)
 
 fun conditionalBranch(
     conditions: List<Node.Expression.When.Condition> = listOf(),
