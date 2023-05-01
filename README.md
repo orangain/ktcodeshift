@@ -46,7 +46,7 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
 ## Transform file
 
 A transform file is a Kotlin script file that defines a lambda function `transform`. The `transform` function takes
-information about the file as an argument and returns the source code of the result of the transformation.
+information about the file as an argument and returns the modified source code.
 
 ```kts
 import ktast.ast.Node
