@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":ktcodeshift-cli:dokkaHtmlPartial/main":[],":ktcodeshift-dsl:dokkaHtmlPartial/main":[]}'
