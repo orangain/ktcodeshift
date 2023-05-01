@@ -5,9 +5,11 @@ by [jscodeshift](https://github.com/facebook/jscodeshift). It provides:
 
 - A runner, which executes the provided transform for each file passed to it. It also outputs a summary of how many files have (not) been transformed.
 - A wrapper around [ktast](https://github.com/orangain/ktast), providing a different API. ktast is a Kotlin AST library and also tries to preserve the style of original code as much as possible.
-
-
 ## Setup
+
+### Prerequisites
+
+- Java 11 or later is required.
 
 ### macOS
 
