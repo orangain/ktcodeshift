@@ -43,6 +43,29 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
   -V, --version          Print version information and exit.
 ```
 
+## Transform file
+
+A transform file is a Kotlin script file that defines a lambda function `transform`. The `transform` function takes
+information about the file as an argument and returns the source code of the result of the transformation.
+
+```kts
+import ktast.ast.Node
+import ktcodeshift.*
+
+transform { fileInfo ->
+    Api
+        .parse(fileInfo.source)
+        .find<Node.Expression.Name>()
+        .filter { v, parent ->
+            parent is Node.Declaration.Property.Variable && v.name == "foo"
+        }
+        .replaceWith { v ->
+            v.copy(name = "bar")
+        }
+        .toSource()
+}
+```
+
 ## Examples
 
 Example transforms and their inputs/outputs are available
