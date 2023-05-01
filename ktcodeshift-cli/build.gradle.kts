@@ -21,7 +21,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-scripting-common")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
-    implementation("info.picocli:picocli:4.6.3")
+    implementation("info.picocli:picocli:4.7.3")
     implementation(project(":ktcodeshift-dsl")) // the script definition module
     implementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("com.github.orangain.ktast:ast-psi:0.8.1")
