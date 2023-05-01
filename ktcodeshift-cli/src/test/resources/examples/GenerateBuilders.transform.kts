@@ -43,6 +43,8 @@ transform { fileInfo ->
 
             println(fqNames)
             println("-".repeat(40))
+            stringBuilder.appendLine("package ktcodeshift")
+            stringBuilder.appendLine()
             stringBuilder.appendLine("import ktast.ast.Node")
 
             fun toFqNameType(type: Node.Type.Simple, nestedNames: List<String>): Node.Type.Simple {
