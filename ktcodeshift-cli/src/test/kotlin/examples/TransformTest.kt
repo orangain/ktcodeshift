@@ -1,6 +1,6 @@
 package examples
 
-import ktcodeshift.*
+import ktcodeshift.testing.testTransform
 import kotlin.test.Test
 
 class TransformTest {
