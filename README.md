@@ -66,6 +66,11 @@ transform { fileInfo ->
 }
 ```
 
+The following API documents will be helpful to write a transform file.
+
+- https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/index.html
+- https://orangain.github.io/ktast/main/api/ast/ktast.ast/index.html
+
 ## Examples
 
 Example transforms and their inputs/outputs are available
