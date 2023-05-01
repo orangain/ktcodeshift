@@ -1,5 +1,6 @@
-package ktcodeshift
+package ktcodeshift.testing
 
+import ktcodeshift.*
 import kotlin.reflect.KClass
 import kotlin.script.experimental.host.UrlScriptSource
 import kotlin.test.assertEquals

@@ -7,6 +7,7 @@ plugins {
     application
     // Add support for generating version number from Git status.
     id("com.palantir.git-version") version "3.0.0"
+    id("org.jetbrains.dokka")
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -29,6 +30,12 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
 
 testing {

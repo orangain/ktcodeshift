@@ -1,3 +1,5 @@
+package ktcodeshift
+
 import ktast.ast.Node
 
 fun kotlinFile(
@@ -74,9 +76,7 @@ fun callConstructorParent(
 ) = Node.Declaration.Class.Parent.CallConstructor(type = type, typeArgs = typeArgs, args = args, lambda = lambda)
 
 fun delegatedTypeParent(
-    type: Node.Type.Simple,
-    byKeyword: Node.Keyword.By = Node.Keyword.By(),
-    expression: Node.Expression
+    type: Node.Type.Simple, byKeyword: Node.Keyword.By = Node.Keyword.By(), expression: Node.Expression
 ) = Node.Declaration.Class.Parent.DelegatedType(type = type, byKeyword = byKeyword, expression = expression)
 
 fun typeParent(type: Node.Type.Simple) = Node.Declaration.Class.Parent.Type(type = type)
@@ -85,9 +85,7 @@ fun primaryConstructor(
     constructorKeyword: Node.Keyword.Constructor? = null,
     params: Node.Declaration.Function.Params? = null
 ) = Node.Declaration.Class.PrimaryConstructor(
-    modifiers = modifiers,
-    constructorKeyword = constructorKeyword,
-    params = params
+    modifiers = modifiers, constructorKeyword = constructorKeyword, params = params
 )
 
 fun classBody(
@@ -128,8 +126,7 @@ fun functionDeclaration(
 )
 
 fun functionParams(
-    elements: List<Node.Declaration.Function.Param> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null
+    elements: List<Node.Declaration.Function.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null
 ) = Node.Declaration.Function.Params(elements = elements, trailingComma = trailingComma)
 
 fun functionParams(vararg elements: Node.Declaration.Function.Param) = functionParams(elements.toList())
@@ -278,8 +275,7 @@ fun functionType(
 )
 
 fun contextReceivers(
-    elements: List<Node.Type.Function.ContextReceiver> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null
+    elements: List<Node.Type.Function.ContextReceiver> = listOf(), trailingComma: Node.Keyword.Comma? = null
 ) = Node.Type.Function.ContextReceivers(elements = elements, trailingComma = trailingComma)
 
 fun contextReceivers(vararg elements: Node.Type.Function.ContextReceiver) = contextReceivers(elements.toList())
@@ -293,19 +289,14 @@ fun functionTypeParam(name: Node.Expression.Name? = null, typeRef: Node.TypeRef)
     Node.Type.Function.Param(name = name, typeRef = typeRef)
 
 fun simpleType(
-    qualifiers: List<Node.Type.Simple.Qualifier> = listOf(),
-    name: Node.Expression.Name,
-    typeArgs: Node.TypeArgs? = null
+    qualifiers: List<Node.Type.Simple.Qualifier> = listOf(), name: Node.Expression.Name, typeArgs: Node.TypeArgs? = null
 ) = Node.Type.Simple(qualifiers = qualifiers, name = name, typeArgs = typeArgs)
 
 fun qualifier(name: Node.Expression.Name, typeArgs: Node.TypeArgs? = null) =
     Node.Type.Simple.Qualifier(name = name, typeArgs = typeArgs)
 
 fun nullableType(
-    lPar: Node.Keyword.LPar? = null,
-    modifiers: Node.Modifiers? = null,
-    type: Node.Type,
-    rPar: Node.Keyword.RPar? = null
+    lPar: Node.Keyword.LPar? = null, modifiers: Node.Modifiers? = null, type: Node.Type, rPar: Node.Keyword.RPar? = null
 ) = Node.Type.Nullable(lPar = lPar, modifiers = modifiers, type = type, rPar = rPar)
 
 fun dynamicType(_unused_: Boolean = false) = Node.Type.Dynamic(_unused_ = _unused_)
@@ -317,10 +308,7 @@ fun typeArg(modifiers: Node.Modifiers? = null, typeRef: Node.TypeRef? = null, as
     Node.TypeArg(modifiers = modifiers, typeRef = typeRef, asterisk = asterisk)
 
 fun typeRef(
-    lPar: Node.Keyword.LPar? = null,
-    modifiers: Node.Modifiers? = null,
-    type: Node.Type,
-    rPar: Node.Keyword.RPar? = null
+    lPar: Node.Keyword.LPar? = null, modifiers: Node.Modifiers? = null, type: Node.Type, rPar: Node.Keyword.RPar? = null
 ) = Node.TypeRef(lPar = lPar, modifiers = modifiers, type = type, rPar = rPar)
 
 fun valueArgs(elements: List<Node.ValueArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
@@ -444,11 +432,7 @@ fun whenExpression(
     rPar: Node.Keyword.RPar? = null,
     branches: List<Node.Expression.When.Branch> = listOf()
 ) = Node.Expression.When(
-    whenKeyword = whenKeyword,
-    lPar = lPar,
-    expression = expression,
-    rPar = rPar,
-    branches = branches
+    whenKeyword = whenKeyword, lPar = lPar, expression = expression, rPar = rPar, branches = branches
 )
 
 fun conditionalBranch(
@@ -477,8 +461,7 @@ fun returnExpression(label: String? = null, expression: Node.Expression? = null)
 fun continueExpression(label: String? = null) = Node.Expression.Continue(label = label)
 fun breakExpression(label: String? = null) = Node.Expression.Break(label = label)
 fun collectionLiteralExpression(
-    expressions: List<Node.Expression> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null
+    expressions: List<Node.Expression> = listOf(), trailingComma: Node.Keyword.Comma? = null
 ) = Node.Expression.CollectionLiteral(expressions = expressions, trailingComma = trailingComma)
 
 fun nameExpression(name: String) = Node.Expression.Name(name = name)
@@ -502,9 +485,7 @@ fun lambdaArg(
 ) = Node.Expression.Call.LambdaArg(annotationSets = annotationSets, label = label, expression = expression)
 
 fun arrayAccessExpression(
-    expression: Node.Expression,
-    indices: List<Node.Expression> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null
+    expression: Node.Expression, indices: List<Node.Expression> = listOf(), trailingComma: Node.Keyword.Comma? = null
 ) = Node.Expression.ArrayAccess(expression = expression, indices = indices, trailingComma = trailingComma)
 
 fun anonymousFunctionExpression(function: Node.Declaration.Function) =
@@ -550,9 +531,7 @@ fun typeConstraintList(vararg elements: Node.PostModifier.TypeConstraints.TypeCo
     typeConstraintList(elements.toList())
 
 fun typeConstraint(
-    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
-    name: Node.Expression.Name,
-    typeRef: Node.TypeRef
+    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(), name: Node.Expression.Name, typeRef: Node.TypeRef
 ) = Node.PostModifier.TypeConstraints.TypeConstraint(annotationSets = annotationSets, name = name, typeRef = typeRef)
 
 fun contract(
@@ -561,8 +540,7 @@ fun contract(
 ) = Node.PostModifier.Contract(contractKeyword = contractKeyword, contractEffects = contractEffects)
 
 fun contractEffects(
-    elements: List<Node.PostModifier.Contract.ContractEffect> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null
+    elements: List<Node.PostModifier.Contract.ContractEffect> = listOf(), trailingComma: Node.Keyword.Comma? = null
 ) = Node.PostModifier.Contract.ContractEffects(elements = elements, trailingComma = trailingComma)
 
 fun contractEffects(vararg elements: Node.PostModifier.Contract.ContractEffect) = contractEffects(elements.toList())
