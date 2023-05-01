@@ -73,5 +73,8 @@ The following API documents will be helpful to write a transform file.
 
 ## Examples
 
-Example transforms and their inputs/outputs are available
+Example transform files are available
 under [ktcodeshift-cli/src/test/resources/examples/](ktcodeshift-cli/src/test/resources/examples/) directory.
+[\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) also contains pair of their input
+and
+output.
