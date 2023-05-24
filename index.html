@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      ktcodeshift: Toolkit for running codemods over multiple Kotlin files
+      inspired by jscodeshift.
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #111;
+        background-color: #fdfdfd;
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-feature-settings: "kern" 1;
+        -moz-font-feature-settings: "kern" 1;
+        -o-font-feature-settings: "kern" 1;
+        font-feature-settings: "kern" 1;
+        font-kerning: normal;
+        padding: 30px;
+      }
+
+      @media only screen and (max-width: 600px) {
+        body {
+          padding: 5px;
+        }
+
+        main {
+          padding: 0px 20px 20px 20px !important;
+        }
+      }
+
+      main {
+        margin: 0px;
+        max-width: 900px;
+        /* border: 1px solid #e1e4e8; */
+        padding: 10px 40px;
+        padding-bottom: 20px;
+        border-radius: 2px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      hr {
+        color: #bbb;
+        background-color: #bbb;
+        height: 1px;
+        flex: 0 1 auto;
+        margin: 1em 0;
+        padding: 0;
+        border: none;
+      }
+
+      /**
+ * Links
+ */
+      a {
+        color: #0366d6;
+        text-decoration: none;
+      }
+      a:visited {
+        color: #0366d6;
+      }
+      a:hover {
+        color: #0366d6;
+        text-decoration: underline;
+      }
+
+      pre {
+        background-color: #f6f8fa;
+        border-radius: 3px;
+        font-size: 85%;
+        line-height: 1.45;
+        overflow: auto;
+        padding: 16px;
+      }
+
+      /**
+  * Code blocks
+  */
+
+      code {
+        background-color: rgba(27, 31, 35, 0.05);
+        border-radius: 3px;
+        font-size: 85%;
+        margin: 0;
+        word-wrap: break-word;
+        padding: 0.2em 0.4em;
+        font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier,
+          monospace;
+      }
+
+      pre > code {
+        background-color: transparent;
+        border: 0;
+        display: inline;
+        line-height: inherit;
+        margin: 0;
+        overflow: visible;
+        padding: 0;
+        word-wrap: normal;
+        font-size: 100%;
+      }
+
+      /**
+ * Blockquotes
+ */
+      blockquote {
+        margin-left: 30px;
+        margin-top: 0px;
+        margin-bottom: 16px;
+        border-left-width: 3px;
+        padding: 0 1em;
+        color: #828282;
+        border-left: 4px solid #e8e8e8;
+        padding-left: 15px;
+        font-size: 18px;
+        letter-spacing: -1px;
+        font-style: italic;
+      }
+      blockquote * {
+        font-style: normal !important;
+        letter-spacing: 0;
+        color: #6a737d !important;
+      }
+
+      /**
+ * Tables
+ */
+      table {
+        border-spacing: 2px;
+        display: block;
+        font-size: 14px;
+        overflow: auto;
+        width: 100%;
+        margin-bottom: 16px;
+        border-spacing: 0;
+        border-collapse: collapse;
+      }
+
+      td {
+        padding: 6px 13px;
+        border: 1px solid #dfe2e5;
+      }
+
+      th {
+        font-weight: 600;
+        padding: 6px 13px;
+        border: 1px solid #dfe2e5;
+      }
+
+      tr {
+        background-color: #fff;
+        border-top: 1px solid #c6cbd1;
+      }
+
+      table tr:nth-child(2n) {
+        background-color: #f6f8fa;
+      }
+
+      /**
+ * Others
+ */
+
+      img {
+        max-width: 100%;
+      }
+
+      p {
+        line-height: 24px;
+        font-weight: 400;
+        font-size: 16px;
+        color: #24292e;
+      }
+
+      ul {
+        margin-top: 0;
+      }
+
+      li {
+        color: #24292e;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+      }
+
+      li + li {
+        margin-top: 0.25em;
+      }
+
+      * {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+          Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+          "Segoe UI Symbol";
+      }
+
+      a:visited {
+        color: #0366d6;
+      }
+
+      h1,
+      h2,
+      h3 {
+        border-bottom: 1px solid #eaecef;
+        color: #111;
+        /* Darker */
+      }
+
+      h1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      a.view-on-github {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 16px;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .octicon {
+        display: inline-block;
+        vertical-align: text-top !important;
+        fill: currentColor;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1
+        id="ktcodeshift-java-cihttpsgithubcomorangainktcodeshiftactionsworkflowsjava_ciyamlbadgesvghttpsgithubcomorangainktcodeshiftactionsworkflowsjava_ciyaml"
+      >
+        ktcodeshift
+        <a href="https://github.com/orangain/ktcodeshift" class="view-on-github"
+          >View on GitHub
+          <svg
+            version="1.1"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            class="octicon octicon-mark-github"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+            /></svg
+        ></a>
+      </h1>
+      <p>
+        ktcodeshift is a toolkit for running codemods over multiple Kotlin files
+        inspired by
+        <a href="https://github.com/facebook/jscodeshift">jscodeshift</a>. It
+        provides:
+      </p>
+      <ul>
+        <li>
+          A runner, which executes the provided transform for each file passed
+          to it. It also outputs a summary of how many files have (not) been
+          transformed.
+        </li>
+        <li>
+          A wrapper around
+          <a href="https://github.com/orangain/ktast">ktast</a>, providing a
+          different API. ktast is a Kotlin AST library and also tries to
+          preserve the style of original code as much as possible.
+        </li>
+      </ul>
+      <h2 id="setup">Setup</h2>
+      <h3 id="prerequisites">Prerequisites</h3>
+      <ul>
+        <li>Java 11 or later is required.</li>
+      </ul>
+      <h3 id="macos">macOS</h3>
+      <pre><code>brew install orangain/tap/ktcodeshift</code></pre>
+      <h3 id="other-platforms">Other platforms</h3>
+      <p>
+        Download the latest archive from
+        <a href="https://github.com/orangain/ktcodeshift/releases">releases</a>
+        and extract it. <code>ktcodeshift</code> command is available in the
+        <code>bin</code> directory.
+      </p>
+      <h2 id="usage">Usage</h2>
+      <pre><code>Usage: ktcodeshift [-dhV] [--extensions=EXT] -t=TRANSFORM_PATH PATH...
+
+Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
+
+      PATH...            Search target files in these paths.
+  -d, --dry              dry run (no changes are made to files)
+      --extensions=EXT   Target file extensions to be transformed (comma
+                           separated list)
+                         (default: kt)
+  -h, --help             Show this help message and exit.
+  -t, --transform=TRANSFORM_PATH
+                         Transform file
+  -V, --version          Print version information and exit.</code></pre>
+      <h2 id="transform-file">Transform file</h2>
+      <p>
+        A transform file is a Kotlin script file that defines a lambda function
+        <code>transform</code>. The <code>transform</code> function takes
+        information about the file as an argument and returns the modified
+        source code.
+      </p>
+      <pre><code class="kts language-kts">import ktast.ast.Node
+import ktcodeshift.*
+
+transform { fileInfo -&gt;
+    Api
+        .parse(fileInfo.source)
+        .find&lt;Node.Expression.Name&gt;()
+        .filter { v, parent -&gt;
+            parent is Node.Declaration.Property.Variable &amp;&amp; v.name == "foo"
+        }
+        .replaceWith { v -&gt;
+            v.copy(name = "bar")
+        }
+        .toSource()
+}</code></pre>
+      <p>
+        The following API documents will be helpful to write a transform file.
+      </p>
+      <ul>
+        <li>
+          <a
+            href="https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/index.html"
+            >https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/index.html</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://orangain.github.io/ktast/main/api/ast/ktast.ast/index.html"
+            >https://orangain.github.io/ktast/main/api/ast/ktast.ast/index.html</a
+          >
+        </li>
+      </ul>
+      <h2 id="examples">Examples</h2>
+      <p>
+        Example transform files are available under
+        <a
+          href="https://github.com/orangain/ktcodeshift/ktcodeshift-cli/src/test/resources/examples/"
+          >ktcodeshift-cli/src/test/resources/examples/</a
+        >
+        directory.
+        <a
+          href="https://github.com/orangain/ktcodeshift/ktcodeshift-cli/src/test/resources/examples/__testfixtures__"
+          >__testfixtures__</a
+        >
+        also contains pair of their input and output.
+      </p>
+    </main>
+  </body>
+</html>
