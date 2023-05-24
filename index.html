@@ -301,9 +301,13 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
       <h2 id="transform-file">Transform file</h2>
       <p>
         A transform file is a Kotlin script file that defines a lambda function
-        <code>transform</code>. The <code>transform</code> function takes
-        information about the file as an argument and returns the modified
-        source code.
+        <code>transform</code>. The <code>transform</code> function takes an
+        argument
+        <a
+          href="https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html"
+          >FileInfo</a
+        >, information about the file, and returns the modified source code. The
+        filename should ends with <code>.transform.kts</code>.
       </p>
       <pre><code class="kts language-kts">import ktast.ast.Node
 import ktcodeshift.*
@@ -327,29 +331,27 @@ transform { fileInfo -&gt;
         <li>
           <a
             href="https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/index.html"
-            >https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/index.html</a
+            >API document of ktcodeshift</a
           >
         </li>
         <li>
           <a
-            href="https://orangain.github.io/ktast/main/api/ast/ktast.ast/index.html"
-            >https://orangain.github.io/ktast/main/api/ast/ktast.ast/index.html</a
+            href="https://orangain.github.io/ktast/latest/api/ast/ktast.ast/index.html"
+            >API document of ktast</a
           >
         </li>
       </ul>
       <h2 id="examples">Examples</h2>
       <p>
-        Example transform files are available under
-        <a
-          href="https://github.com/orangain/ktcodeshift/ktcodeshift-cli/src/test/resources/examples/"
+        Example transform files are available under the
+        <a href="https://github.com/orangain/ktcodeshift/tree/main/ktcodeshift-cli/src/test/resources/examples/"
           >ktcodeshift-cli/src/test/resources/examples/</a
         >
-        directory.
-        <a
-          href="https://github.com/orangain/ktcodeshift/ktcodeshift-cli/src/test/resources/examples/__testfixtures__"
+        directory. The
+        <a href="https://github.com/orangain/ktcodeshift/tree/main/ktcodeshift-cli/src/test/resources/examples/__testfixtures__"
           >__testfixtures__</a
         >
-        also contains pair of their input and output.
+        directory also contains pairs of their input and output.
       </p>
     </main>
   </body>
