@@ -88,8 +88,9 @@ transform { fileInfo ->
                         val nestedNames = nestedClassNames(path)
 
                         if (v.isDataClass && nestedNames[1] != "Keyword") {
+                            val name = v.name!!.text
                             val params = v.primaryConstructor?.params.orEmpty()
-                            val functionName = nestedNames.last().decapitalizeSmart()
+                            val functionName = name.decapitalizeSmart()
 
                             val func = functionDeclaration(
                                 name = nameExpression(functionName),
@@ -118,7 +119,7 @@ transform { fileInfo ->
                                     args = params.map { p ->
                                         valueArg(
                                             name = p.name,
-                                            expression = expressionOf(functionName, p.name),
+                                            expression = expressionOf(name, p.name),
                                         )
                                     },
                                     rPar = Node.Keyword.RPar(),
@@ -197,17 +198,59 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
     }
 }
 
-fun expressionOf(functionName: String, paramName: Node.Expression.NameExpression): Node.Expression {
-    if (paramName.text == "equals") {
-        val expressionText = when (functionName) {
-            "functionDeclaration", "getter", "setter" -> "if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals"
-            "functionParam" -> "if (equals == null && defaultValue != null) Node.Keyword.Equal() else equals"
-            "propertyDeclaration" -> "if (equals == null && initializer != null) Node.Keyword.Equal() else equals"
-            else -> null
+val parenthesizedParamNames = mapOf(
+    "PrimaryConstructor" to "params",
+    "EnumEntry" to "args",
+    "SecondaryConstructor" to "params",
+    "FunctionDeclaration" to "params",
+    "PropertyDeclaration" to "variables",
+    "Setter" to "params",
+    "FunctionType" to "params",
+    "CallExpression" to "args",
+    "LambdaParams" to "variables",
+    "Annotation" to "args",
+)
+
+val angledParamNames = mapOf(
+    "ClassDeclaration" to "typeParams",
+    "FunctionDeclaration" to "typeParams",
+    "PropertyDeclaration" to "typeParams",
+    "TypeAliasDeclaration" to "typeParams",
+    "SimpleTypePiece" to "typeArgs",
+    "CallExpression" to "typeArgs",
+)
+
+val keywordTypes = mapOf(
+    "lPar" to "Node.Keyword.LPar",
+    "rPar" to "Node.Keyword.RPar",
+    "lAngle" to "Node.Keyword.Less",
+    "rAngle" to "Node.Keyword.Greater",
+    "lBracket" to "Node.Keyword.LBracket",
+    "rBracket" to "Node.Keyword.RBracket",
+)
+
+fun expressionOf(className: String, paramName: Node.Expression.NameExpression): Node.Expression {
+    when (val name = paramName.text) {
+        "lPar", "rPar" -> {
+            if (className == "Getter") {
+                return nameExpression("if (body != null) $name ?: ${keywordTypes[name]}() else $name")
+            }
+            val parenthesizedParamName = parenthesizedParamNames[className]
+            if (parenthesizedParamName != null) {
+                return nameExpression("if ($parenthesizedParamName.isNotEmpty()) $name ?: ${keywordTypes[name]}() else $name")
+            }
         }
-        if (expressionText != null) {
-            return nameExpression(expressionText)
+        "lAngle", "rAngle" -> {
+            val angledParamName = angledParamNames[className]
+            if (angledParamName != null) {
+                return nameExpression("if ($angledParamName.isNotEmpty()) $name ?: ${keywordTypes[name]}() else $name")
+            }
+        }
+        "lBracket", "rBracket" -> {
+            if (className == "AnnotationSet") {
+                return nameExpression("if (annotations.size >= 2) $name ?: ${keywordTypes[name]}() else $name")
+            }
         }
     }
-    return paramName
+    return paramName.copy()
 }
