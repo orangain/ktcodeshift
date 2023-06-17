@@ -61,21 +61,15 @@ transform { fileInfo ->
                     )
                 }
 
-                val mutableNestedNames = nestedNames.toMutableList()
-
-                while (true) {
+                generateSequence(nestedNames) { if (it.isNotEmpty()) it.dropLast(1) else null }.forEach { prefixNames ->
                     val fqName = FullyQualifiedName(
-                        mutableNestedNames + type.pieces.map { it.name.text },
+                        prefixNames + type.pieces.map { it.name.text },
                     )
                     if (fqNames.contains(fqName)) {
                         return simpleType(
                             pieces = fqName.names.map { simpleTypePiece(nameExpression(it)) },
                         )
                     }
-                    if (mutableNestedNames.isEmpty()) {
-                        break
-                    }
-                    mutableNestedNames.removeLast()
                 }
 
                 return type
