@@ -7,19 +7,19 @@ transform { fileInfo ->
         .find<Node.Expression.CallExpression>()
         .filter { n -> isListOf(n) }
         .replaceWith { n ->
-            n.copy(args = n.args.flatMap { element ->
-                val expr = element.expression
+            n.copy(args = n.args.flatMap { arg ->
+                val expr = arg.expression
                 if (expr is Node.Expression.CallExpression && isListOf(expr)) {
                     expr.args
                 } else {
-                    listOf(element)
+                    listOf(arg)
                 }
             })
         }
         .toSource()
 }
 
-fun isListOf(e: Node.Expression.CallExpression): Boolean {
-    val expr = e.calleeExpression as? Node.Expression.NameExpression ?: return false
+fun isListOf(call: Node.Expression.CallExpression): Boolean {
+    val expr = call.calleeExpression as? Node.Expression.NameExpression ?: return false
     return expr.text == "listOf"
 }

@@ -47,9 +47,9 @@ transform { fileInfo ->
             val originalStatements = (n.body as Node.Expression.BlockExpression).statements
 
             n.copy(
-                modifiers = n.modifiers.map {
-                    if (it is Node.Modifier.AnnotationSet && it.annotations.contains(annotation)) {
-                        it.copy(
+                modifiers = n.modifiers.map { modifier ->
+                    if (modifier is Node.Modifier.AnnotationSet && modifier.annotations.contains(annotation)) {
+                        modifier.copy(
                             annotations = listOf(
                                 annotation.copy(
                                     lPar = null,
@@ -59,7 +59,7 @@ transform { fileInfo ->
                             )
                         )
                     } else {
-                        it
+                        modifier
                     }
                 },
                 body = blockExpression(
