@@ -13,64 +13,68 @@ transform { fileInfo ->
     Api
         .parse(fileInfo.source)
         .find<Node.ImportDirective>()
-        .filter { v ->
-            v.names.size == 3 && v.names.take(2).map { it.name } == listOf("org", "junit")
+        .filter { n ->
+            n.names.size == 3 && n.names.take(2).map { it.text } == listOf("org", "junit")
         }
-        .replaceWith { v ->
-            v.copy(
-                names = v.names.take(2) + listOf(
+        .replaceWith { n ->
+            n.copy(
+                names = n.names.take(2) + listOf(
                     nameExpression("jupiter"),
                     nameExpression("api"),
-                    nameExpression(v.names[2].name.let { annotationNameMap[it] ?: it }),
+                    nameExpression(n.names[2].text.let { annotationNameMap[it] ?: it }),
                 )
             )
         }
         .find<Node.Modifier.AnnotationSet.Annotation>()
-        .replaceWith { v ->
-            val name = annotationNameMap[v.type.name.name]?.let(::nameExpression)
-            if (name != null) {
-                v.copy(
-                    type = v.type.copy(name = name),
+        .replaceWith { n ->
+            n.copy(
+                type = n.type.copy(
+                    pieces = n.type.pieces.map { p ->
+                        simpleTypePiece(nameExpression(annotationNameMap[p.name.text] ?: p.name.text))
+                    }
                 )
-            } else {
-                v
-            }
+            )
         }
-        .find<Node.Declaration.Function>()
-        .filter { v ->
-            val annotation = getAnnotationByName(v.annotations, "Test")
+        .find<Node.Declaration.FunctionDeclaration>()
+        .filter { n ->
+            val annotation = getAnnotationByName(n.annotations, "Test")
             getValueArgByName(annotation?.args, "expected") != null
         }
-        .replaceWith { v ->
-            val annotation = getAnnotationByName(v.annotations, "Test")
-            val arg = getValueArgByName(annotation?.args, "expected")
-            val exceptionType =
-                ((arg?.expression as Node.Expression.ClassLiteral).lhs as Node.Expression.DoubleColon.Receiver.Type).type
-            val originalStatements = (v.body as Node.Expression.Block).statements
+        .replaceWith { n ->
+            val annotation = getAnnotationByName(n.annotations, "Test")!!
+            val arg = getValueArgByName(annotation.args, "expected")!!
+            val exceptionType = expressionToSimpleType((arg.expression as Node.Expression.ClassLiteralExpression).lhs!!)
+            val originalStatements = (n.body as Node.Expression.BlockExpression).statements
 
-            v.copy(
-                modifiers = v.modifiers!!.copy(
-                    elements = v.modifiers!!.elements.map {
-                        if (it is Node.Modifier.AnnotationSet && it.annotations.contains(annotation)) {
-                            it.copy(annotations = listOf(annotation!!.copy(args = null)))
-                        } else {
-                            it
-                        }
-                    }
-                ),
-                body = blockExpression(
-                    callExpression(
-                        expression = nameExpression("Assertions.assertThrows"),
-                        typeArgs = typeArgs(
-                            typeArg(
-                                typeRef = typeRef(
-                                    type = exceptionType,
+            n.copy(
+                modifiers = n.modifiers.map {
+                    if (it is Node.Modifier.AnnotationSet && it.annotations.contains(annotation)) {
+                        it.copy(
+                            annotations = listOf(
+                                annotation.copy(
+                                    lPar = null,
+                                    args = listOf(),
+                                    rPar = null,
                                 )
                             )
+                        )
+                    } else {
+                        it
+                    }
+                },
+                body = blockExpression(
+                    callExpression(
+                        calleeExpression = nameExpression("Assertions.assertThrows"),
+                        lAngle = Node.Keyword.Less(),
+                        typeArgs = listOf(
+                            typeArg(
+                                type = exceptionType,
+                            )
                         ),
+                        rAngle = Node.Keyword.Greater(),
                         lambdaArg = lambdaArg(
                             expression = lambdaExpression(
-                                body = lambdaBody(originalStatements),
+                                statements = originalStatements,
                             ),
                         ),
                     )
@@ -84,13 +88,22 @@ fun getAnnotationByName(
     annotations: List<Node.Modifier.AnnotationSet.Annotation>,
     name: String
 ): Node.Modifier.AnnotationSet.Annotation? {
-    return annotations.find { it.type.name.name == name }
+    return annotations.find { annotation ->
+        annotation.type.pieces.joinToString(".") { it.name.text } == name
+    }
 }
 
-fun getValueArgByName(args: Node.ValueArgs?, name: String): Node.ValueArg? {
-    if (args == null) {
-        return null
-    }
+fun getValueArgByName(args: List<Node.ValueArg>?, name: String): Node.ValueArg? {
+    return args.orEmpty().find { it.name?.text == name }
+}
 
-    return args.elements.find { it.name?.name == name }
+fun expressionToSimpleType(e: Node.Expression): Node.Type.SimpleType {
+    val names = generateSequence(e) { (it as? Node.Expression.BinaryExpression)?.lhs }
+        .map { (if (it is Node.Expression.BinaryExpression) it.rhs else it) as Node.Expression.NameExpression }
+        .toList()
+        .reversed()
+
+    return simpleType(
+        pieces = names.map { simpleTypePiece(it) }
+    )
 }
