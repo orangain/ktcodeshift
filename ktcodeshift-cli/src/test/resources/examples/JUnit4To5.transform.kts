@@ -65,13 +65,11 @@ transform { fileInfo ->
                 body = blockExpression(
                     callExpression(
                         calleeExpression = nameExpression("Assertions.assertThrows"),
-                        lAngle = Node.Keyword.Less(),
                         typeArgs = listOf(
                             typeArg(
                                 type = exceptionType,
                             )
                         ),
-                        rAngle = Node.Keyword.Greater(),
                         lambdaArg = lambdaArg(
                             expression = lambdaExpression(
                                 statements = originalStatements,

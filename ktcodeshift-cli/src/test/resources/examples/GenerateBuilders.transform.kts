@@ -94,7 +94,6 @@ transform { fileInfo ->
 
                             val func = functionDeclaration(
                                 name = nameExpression(functionName),
-                                lPar = Node.Keyword.LPar(),
                                 params = params.map { p ->
                                     val fqType = when (val type = p.type) {
                                         is Node.Type.SimpleType -> toFqNameType(type, nestedNames)
@@ -112,17 +111,14 @@ transform { fileInfo ->
                                         defaultValue = defaultValueOf(fqType),
                                     )
                                 },
-                                rPar = Node.Keyword.RPar(),
                                 body = callExpression(
                                     calleeExpression = nameExpression(nestedNames.joinToString(".")),
-                                    lPar = Node.Keyword.LPar(),
                                     args = params.map { p ->
                                         valueArg(
                                             name = p.name,
                                             expression = expressionOf(name, p.name),
                                         )
                                     },
-                                    rPar = Node.Keyword.RPar(),
                                 )
                             )
                             stringBuilder.appendLine(Writer.write(func))
@@ -134,7 +130,6 @@ transform { fileInfo ->
                                         val listElementType = firstParamType.pieces.last().typeArgs[0].type
                                         val varargFunc = functionDeclaration(
                                             name = nameExpression(functionName),
-                                            lPar = Node.Keyword.LPar(),
                                             params = listOf(
                                                 functionParam(
                                                     modifiers = listOf(Node.Keyword.Vararg()),
@@ -142,16 +137,13 @@ transform { fileInfo ->
                                                     type = listElementType,
                                                 )
                                             ),
-                                            rPar = Node.Keyword.RPar(),
                                             body = callExpression(
                                                 calleeExpression = nameExpression(functionName),
-                                                lPar = Node.Keyword.LPar(),
                                                 args = listOf(
                                                     valueArg(
                                                         expression = nameExpression("${firstParam.name.text}.toList()"),
                                                     )
                                                 ),
-                                                rPar = Node.Keyword.RPar(),
                                             )
                                         )
                                         stringBuilder.appendLine(Writer.write(varargFunc))
