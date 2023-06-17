@@ -89,7 +89,7 @@ transform { fileInfo ->
 
                         if (v.isDataClass && nestedNames[1] != "Keyword") {
                             val params = v.primaryConstructor?.params.orEmpty()
-                            val functionName = toFunctionName(nestedNames)
+                            val functionName = nestedNames.last().decapitalizeSmart()
 
                             val func = functionDeclaration(
                                 name = nameExpression(functionName),
@@ -174,11 +174,6 @@ fun nestedClassNames(path: NodePath<*>): List<String> {
     val nestedClasses = (path.ancestors().toList().reversed() + path.node)
         .filterIsInstance<Node.Declaration.ClassDeclaration>()
     return nestedClasses.mapNotNull { it.name?.text }
-}
-
-fun toFunctionName(nestedNames: List<String>): String {
-    val name = nestedNames.last()
-    return name.decapitalizeSmart()
 }
 
 fun defaultValueOf(type: Node.Type?): Node.Expression? {
