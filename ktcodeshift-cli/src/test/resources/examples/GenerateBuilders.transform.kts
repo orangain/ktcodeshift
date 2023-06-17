@@ -22,23 +22,16 @@ transform { fileInfo ->
     Api
         .parse(fileInfo.source)
         .also { ctx ->
-            val nestedNames = mutableListOf<String>()
             val fqNames = mutableSetOf<FullyQualifiedName>()
 
             object : Visitor() {
                 override fun visit(path: NodePath<*>) {
                     val node = path.node
-                    if (node is Node.Declaration.ClassDeclaration) {
-                        val name = node.name?.text.orEmpty()
-                        fqNames.add(FullyQualifiedName(nestedNames.toList() + name))
-
-                        nestedNames.add(name)
-
-                        super.visit(path)
-                        nestedNames.removeLast()
-                    } else {
-                        super.visit(path)
+                    if (node is Node.Declaration.ClassDeclaration && node.name != null) {
+                        val nestedNames = nestedClassNames(path)
+                        fqNames.add(FullyQualifiedName(nestedNames))
                     }
+                    super.visit(path)
                 }
             }.traverse(ctx.fileNode)
 
@@ -92,8 +85,7 @@ transform { fileInfo ->
                 override fun visit(path: NodePath<*>) {
                     val v = path.node
                     if (v is Node.Declaration.ClassDeclaration) {
-                        val name = v.name?.text.orEmpty()
-                        nestedNames.add(name)
+                        val nestedNames = nestedClassNames(path)
 
                         if (v.isDataClass && nestedNames[1] != "Keyword") {
                             val params = v.primaryConstructor?.params.orEmpty()
@@ -166,13 +158,8 @@ transform { fileInfo ->
                                 }
                             }
                         }
-
-                        super.visit(path)
-
-                        nestedNames.removeLast()
-                    } else {
-                        super.visit(path)
                     }
+                    super.visit(path)
                 }
             }.traverse(ctx.fileNode)
         }
@@ -181,6 +168,12 @@ transform { fileInfo ->
             java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
                 .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
         }
+}
+
+fun nestedClassNames(path: NodePath<*>): List<String> {
+    val nestedClasses = (path.ancestors().toList().reversed() + path.node)
+        .filterIsInstance<Node.Declaration.ClassDeclaration>()
+    return nestedClasses.mapNotNull { it.name?.text }
 }
 
 fun toFunctionName(nestedNames: List<String>): String {
