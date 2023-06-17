@@ -88,17 +88,6 @@ transform { fileInfo ->
                     mutableNestedNames.removeLast()
                 }
 
-                if (type.qualifiers.isEmpty() && type.name.name == "Receiver") {
-                    return simpleType(
-                        qualifiers = listOf(
-                            qualifier(name = nameExpression("Node")),
-                            qualifier(name = nameExpression("Expression")),
-                            qualifier(name = nameExpression("DoubleColon")),
-                        ),
-                        name = type.name,
-                    )
-                }
-
                 return type
             }
 
@@ -108,7 +97,7 @@ transform { fileInfo ->
                         val name = v.name?.name.orEmpty()
                         nestedNames.add(name)
 
-                        if (v.isDataClass) {
+                        if (v.isDataClass && nestedNames[1] != "Keyword") {
                             val params = v.primaryConstructor?.params?.elements.orEmpty()
                             val functionName = toFunctionName(nestedNames)
 
@@ -144,7 +133,7 @@ transform { fileInfo ->
                             )
                             stringBuilder.appendLine(Writer.write(func))
                             val firstParam = func.params?.elements?.firstOrNull()
-                            if (firstParam != null && listOf("elements", "statements").contains(firstParam.name.name)) {
+                            if (firstParam != null && firstParam.name.name == "statements") {
                                 val firstParamType = firstParam.typeRef?.type as? Node.Type.Simple
                                 if (firstParamType != null) {
                                     if (firstParamType.name.name == "List") {
@@ -193,49 +182,7 @@ transform { fileInfo ->
 
 fun toFunctionName(nestedNames: List<String>): String {
     val name = nestedNames.last()
-    val fqName = nestedNames.joinToString(".")
-    fun isChildOf(parent: String): Boolean {
-        val prefix = "$parent."
-        return fqName.startsWith(prefix) && nestedNames.size == prefix.count { it == '.' } + 1
-    }
-    if (isChildOf("Node.Declaration")) {
-        return "${name.decapitalizeSmart()}Declaration"
-    }
-    if (isChildOf("Node.Type")) {
-        return "${name.decapitalizeSmart()}Type"
-    }
-    if (isChildOf("Node.Expression")) {
-        return "${name.decapitalizeSmart()}Expression"
-    }
-    if (isChildOf("Node.Expression.When.Branch")) {
-        return "${name.decapitalizeSmart()}Branch"
-    }
-    if (isChildOf("Node.Expression.When.Condition")) {
-        return "${name.decapitalizeSmart()}Condition"
-    }
-    if (isChildOf("Node.Expression.DoubleColon.Receiver")) {
-        return "${name.decapitalizeSmart()}DoubleColonReceiver"
-    }
-    if (isChildOf("Node.Declaration.Class.Parent")) {
-        return "${name.decapitalizeSmart()}Parent"
-    }
-    return when (fqName) {
-        "Node.Declaration.Class.Body" -> "classBody"
-        "Node.Declaration.Function.Params" -> "functionParams"
-        "Node.Declaration.Function.Param" -> "functionParam"
-        "Node.Type.Function.Receiver" -> "functionTypeReceiver"
-        "Node.Type.Function.Params" -> "functionTypeParams"
-        "Node.Type.Function.Param" -> "functionTypeParam"
-        "Node.Expression.Lambda.Params" -> "lambdaParams"
-        "Node.Expression.Lambda.Param" -> "lambdaParam"
-        "Node.Expression.Lambda.Body" -> "lambdaBody"
-        "Node.Expression.Binary.Operator" -> "binaryOperator"
-        "Node.Expression.Unary.Operator" -> "unaryOperator"
-        "Node.Expression.BinaryType.Operator" -> "binaryTypeOperator"
-        "Node.Modifier.AnnotationSet.Target" -> "annotationSetTarget"
-        "Node.Modifier.Keyword" -> "keywordModifier"
-        else -> name.decapitalizeSmart()
-    }
+    return name.decapitalizeSmart()
 }
 
 fun defaultValueOf(type: Node.Type?): Node.Expression? {
@@ -248,7 +195,7 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
         } else if (fqName == "Boolean") {
             nameExpression("false")
         } else {
-            if (fqName.startsWith("Node.Keyword.") && !(fqName.contains(".ValOrVar") || fqName.contains(".Declaration"))) {
+            if (fqName.startsWith("Node.Keyword.") && !fqName.contains(".ValOrVar")) {
                 nameExpression("$fqName()")
             } else {
                 null
