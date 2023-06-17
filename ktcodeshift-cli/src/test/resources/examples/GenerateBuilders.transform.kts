@@ -13,23 +13,18 @@ import ktcodeshift.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
 
-data class FullyQualifiedName(
-    val names: List<String>,
-)
-
 transform { fileInfo ->
     val stringBuilder = StringBuilder()
     Api
         .parse(fileInfo.source)
         .also { ctx ->
-            val fqNames = mutableSetOf<FullyQualifiedName>()
+            val fqNames = mutableSetOf<List<String>>()
 
             object : Visitor() {
                 override fun visit(path: NodePath<*>) {
                     val node = path.node
                     if (node is Node.Declaration.ClassDeclaration && node.name != null) {
-                        val nestedNames = nestedClassNames(path)
-                        fqNames.add(FullyQualifiedName(nestedNames))
+                        fqNames.add(nestedClassNames(path))
                     }
                     super.visit(path)
                 }
@@ -62,12 +57,10 @@ transform { fileInfo ->
                 }
 
                 generateSequence(nestedNames) { if (it.isNotEmpty()) it.dropLast(1) else null }.forEach { prefixNames ->
-                    val fqName = FullyQualifiedName(
-                        prefixNames + type.pieces.map { it.name.text },
-                    )
+                    val fqName = prefixNames + type.pieces.map { it.name.text }
                     if (fqNames.contains(fqName)) {
                         return simpleType(
-                            pieces = fqName.names.map { simpleTypePiece(nameExpression(it)) },
+                            pieces = fqName.map { simpleTypePiece(nameExpression(it)) },
                         )
                     }
                 }
