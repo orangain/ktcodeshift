@@ -5,546 +5,700 @@ import ktast.ast.Node
 fun kotlinFile(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     packageDirective: Node.PackageDirective? = null,
-    importDirectives: Node.ImportDirectives? = null,
-    declarations: List<Node.Declaration> = listOf()
+    importDirectives: List<Node.ImportDirective> = listOf(),
+    declarations: List<Node.Declaration> = listOf(),
+    tag: Any? = null
 ) = Node.KotlinFile(
     annotationSets = annotationSets,
     packageDirective = packageDirective,
     importDirectives = importDirectives,
-    declarations = declarations
+    declarations = declarations,
+    tag = tag
 )
 
 fun kotlinScript(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     packageDirective: Node.PackageDirective? = null,
-    importDirectives: Node.ImportDirectives? = null,
-    expressions: List<Node.Expression> = listOf()
+    importDirectives: List<Node.ImportDirective> = listOf(),
+    expressions: List<Node.Expression> = listOf(),
+    tag: Any? = null
 ) = Node.KotlinScript(
     annotationSets = annotationSets,
     packageDirective = packageDirective,
     importDirectives = importDirectives,
-    expressions = expressions
+    expressions = expressions,
+    tag = tag
 )
 
-fun packageDirective(
-    modifiers: Node.Modifiers? = null,
-    packageKeyword: Node.Keyword.Package = Node.Keyword.Package(),
-    names: List<Node.Expression.Name> = listOf()
-) = Node.PackageDirective(modifiers = modifiers, packageKeyword = packageKeyword, names = names)
+fun packageDirective(names: List<Node.Expression.NameExpression> = listOf(), tag: Any? = null) =
+    Node.PackageDirective(names = names, tag = tag)
 
-fun importDirectives(elements: List<Node.ImportDirective> = listOf()) = Node.ImportDirectives(elements = elements)
-fun importDirectives(vararg elements: Node.ImportDirective) = importDirectives(elements.toList())
 fun importDirective(
-    importKeyword: Node.Keyword.Import = Node.Keyword.Import(),
-    names: List<Node.Expression.Name> = listOf(),
-    alias: Node.ImportDirective.Alias? = null
-) = Node.ImportDirective(importKeyword = importKeyword, names = names, alias = alias)
+    names: List<Node.Expression.NameExpression> = listOf(),
+    aliasName: Node.Expression.NameExpression? = null,
+    tag: Any? = null
+) = Node.ImportDirective(names = names, aliasName = aliasName, tag = tag)
 
-fun alias(name: Node.Expression.Name) = Node.ImportDirective.Alias(name = name)
-fun classDeclaration(
-    modifiers: Node.Modifiers? = null,
-    declarationKeyword: Node.Declaration.Class.DeclarationKeyword,
-    name: Node.Expression.Name? = null,
-    typeParams: Node.TypeParams? = null,
-    primaryConstructor: Node.Declaration.Class.PrimaryConstructor? = null,
-    parents: Node.Declaration.Class.Parents? = null,
-    typeConstraints: Node.PostModifier.TypeConstraints? = null,
-    body: Node.Declaration.Class.Body? = null
-) = Node.Declaration.Class(
-    modifiers = modifiers,
-    declarationKeyword = declarationKeyword,
-    name = name,
-    typeParams = typeParams,
-    primaryConstructor = primaryConstructor,
-    parents = parents,
-    typeConstraints = typeConstraints,
-    body = body
+fun forStatement(
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    loopParam: Node.LambdaParam,
+    inKeyword: Node.Keyword.In = Node.Keyword.In(),
+    loopRange: Node.Expression,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    body: Node.Expression,
+    tag: Any? = null
+) = Node.Statement.ForStatement(
+    lPar = lPar,
+    loopParam = loopParam,
+    inKeyword = inKeyword,
+    loopRange = loopRange,
+    rPar = rPar,
+    body = body,
+    tag = tag
 )
 
-fun declarationKeyword(token: Node.Declaration.Class.DeclarationKeyword.Token) =
-    Node.Declaration.Class.DeclarationKeyword(token = token)
+fun whileStatement(
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    condition: Node.Expression,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    body: Node.Expression,
+    tag: Any? = null
+) = Node.Statement.WhileStatement(lPar = lPar, condition = condition, rPar = rPar, body = body, tag = tag)
 
-fun parents(elements: List<Node.Declaration.Class.Parent> = listOf()) =
-    Node.Declaration.Class.Parents(elements = elements)
+fun doWhileStatement(
+    body: Node.Expression,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    condition: Node.Expression,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    tag: Any? = null
+) = Node.Statement.DoWhileStatement(body = body, lPar = lPar, condition = condition, rPar = rPar, tag = tag)
 
-fun parents(vararg elements: Node.Declaration.Class.Parent) = parents(elements.toList())
-fun callConstructorParent(
-    type: Node.Type.Simple,
-    typeArgs: Node.TypeArgs? = null,
-    args: Node.ValueArgs? = null,
-    lambda: Node.Expression.Call.LambdaArg? = null
-) = Node.Declaration.Class.Parent.CallConstructor(type = type, typeArgs = typeArgs, args = args, lambda = lambda)
+fun classDeclaration(
+    modifiers: List<Node.Modifier> = listOf(),
+    classDeclarationKeyword: Node.Declaration.ClassDeclaration.ClassDeclarationKeyword,
+    name: Node.Expression.NameExpression? = null,
+    lAngle: Node.Keyword.Less? = null,
+    typeParams: List<Node.TypeParam> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    primaryConstructor: Node.Declaration.ClassDeclaration.PrimaryConstructor? = null,
+    classParents: List<Node.Declaration.ClassDeclaration.ClassParent> = listOf(),
+    typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
+    classBody: Node.Declaration.ClassDeclaration.ClassBody? = null,
+    tag: Any? = null
+) = Node.Declaration.ClassDeclaration(
+    modifiers = modifiers,
+    classDeclarationKeyword = classDeclarationKeyword,
+    name = name,
+    lAngle = lAngle,
+    typeParams = typeParams,
+    rAngle = rAngle,
+    primaryConstructor = primaryConstructor,
+    classParents = classParents,
+    typeConstraintSet = typeConstraintSet,
+    classBody = classBody,
+    tag = tag
+)
 
-fun delegatedTypeParent(
-    type: Node.Type.Simple, byKeyword: Node.Keyword.By = Node.Keyword.By(), expression: Node.Expression
-) = Node.Declaration.Class.Parent.DelegatedType(type = type, byKeyword = byKeyword, expression = expression)
+fun constructorClassParent(
+    type: Node.Type.SimpleType,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    args: List<Node.ValueArg> = listOf(),
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    tag: Any? = null
+) = Node.Declaration.ClassDeclaration.ConstructorClassParent(
+    type = type,
+    lPar = lPar,
+    args = args,
+    rPar = rPar,
+    tag = tag
+)
 
-fun typeParent(type: Node.Type.Simple) = Node.Declaration.Class.Parent.Type(type = type)
+fun delegationClassParent(type: Node.Type, expression: Node.Expression, tag: Any? = null) =
+    Node.Declaration.ClassDeclaration.DelegationClassParent(type = type, expression = expression, tag = tag)
+
+fun typeClassParent(type: Node.Type, tag: Any? = null) =
+    Node.Declaration.ClassDeclaration.TypeClassParent(type = type, tag = tag)
+
 fun primaryConstructor(
-    modifiers: Node.Modifiers? = null,
+    modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor? = null,
-    params: Node.Declaration.Function.Params? = null
-) = Node.Declaration.Class.PrimaryConstructor(
-    modifiers = modifiers, constructorKeyword = constructorKeyword, params = params
+    lPar: Node.Keyword.LPar? = null,
+    params: List<Node.FunctionParam> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    tag: Any? = null
+) = Node.Declaration.ClassDeclaration.PrimaryConstructor(
+    modifiers = modifiers,
+    constructorKeyword = constructorKeyword,
+    lPar = lPar,
+    params = params,
+    rPar = rPar,
+    tag = tag
 )
 
 fun classBody(
-    enumEntries: List<Node.EnumEntry> = listOf(),
-    hasTrailingCommaInEnumEntries: Boolean = false,
-    declarations: List<Node.Declaration> = listOf()
-) = Node.Declaration.Class.Body(
-    enumEntries = enumEntries,
-    hasTrailingCommaInEnumEntries = hasTrailingCommaInEnumEntries,
-    declarations = declarations
+    enumEntries: List<Node.Declaration.ClassDeclaration.ClassBody.EnumEntry> = listOf(),
+    declarations: List<Node.Declaration> = listOf(),
+    tag: Any? = null
+) = Node.Declaration.ClassDeclaration.ClassBody(enumEntries = enumEntries, declarations = declarations, tag = tag)
+
+fun enumEntry(
+    modifiers: List<Node.Modifier> = listOf(),
+    name: Node.Expression.NameExpression,
+    lPar: Node.Keyword.LPar? = null,
+    args: List<Node.ValueArg> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    classBody: Node.Declaration.ClassDeclaration.ClassBody? = null,
+    tag: Any? = null
+) = Node.Declaration.ClassDeclaration.ClassBody.EnumEntry(
+    modifiers = modifiers,
+    name = name,
+    lPar = lPar,
+    args = args,
+    rPar = rPar,
+    classBody = classBody,
+    tag = tag
 )
 
-fun initDeclaration(modifiers: Node.Modifiers? = null, block: Node.Expression.Block) =
-    Node.Declaration.Init(modifiers = modifiers, block = block)
+fun initializer(block: Node.Expression.BlockExpression, tag: Any? = null) =
+    Node.Declaration.ClassDeclaration.ClassBody.Initializer(block = block, tag = tag)
+
+fun secondaryConstructor(
+    modifiers: List<Node.Modifier> = listOf(),
+    constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
+    lPar: Node.Keyword.LPar? = null,
+    params: List<Node.FunctionParam> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    delegationCall: Node.Expression.CallExpression? = null,
+    block: Node.Expression.BlockExpression? = null,
+    tag: Any? = null
+) = Node.Declaration.ClassDeclaration.ClassBody.SecondaryConstructor(
+    modifiers = modifiers,
+    constructorKeyword = constructorKeyword,
+    lPar = lPar,
+    params = params,
+    rPar = rPar,
+    delegationCall = delegationCall,
+    block = block,
+    tag = tag
+)
 
 fun functionDeclaration(
-    modifiers: Node.Modifiers? = null,
-    funKeyword: Node.Keyword.Fun = Node.Keyword.Fun(),
-    typeParams: Node.TypeParams? = null,
-    receiverTypeRef: Node.TypeRef? = null,
-    name: Node.Expression.Name? = null,
-    params: Node.Declaration.Function.Params? = null,
-    typeRef: Node.TypeRef? = null,
+    modifiers: List<Node.Modifier> = listOf(),
+    lAngle: Node.Keyword.Less? = null,
+    typeParams: List<Node.TypeParam> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    receiverType: Node.Type? = null,
+    name: Node.Expression.NameExpression? = null,
+    lPar: Node.Keyword.LPar? = null,
+    params: List<Node.FunctionParam> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    returnType: Node.Type? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
-    equals: Node.Keyword.Equal? = null,
-    body: Node.Expression? = null
-) = Node.Declaration.Function(
+    body: Node.Expression? = null,
+    tag: Any? = null
+) = Node.Declaration.FunctionDeclaration(
     modifiers = modifiers,
-    funKeyword = funKeyword,
+    lAngle = lAngle,
     typeParams = typeParams,
-    receiverTypeRef = receiverTypeRef,
+    rAngle = rAngle,
+    receiverType = receiverType,
     name = name,
+    lPar = lPar,
     params = params,
-    typeRef = typeRef,
+    rPar = rPar,
+    returnType = returnType,
     postModifiers = postModifiers,
-    equals = if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals,
-    body = body
-)
-
-fun functionParams(
-    elements: List<Node.Declaration.Function.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null
-) = Node.Declaration.Function.Params(elements = elements, trailingComma = trailingComma)
-
-fun functionParams(vararg elements: Node.Declaration.Function.Param) = functionParams(elements.toList())
-fun functionParam(
-    modifiers: Node.Modifiers? = null,
-    valOrVar: Node.Declaration.Property.ValOrVar? = null,
-    name: Node.Expression.Name,
-    typeRef: Node.TypeRef? = null,
-    equals: Node.Keyword.Equal? = null,
-    defaultValue: Node.Expression? = null
-) = Node.Declaration.Function.Param(
-    modifiers = modifiers,
-    valOrVar = valOrVar,
-    name = name,
-    typeRef = typeRef,
-    equals = if (equals == null && defaultValue != null) Node.Keyword.Equal() else equals,
-    defaultValue = defaultValue
+    body = body,
+    tag = tag
 )
 
 fun propertyDeclaration(
-    modifiers: Node.Modifiers? = null,
-    valOrVar: Node.Declaration.Property.ValOrVar,
-    typeParams: Node.TypeParams? = null,
-    receiverTypeRef: Node.TypeRef? = null,
+    modifiers: List<Node.Modifier> = listOf(),
+    valOrVarKeyword: Node.Keyword.ValOrVarKeyword,
+    lAngle: Node.Keyword.Less? = null,
+    typeParams: List<Node.TypeParam> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    receiverType: Node.Type? = null,
     lPar: Node.Keyword.LPar? = null,
-    variables: List<Node.Declaration.Property.Variable> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null,
+    variables: List<Node.Variable> = listOf(),
     rPar: Node.Keyword.RPar? = null,
-    typeConstraints: Node.PostModifier.TypeConstraints? = null,
-    equals: Node.Keyword.Equal? = null,
-    initializer: Node.Expression? = null,
-    delegate: Node.Declaration.Property.Delegate? = null,
-    accessors: List<Node.Declaration.Property.Accessor> = listOf()
-) = Node.Declaration.Property(
+    typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
+    initializerExpression: Node.Expression? = null,
+    delegateExpression: Node.Expression? = null,
+    accessors: List<Node.Declaration.PropertyDeclaration.Accessor> = listOf(),
+    tag: Any? = null
+) = Node.Declaration.PropertyDeclaration(
     modifiers = modifiers,
-    valOrVar = valOrVar,
+    valOrVarKeyword = valOrVarKeyword,
+    lAngle = lAngle,
     typeParams = typeParams,
-    receiverTypeRef = receiverTypeRef,
+    rAngle = rAngle,
+    receiverType = receiverType,
     lPar = lPar,
     variables = variables,
-    trailingComma = trailingComma,
     rPar = rPar,
-    typeConstraints = typeConstraints,
-    equals = if (equals == null && initializer != null) Node.Keyword.Equal() else equals,
-    initializer = initializer,
-    delegate = delegate,
-    accessors = accessors
+    typeConstraintSet = typeConstraintSet,
+    initializerExpression = initializerExpression,
+    delegateExpression = delegateExpression,
+    accessors = accessors,
+    tag = tag
 )
 
-fun valOrVar(token: Node.Declaration.Property.ValOrVar.Token) = Node.Declaration.Property.ValOrVar(token = token)
-fun variable(name: Node.Expression.Name, typeRef: Node.TypeRef? = null) =
-    Node.Declaration.Property.Variable(name = name, typeRef = typeRef)
-
-fun delegate(byKeyword: Node.Keyword.By = Node.Keyword.By(), expression: Node.Expression) =
-    Node.Declaration.Property.Delegate(byKeyword = byKeyword, expression = expression)
-
 fun getter(
-    modifiers: Node.Modifiers? = null,
-    getKeyword: Node.Keyword.Get = Node.Keyword.Get(),
-    typeRef: Node.TypeRef? = null,
+    modifiers: List<Node.Modifier> = listOf(),
+    lPar: Node.Keyword.LPar? = null,
+    rPar: Node.Keyword.RPar? = null,
+    type: Node.Type? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
-    equals: Node.Keyword.Equal? = null,
-    body: Node.Expression? = null
-) = Node.Declaration.Property.Accessor.Getter(
+    body: Node.Expression? = null,
+    tag: Any? = null
+) = Node.Declaration.PropertyDeclaration.Getter(
     modifiers = modifiers,
-    getKeyword = getKeyword,
-    typeRef = typeRef,
+    lPar = lPar,
+    rPar = rPar,
+    type = type,
     postModifiers = postModifiers,
-    equals = if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals,
-    body = body
+    body = body,
+    tag = tag
 )
 
 fun setter(
-    modifiers: Node.Modifiers? = null,
-    setKeyword: Node.Keyword.Set = Node.Keyword.Set(),
-    params: Node.Expression.Lambda.Params? = null,
+    modifiers: List<Node.Modifier> = listOf(),
+    lPar: Node.Keyword.LPar? = null,
+    params: List<Node.LambdaParam> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
-    equals: Node.Keyword.Equal? = null,
-    body: Node.Expression? = null
-) = Node.Declaration.Property.Accessor.Setter(
+    body: Node.Expression? = null,
+    tag: Any? = null
+) = Node.Declaration.PropertyDeclaration.Setter(
     modifiers = modifiers,
-    setKeyword = setKeyword,
+    lPar = lPar,
     params = params,
+    rPar = rPar,
     postModifiers = postModifiers,
-    equals = if (equals == null && body != null && body !is Node.Expression.Block) Node.Keyword.Equal() else equals,
-    body = body
+    body = body,
+    tag = tag
 )
 
 fun typeAliasDeclaration(
-    modifiers: Node.Modifiers? = null,
-    name: Node.Expression.Name,
-    typeParams: Node.TypeParams? = null,
-    typeRef: Node.TypeRef
-) = Node.Declaration.TypeAlias(modifiers = modifiers, name = name, typeParams = typeParams, typeRef = typeRef)
-
-fun secondaryConstructorDeclaration(
-    modifiers: Node.Modifiers? = null,
-    constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
-    params: Node.Declaration.Function.Params? = null,
-    delegationCall: Node.Declaration.SecondaryConstructor.DelegationCall? = null,
-    block: Node.Expression.Block? = null
-) = Node.Declaration.SecondaryConstructor(
+    modifiers: List<Node.Modifier> = listOf(),
+    name: Node.Expression.NameExpression,
+    lAngle: Node.Keyword.Less? = null,
+    typeParams: List<Node.TypeParam> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    type: Node.Type,
+    tag: Any? = null
+) = Node.Declaration.TypeAliasDeclaration(
     modifiers = modifiers,
-    constructorKeyword = constructorKeyword,
-    params = params,
-    delegationCall = delegationCall,
-    block = block
+    name = name,
+    lAngle = lAngle,
+    typeParams = typeParams,
+    rAngle = rAngle,
+    type = type,
+    tag = tag
 )
 
-fun delegationCall(target: Node.Declaration.SecondaryConstructor.DelegationTarget, args: Node.ValueArgs? = null) =
-    Node.Declaration.SecondaryConstructor.DelegationCall(target = target, args = args)
-
-fun delegationTarget(token: Node.Declaration.SecondaryConstructor.DelegationTarget.Token) =
-    Node.Declaration.SecondaryConstructor.DelegationTarget(token = token)
-
-fun enumEntry(
-    modifiers: Node.Modifiers? = null,
-    name: Node.Expression.Name,
-    args: Node.ValueArgs? = null,
-    body: Node.Declaration.Class.Body? = null
-) = Node.EnumEntry(modifiers = modifiers, name = name, args = args, body = body)
-
-fun typeParams(elements: List<Node.TypeParam> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
-    Node.TypeParams(elements = elements, trailingComma = trailingComma)
-
-fun typeParams(vararg elements: Node.TypeParam) = typeParams(elements.toList())
-fun typeParam(modifiers: Node.Modifiers? = null, name: Node.Expression.Name, typeRef: Node.TypeRef? = null) =
-    Node.TypeParam(modifiers = modifiers, name = name, typeRef = typeRef)
-
-fun functionType(
-    lPar: Node.Keyword.LPar? = null,
-    modifiers: Node.Modifiers? = null,
-    contextReceivers: Node.Type.Function.ContextReceivers? = null,
-    receiver: Node.Type.Function.Receiver? = null,
-    params: Node.Type.Function.Params? = null,
-    returnTypeRef: Node.TypeRef,
-    rPar: Node.Keyword.RPar? = null
-) = Node.Type.Function(
-    lPar = lPar,
-    modifiers = modifiers,
-    contextReceivers = contextReceivers,
-    receiver = receiver,
-    params = params,
-    returnTypeRef = returnTypeRef,
-    rPar = rPar
-)
-
-fun contextReceivers(
-    elements: List<Node.Type.Function.ContextReceiver> = listOf(), trailingComma: Node.Keyword.Comma? = null
-) = Node.Type.Function.ContextReceivers(elements = elements, trailingComma = trailingComma)
-
-fun contextReceivers(vararg elements: Node.Type.Function.ContextReceiver) = contextReceivers(elements.toList())
-fun contextReceiver(typeRef: Node.TypeRef) = Node.Type.Function.ContextReceiver(typeRef = typeRef)
-fun functionTypeReceiver(typeRef: Node.TypeRef) = Node.Type.Function.Receiver(typeRef = typeRef)
-fun functionTypeParams(elements: List<Node.Type.Function.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
-    Node.Type.Function.Params(elements = elements, trailingComma = trailingComma)
-
-fun functionTypeParams(vararg elements: Node.Type.Function.Param) = functionTypeParams(elements.toList())
-fun functionTypeParam(name: Node.Expression.Name? = null, typeRef: Node.TypeRef) =
-    Node.Type.Function.Param(name = name, typeRef = typeRef)
-
-fun simpleType(
-    qualifiers: List<Node.Type.Simple.Qualifier> = listOf(), name: Node.Expression.Name, typeArgs: Node.TypeArgs? = null
-) = Node.Type.Simple(qualifiers = qualifiers, name = name, typeArgs = typeArgs)
-
-fun qualifier(name: Node.Expression.Name, typeArgs: Node.TypeArgs? = null) =
-    Node.Type.Simple.Qualifier(name = name, typeArgs = typeArgs)
+fun parenthesizedType(
+    modifiers: List<Node.Modifier> = listOf(),
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    innerType: Node.Type,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    tag: Any? = null
+) = Node.Type.ParenthesizedType(modifiers = modifiers, lPar = lPar, innerType = innerType, rPar = rPar, tag = tag)
 
 fun nullableType(
-    lPar: Node.Keyword.LPar? = null, modifiers: Node.Modifiers? = null, type: Node.Type, rPar: Node.Keyword.RPar? = null
-) = Node.Type.Nullable(lPar = lPar, modifiers = modifiers, type = type, rPar = rPar)
+    modifiers: List<Node.Modifier> = listOf(),
+    innerType: Node.Type,
+    questionMark: Node.Keyword.Question = Node.Keyword.Question(),
+    tag: Any? = null
+) = Node.Type.NullableType(modifiers = modifiers, innerType = innerType, questionMark = questionMark, tag = tag)
 
-fun dynamicType(_unused_: Boolean = false) = Node.Type.Dynamic(_unused_ = _unused_)
-fun typeArgs(elements: List<Node.TypeArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
-    Node.TypeArgs(elements = elements, trailingComma = trailingComma)
+fun simpleType(
+    modifiers: List<Node.Modifier> = listOf(),
+    pieces: List<Node.Type.SimpleType.SimpleTypePiece> = listOf(),
+    tag: Any? = null
+) = Node.Type.SimpleType(modifiers = modifiers, pieces = pieces, tag = tag)
 
-fun typeArgs(vararg elements: Node.TypeArg) = typeArgs(elements.toList())
-fun typeArg(modifiers: Node.Modifiers? = null, typeRef: Node.TypeRef? = null, asterisk: Boolean = false) =
-    Node.TypeArg(modifiers = modifiers, typeRef = typeRef, asterisk = asterisk)
+fun simpleTypePiece(
+    name: Node.Expression.NameExpression,
+    lAngle: Node.Keyword.Less? = null,
+    typeArgs: List<Node.TypeArg> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    tag: Any? = null
+) = Node.Type.SimpleType.SimpleTypePiece(name = name, lAngle = lAngle, typeArgs = typeArgs, rAngle = rAngle, tag = tag)
 
-fun typeRef(
-    lPar: Node.Keyword.LPar? = null, modifiers: Node.Modifiers? = null, type: Node.Type, rPar: Node.Keyword.RPar? = null
-) = Node.TypeRef(lPar = lPar, modifiers = modifiers, type = type, rPar = rPar)
+fun dynamicType(modifiers: List<Node.Modifier> = listOf(), tag: Any? = null) =
+    Node.Type.DynamicType(modifiers = modifiers, tag = tag)
 
-fun valueArgs(elements: List<Node.ValueArg> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
-    Node.ValueArgs(elements = elements, trailingComma = trailingComma)
-
-fun valueArgs(vararg elements: Node.ValueArg) = valueArgs(elements.toList())
-fun valueArg(name: Node.Expression.Name? = null, asterisk: Boolean = false, expression: Node.Expression) =
-    Node.ValueArg(name = name, asterisk = asterisk, expression = expression)
-
-fun expressionContainer(expression: Node.Expression) = Node.ExpressionContainer(expression = expression)
-fun ifExpression(
-    ifKeyword: Node.Keyword.If = Node.Keyword.If(),
-    condition: Node.Expression,
-    body: Node.ExpressionContainer,
-    elseBody: Node.ExpressionContainer? = null
-) = Node.Expression.If(ifKeyword = ifKeyword, condition = condition, body = body, elseBody = elseBody)
-
-fun tryExpression(
-    block: Node.Expression.Block,
-    catches: List<Node.Expression.Try.Catch> = listOf(),
-    finallyBlock: Node.Expression.Block? = null
-) = Node.Expression.Try(block = block, catches = catches, finallyBlock = finallyBlock)
-
-fun catch(
-    catchKeyword: Node.Keyword.Catch = Node.Keyword.Catch(),
-    params: Node.Declaration.Function.Params,
-    block: Node.Expression.Block
-) = Node.Expression.Try.Catch(catchKeyword = catchKeyword, params = params, block = block)
-
-fun forExpression(
-    forKeyword: Node.Keyword.For = Node.Keyword.For(),
-    loopParam: Node.Expression.Lambda.Param,
-    loopRange: Node.ExpressionContainer,
-    body: Node.ExpressionContainer
-) = Node.Expression.For(forKeyword = forKeyword, loopParam = loopParam, loopRange = loopRange, body = body)
-
-fun whileExpression(
-    whileKeyword: Node.Keyword.While = Node.Keyword.While(),
-    condition: Node.ExpressionContainer,
-    body: Node.ExpressionContainer,
-    doWhile: Boolean = false
-) = Node.Expression.While(whileKeyword = whileKeyword, condition = condition, body = body, doWhile = doWhile)
-
-fun binaryExpression(lhs: Node.Expression, operator: Node.Expression.Binary.Operator, rhs: Node.Expression) =
-    Node.Expression.Binary(lhs = lhs, operator = operator, rhs = rhs)
-
-fun binaryOperator(token: Node.Expression.Binary.Operator.Token) = Node.Expression.Binary.Operator(token = token)
-fun binaryInfixExpression(lhs: Node.Expression, operator: Node.Expression.Name, rhs: Node.Expression) =
-    Node.Expression.BinaryInfix(lhs = lhs, operator = operator, rhs = rhs)
-
-fun unaryExpression(expression: Node.Expression, operator: Node.Expression.Unary.Operator, prefix: Boolean = false) =
-    Node.Expression.Unary(expression = expression, operator = operator, prefix = prefix)
-
-fun unaryOperator(token: Node.Expression.Unary.Operator.Token) = Node.Expression.Unary.Operator(token = token)
-fun binaryTypeExpression(lhs: Node.Expression, operator: Node.Expression.BinaryType.Operator, rhs: Node.TypeRef) =
-    Node.Expression.BinaryType(lhs = lhs, operator = operator, rhs = rhs)
-
-fun binaryTypeOperator(token: Node.Expression.BinaryType.Operator.Token) =
-    Node.Expression.BinaryType.Operator(token = token)
-
-fun expressionDoubleColonReceiver(expression: Node.Expression) =
-    Node.Expression.DoubleColon.Receiver.Expression(expression = expression)
-
-fun typeDoubleColonReceiver(type: Node.Type.Simple, questionMarks: List<Node.Keyword.Question> = listOf()) =
-    Node.Expression.DoubleColon.Receiver.Type(type = type, questionMarks = questionMarks)
-
-fun callableReferenceExpression(lhs: Node.Expression.DoubleColon.Receiver? = null, rhs: Node.Expression.Name) =
-    Node.Expression.CallableReference(lhs = lhs, rhs = rhs)
-
-fun classLiteralExpression(lhs: Node.Expression.DoubleColon.Receiver? = null) = Node.Expression.ClassLiteral(lhs = lhs)
-fun parenthesizedExpression(expression: Node.Expression) = Node.Expression.Parenthesized(expression = expression)
-fun stringTemplateExpression(entries: List<Node.Expression.StringTemplate.Entry> = listOf(), raw: Boolean = false) =
-    Node.Expression.StringTemplate(entries = entries, raw = raw)
-
-fun regular(str: String) = Node.Expression.StringTemplate.Entry.Regular(str = str)
-fun shortTemplate(str: String) = Node.Expression.StringTemplate.Entry.ShortTemplate(str = str)
-fun unicodeEscape(digits: String) = Node.Expression.StringTemplate.Entry.UnicodeEscape(digits = digits)
-fun regularEscape(char: Char) = Node.Expression.StringTemplate.Entry.RegularEscape(char = char)
-fun longTemplate(expression: Node.Expression) =
-    Node.Expression.StringTemplate.Entry.LongTemplate(expression = expression)
-
-fun constantExpression(value: String, form: Node.Expression.Constant.Form) =
-    Node.Expression.Constant(value = value, form = form)
-
-fun lambdaExpression(params: Node.Expression.Lambda.Params? = null, body: Node.Expression.Lambda.Body? = null) =
-    Node.Expression.Lambda(params = params, body = body)
-
-fun lambdaParams(elements: List<Node.Expression.Lambda.Param> = listOf(), trailingComma: Node.Keyword.Comma? = null) =
-    Node.Expression.Lambda.Params(elements = elements, trailingComma = trailingComma)
-
-fun lambdaParams(vararg elements: Node.Expression.Lambda.Param) = lambdaParams(elements.toList())
-fun lambdaParam(
+fun functionType(
+    modifiers: List<Node.Modifier> = listOf(),
+    contextReceiver: Node.ContextReceiver? = null,
+    receiverType: Node.Type? = null,
     lPar: Node.Keyword.LPar? = null,
-    variables: List<Node.Expression.Lambda.Param.Variable> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null,
+    params: List<Node.Type.FunctionType.FunctionTypeParam> = listOf(),
     rPar: Node.Keyword.RPar? = null,
-    colon: Node.Keyword.Colon? = null,
-    destructTypeRef: Node.TypeRef? = null
-) = Node.Expression.Lambda.Param(
+    returnType: Node.Type,
+    tag: Any? = null
+) = Node.Type.FunctionType(
+    modifiers = modifiers,
+    contextReceiver = contextReceiver,
+    receiverType = receiverType,
     lPar = lPar,
-    variables = variables,
-    trailingComma = trailingComma,
+    params = params,
     rPar = rPar,
-    colon = colon,
-    destructTypeRef = destructTypeRef
+    returnType = returnType,
+    tag = tag
 )
 
-fun variable(modifiers: Node.Modifiers? = null, name: Node.Expression.Name, typeRef: Node.TypeRef? = null) =
-    Node.Expression.Lambda.Param.Variable(modifiers = modifiers, name = name, typeRef = typeRef)
+fun functionTypeParam(name: Node.Expression.NameExpression? = null, type: Node.Type, tag: Any? = null) =
+    Node.Type.FunctionType.FunctionTypeParam(name = name, type = type, tag = tag)
 
-fun lambdaBody(statements: List<Node.Statement> = listOf()) = Node.Expression.Lambda.Body(statements = statements)
-fun lambdaBody(vararg statements: Node.Statement) = lambdaBody(statements.toList())
-fun thisExpression(label: String? = null) = Node.Expression.This(label = label)
-fun superExpression(typeArg: Node.TypeRef? = null, label: String? = null) =
-    Node.Expression.Super(typeArg = typeArg, label = label)
+fun ifExpression(
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    condition: Node.Expression,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    body: Node.Expression,
+    elseBody: Node.Expression? = null,
+    tag: Any? = null
+) = Node.Expression.IfExpression(
+    lPar = lPar,
+    condition = condition,
+    rPar = rPar,
+    body = body,
+    elseBody = elseBody,
+    tag = tag
+)
+
+fun tryExpression(
+    block: Node.Expression.BlockExpression,
+    catchClauses: List<Node.Expression.TryExpression.CatchClause> = listOf(),
+    finallyBlock: Node.Expression.BlockExpression? = null,
+    tag: Any? = null
+) = Node.Expression.TryExpression(block = block, catchClauses = catchClauses, finallyBlock = finallyBlock, tag = tag)
+
+fun catchClause(
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    params: List<Node.FunctionParam> = listOf(),
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    block: Node.Expression.BlockExpression,
+    tag: Any? = null
+) = Node.Expression.TryExpression.CatchClause(lPar = lPar, params = params, rPar = rPar, block = block, tag = tag)
 
 fun whenExpression(
     whenKeyword: Node.Keyword.When = Node.Keyword.When(),
-    lPar: Node.Keyword.LPar? = null,
-    expression: Node.Expression? = null,
-    rPar: Node.Keyword.RPar? = null,
-    branches: List<Node.Expression.When.Branch> = listOf()
-) = Node.Expression.When(
-    whenKeyword = whenKeyword, lPar = lPar, expression = expression, rPar = rPar, branches = branches
+    subject: Node.Expression.WhenExpression.WhenSubject? = null,
+    whenBranches: List<Node.Expression.WhenExpression.WhenBranch> = listOf(),
+    tag: Any? = null
+) = Node.Expression.WhenExpression(whenKeyword = whenKeyword, subject = subject, whenBranches = whenBranches, tag = tag)
+
+fun whenSubject(
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
+    valKeyword: Node.Keyword.Val? = null,
+    variable: Node.Variable? = null,
+    expression: Node.Expression,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    tag: Any? = null
+) = Node.Expression.WhenExpression.WhenSubject(
+    lPar = lPar,
+    annotationSets = annotationSets,
+    valKeyword = valKeyword,
+    variable = variable,
+    expression = expression,
+    rPar = rPar,
+    tag = tag
 )
 
-fun conditionalBranch(
-    conditions: List<Node.Expression.When.Condition> = listOf(),
-    trailingComma: Node.Keyword.Comma? = null,
-    body: Node.Expression
-) = Node.Expression.When.Branch.Conditional(conditions = conditions, trailingComma = trailingComma, body = body)
+fun conditionalWhenBranch(
+    whenConditions: List<Node.Expression.WhenExpression.WhenCondition> = listOf(),
+    arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(),
+    body: Node.Expression,
+    tag: Any? = null
+) = Node.Expression.WhenExpression.ConditionalWhenBranch(
+    whenConditions = whenConditions,
+    arrow = arrow,
+    body = body,
+    tag = tag
+)
 
-fun elseBranch(elseKeyword: Node.Keyword.Else = Node.Keyword.Else(), body: Node.Expression) =
-    Node.Expression.When.Branch.Else(elseKeyword = elseKeyword, body = body)
+fun elseWhenBranch(arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(), body: Node.Expression, tag: Any? = null) =
+    Node.Expression.WhenExpression.ElseWhenBranch(arrow = arrow, body = body, tag = tag)
 
-fun expressionCondition(expression: Node.Expression) =
-    Node.Expression.When.Condition.Expression(expression = expression)
+fun expressionWhenCondition(expression: Node.Expression, tag: Any? = null) =
+    Node.Expression.WhenExpression.ExpressionWhenCondition(expression = expression, tag = tag)
 
-fun inCondition(expression: Node.Expression, not: Boolean = false) =
-    Node.Expression.When.Condition.In(expression = expression, not = not)
-
-fun isCondition(typeRef: Node.TypeRef, not: Boolean = false) =
-    Node.Expression.When.Condition.Is(typeRef = typeRef, not = not)
-
-fun objectExpression(declaration: Node.Declaration.Class) = Node.Expression.Object(declaration = declaration)
-fun throwExpression(expression: Node.Expression) = Node.Expression.Throw(expression = expression)
-fun returnExpression(label: String? = null, expression: Node.Expression? = null) =
-    Node.Expression.Return(label = label, expression = expression)
-
-fun continueExpression(label: String? = null) = Node.Expression.Continue(label = label)
-fun breakExpression(label: String? = null) = Node.Expression.Break(label = label)
-fun collectionLiteralExpression(
-    expressions: List<Node.Expression> = listOf(), trailingComma: Node.Keyword.Comma? = null
-) = Node.Expression.CollectionLiteral(expressions = expressions, trailingComma = trailingComma)
-
-fun nameExpression(name: String) = Node.Expression.Name(name = name)
-fun labeledExpression(label: String, expression: Node.Expression) =
-    Node.Expression.Labeled(label = label, expression = expression)
-
-fun annotatedExpression(annotationSets: List<Node.Modifier.AnnotationSet> = listOf(), expression: Node.Expression) =
-    Node.Expression.Annotated(annotationSets = annotationSets, expression = expression)
-
-fun callExpression(
+fun rangeWhenCondition(
+    operator: Node.Expression.WhenExpression.WhenConditionRangeOperator,
     expression: Node.Expression,
-    typeArgs: Node.TypeArgs? = null,
-    args: Node.ValueArgs? = null,
-    lambdaArg: Node.Expression.Call.LambdaArg? = null
-) = Node.Expression.Call(expression = expression, typeArgs = typeArgs, args = args, lambdaArg = lambdaArg)
+    tag: Any? = null
+) = Node.Expression.WhenExpression.RangeWhenCondition(operator = operator, expression = expression, tag = tag)
+
+fun typeWhenCondition(
+    operator: Node.Expression.WhenExpression.WhenConditionTypeOperator,
+    type: Node.Type,
+    tag: Any? = null
+) = Node.Expression.WhenExpression.TypeWhenCondition(operator = operator, type = type, tag = tag)
+
+fun throwExpression(expression: Node.Expression, tag: Any? = null) =
+    Node.Expression.ThrowExpression(expression = expression, tag = tag)
+
+fun returnExpression(
+    label: Node.Expression.NameExpression? = null,
+    expression: Node.Expression? = null,
+    tag: Any? = null
+) = Node.Expression.ReturnExpression(label = label, expression = expression, tag = tag)
+
+fun continueExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
+    Node.Expression.ContinueExpression(label = label, tag = tag)
+
+fun breakExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
+    Node.Expression.BreakExpression(label = label, tag = tag)
+
+fun blockExpression(statements: List<Node.Statement> = listOf(), tag: Any? = null) =
+    Node.Expression.BlockExpression(statements = statements, tag = tag)
+
+fun blockExpression(vararg statements: Node.Statement) = blockExpression(statements.toList())
+fun callExpression(
+    calleeExpression: Node.Expression,
+    lAngle: Node.Keyword.Less? = null,
+    typeArgs: List<Node.TypeArg> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    lPar: Node.Keyword.LPar? = null,
+    args: List<Node.ValueArg> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    lambdaArg: Node.Expression.CallExpression.LambdaArg? = null,
+    tag: Any? = null
+) = Node.Expression.CallExpression(
+    calleeExpression = calleeExpression,
+    lAngle = lAngle,
+    typeArgs = typeArgs,
+    rAngle = rAngle,
+    lPar = lPar,
+    args = args,
+    rPar = rPar,
+    lambdaArg = lambdaArg,
+    tag = tag
+)
 
 fun lambdaArg(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
-    label: String? = null,
-    expression: Node.Expression.Lambda
-) = Node.Expression.Call.LambdaArg(annotationSets = annotationSets, label = label, expression = expression)
-
-fun arrayAccessExpression(
-    expression: Node.Expression, indices: List<Node.Expression> = listOf(), trailingComma: Node.Keyword.Comma? = null
-) = Node.Expression.ArrayAccess(expression = expression, indices = indices, trailingComma = trailingComma)
-
-fun anonymousFunctionExpression(function: Node.Declaration.Function) =
-    Node.Expression.AnonymousFunction(function = function)
-
-fun propertyExpression(declaration: Node.Declaration.Property) = Node.Expression.Property(declaration = declaration)
-fun blockExpression(statements: List<Node.Statement> = listOf()) = Node.Expression.Block(statements = statements)
-fun blockExpression(vararg statements: Node.Statement) = blockExpression(statements.toList())
-fun modifiers(elements: List<Node.Modifier> = listOf()) = Node.Modifiers(elements = elements)
-fun modifiers(vararg elements: Node.Modifier) = modifiers(elements.toList())
-fun annotationSet(
-    atSymbol: Node.Keyword.At? = null,
-    target: Node.Modifier.AnnotationSet.Target? = null,
-    colon: Node.Keyword.Colon? = null,
-    lBracket: Node.Keyword.LBracket? = null,
-    annotations: List<Node.Modifier.AnnotationSet.Annotation> = listOf(),
-    rBracket: Node.Keyword.RBracket? = null
-) = Node.Modifier.AnnotationSet(
-    atSymbol = atSymbol,
-    target = target,
-    colon = colon,
-    lBracket = lBracket,
-    annotations = annotations,
-    rBracket = rBracket
+    label: Node.Expression.NameExpression? = null,
+    expression: Node.Expression.LambdaExpression,
+    tag: Any? = null
+) = Node.Expression.CallExpression.LambdaArg(
+    annotationSets = annotationSets,
+    label = label,
+    expression = expression,
+    tag = tag
 )
 
-fun annotationSetTarget(token: Node.Modifier.AnnotationSet.Target.Token) =
-    Node.Modifier.AnnotationSet.Target(token = token)
+fun lambdaExpression(
+    params: List<Node.LambdaParam> = listOf(),
+    arrow: Node.Keyword.Arrow? = null,
+    statements: List<Node.Statement> = listOf(),
+    tag: Any? = null
+) = Node.Expression.LambdaExpression(params = params, arrow = arrow, statements = statements, tag = tag)
 
-fun annotation(type: Node.Type.Simple, args: Node.ValueArgs? = null) =
-    Node.Modifier.AnnotationSet.Annotation(type = type, args = args)
+fun binaryExpression(
+    lhs: Node.Expression,
+    operator: Node.Expression.BinaryExpression.BinaryOperator,
+    rhs: Node.Expression,
+    tag: Any? = null
+) = Node.Expression.BinaryExpression(lhs = lhs, operator = operator, rhs = rhs, tag = tag)
 
-fun keywordModifier(token: Node.Modifier.Keyword.Token) = Node.Modifier.Keyword(token = token)
-fun typeConstraints(
-    whereKeyword: Node.Keyword.Where = Node.Keyword.Where(),
-    constraints: Node.PostModifier.TypeConstraints.TypeConstraintList
-) = Node.PostModifier.TypeConstraints(whereKeyword = whereKeyword, constraints = constraints)
+fun prefixUnaryExpression(
+    operator: Node.Expression.UnaryExpression.UnaryOperator,
+    expression: Node.Expression,
+    tag: Any? = null
+) = Node.Expression.PrefixUnaryExpression(operator = operator, expression = expression, tag = tag)
 
-fun typeConstraintList(elements: List<Node.PostModifier.TypeConstraints.TypeConstraint> = listOf()) =
-    Node.PostModifier.TypeConstraints.TypeConstraintList(elements = elements)
+fun postfixUnaryExpression(
+    expression: Node.Expression,
+    operator: Node.Expression.UnaryExpression.UnaryOperator,
+    tag: Any? = null
+) = Node.Expression.PostfixUnaryExpression(expression = expression, operator = operator, tag = tag)
 
-fun typeConstraintList(vararg elements: Node.PostModifier.TypeConstraints.TypeConstraint) =
-    typeConstraintList(elements.toList())
+fun binaryTypeExpression(
+    lhs: Node.Expression,
+    operator: Node.Expression.BinaryTypeExpression.BinaryTypeOperator,
+    rhs: Node.Type,
+    tag: Any? = null
+) = Node.Expression.BinaryTypeExpression(lhs = lhs, operator = operator, rhs = rhs, tag = tag)
+
+fun callableReferenceExpression(
+    lhs: Node.Expression? = null,
+    questionMarks: List<Node.Keyword.Question> = listOf(),
+    rhs: Node.Expression.NameExpression,
+    tag: Any? = null
+) = Node.Expression.CallableReferenceExpression(lhs = lhs, questionMarks = questionMarks, rhs = rhs, tag = tag)
+
+fun classLiteralExpression(
+    lhs: Node.Expression? = null,
+    questionMarks: List<Node.Keyword.Question> = listOf(),
+    tag: Any? = null
+) = Node.Expression.ClassLiteralExpression(lhs = lhs, questionMarks = questionMarks, tag = tag)
+
+fun parenthesizedExpression(innerExpression: Node.Expression, tag: Any? = null) =
+    Node.Expression.ParenthesizedExpression(innerExpression = innerExpression, tag = tag)
+
+fun stringLiteralExpression(
+    entries: List<Node.Expression.StringLiteralExpression.StringEntry> = listOf(),
+    raw: Boolean = false,
+    tag: Any? = null
+) = Node.Expression.StringLiteralExpression(entries = entries, raw = raw, tag = tag)
+
+fun literalStringEntry(text: String, tag: Any? = null) =
+    Node.Expression.StringLiteralExpression.LiteralStringEntry(text = text, tag = tag)
+
+fun escapeStringEntry(text: String, tag: Any? = null) =
+    Node.Expression.StringLiteralExpression.EscapeStringEntry(text = text, tag = tag)
+
+fun templateStringEntry(expression: Node.Expression, short: Boolean = false, tag: Any? = null) =
+    Node.Expression.StringLiteralExpression.TemplateStringEntry(expression = expression, short = short, tag = tag)
+
+fun booleanLiteralExpression(text: String, tag: Any? = null) =
+    Node.Expression.BooleanLiteralExpression(text = text, tag = tag)
+
+fun characterLiteralExpression(text: String, tag: Any? = null) =
+    Node.Expression.CharacterLiteralExpression(text = text, tag = tag)
+
+fun integerLiteralExpression(text: String, tag: Any? = null) =
+    Node.Expression.IntegerLiteralExpression(text = text, tag = tag)
+
+fun realLiteralExpression(text: String, tag: Any? = null) =
+    Node.Expression.RealLiteralExpression(text = text, tag = tag)
+
+fun nullLiteralExpression(tag: Any? = null) = Node.Expression.NullLiteralExpression(tag = tag)
+fun objectLiteralExpression(declaration: Node.Declaration.ClassDeclaration, tag: Any? = null) =
+    Node.Expression.ObjectLiteralExpression(declaration = declaration, tag = tag)
+
+fun collectionLiteralExpression(expressions: List<Node.Expression> = listOf(), tag: Any? = null) =
+    Node.Expression.CollectionLiteralExpression(expressions = expressions, tag = tag)
+
+fun thisExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
+    Node.Expression.ThisExpression(label = label, tag = tag)
+
+fun superExpression(typeArgType: Node.Type? = null, label: Node.Expression.NameExpression? = null, tag: Any? = null) =
+    Node.Expression.SuperExpression(typeArgType = typeArgType, label = label, tag = tag)
+
+fun nameExpression(text: String, tag: Any? = null) = Node.Expression.NameExpression(text = text, tag = tag)
+fun labeledExpression(label: Node.Expression.NameExpression, statement: Node.Statement, tag: Any? = null) =
+    Node.Expression.LabeledExpression(label = label, statement = statement, tag = tag)
+
+fun annotatedExpression(
+    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
+    statement: Node.Statement,
+    tag: Any? = null
+) = Node.Expression.AnnotatedExpression(annotationSets = annotationSets, statement = statement, tag = tag)
+
+fun indexedAccessExpression(expression: Node.Expression, indices: List<Node.Expression> = listOf(), tag: Any? = null) =
+    Node.Expression.IndexedAccessExpression(expression = expression, indices = indices, tag = tag)
+
+fun anonymousFunctionExpression(function: Node.Declaration.FunctionDeclaration, tag: Any? = null) =
+    Node.Expression.AnonymousFunctionExpression(function = function, tag = tag)
+
+fun typeParam(
+    modifiers: List<Node.Modifier> = listOf(),
+    name: Node.Expression.NameExpression,
+    type: Node.Type? = null,
+    tag: Any? = null
+) = Node.TypeParam(modifiers = modifiers, name = name, type = type, tag = tag)
+
+fun functionParam(
+    modifiers: List<Node.Modifier> = listOf(),
+    valOrVarKeyword: Node.Keyword.ValOrVarKeyword? = null,
+    name: Node.Expression.NameExpression,
+    type: Node.Type? = null,
+    defaultValue: Node.Expression? = null,
+    tag: Any? = null
+) = Node.FunctionParam(
+    modifiers = modifiers,
+    valOrVarKeyword = valOrVarKeyword,
+    name = name,
+    type = type,
+    defaultValue = defaultValue,
+    tag = tag
+)
+
+fun lambdaParam(
+    lPar: Node.Keyword.LPar? = null,
+    variables: List<Node.Variable> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    destructType: Node.Type? = null,
+    tag: Any? = null
+) = Node.LambdaParam(lPar = lPar, variables = variables, rPar = rPar, destructType = destructType, tag = tag)
+
+fun variable(
+    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
+    name: Node.Expression.NameExpression,
+    type: Node.Type? = null,
+    tag: Any? = null
+) = Node.Variable(annotationSets = annotationSets, name = name, type = type, tag = tag)
+
+fun typeArg(modifiers: List<Node.Modifier> = listOf(), type: Node.Type, tag: Any? = null) =
+    Node.TypeArg(modifiers = modifiers, type = type, tag = tag)
+
+fun valueArg(
+    name: Node.Expression.NameExpression? = null,
+    spreadOperator: Node.Keyword.Asterisk? = null,
+    expression: Node.Expression,
+    tag: Any? = null
+) = Node.ValueArg(name = name, spreadOperator = spreadOperator, expression = expression, tag = tag)
+
+fun contextReceiver(
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    receiverTypes: List<Node.Type> = listOf(),
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    tag: Any? = null
+) = Node.ContextReceiver(lPar = lPar, receiverTypes = receiverTypes, rPar = rPar, tag = tag)
+
+fun annotationSet(
+    target: Node.Modifier.AnnotationSet.AnnotationTarget? = null,
+    lBracket: Node.Keyword.LBracket? = null,
+    annotations: List<Node.Modifier.AnnotationSet.Annotation> = listOf(),
+    rBracket: Node.Keyword.RBracket? = null,
+    tag: Any? = null
+) = Node.Modifier.AnnotationSet(
+    target = target,
+    lBracket = lBracket,
+    annotations = annotations,
+    rBracket = rBracket,
+    tag = tag
+)
+
+fun annotation(
+    type: Node.Type.SimpleType,
+    lPar: Node.Keyword.LPar? = null,
+    args: List<Node.ValueArg> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    tag: Any? = null
+) = Node.Modifier.AnnotationSet.Annotation(type = type, lPar = lPar, args = args, rPar = rPar, tag = tag)
+
+fun typeConstraintSet(
+    constraints: List<Node.PostModifier.TypeConstraintSet.TypeConstraint> = listOf(),
+    tag: Any? = null
+) = Node.PostModifier.TypeConstraintSet(constraints = constraints, tag = tag)
 
 fun typeConstraint(
-    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(), name: Node.Expression.Name, typeRef: Node.TypeRef
-) = Node.PostModifier.TypeConstraints.TypeConstraint(annotationSets = annotationSets, name = name, typeRef = typeRef)
+    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
+    name: Node.Expression.NameExpression,
+    type: Node.Type,
+    tag: Any? = null
+) = Node.PostModifier.TypeConstraintSet.TypeConstraint(
+    annotationSets = annotationSets,
+    name = name,
+    type = type,
+    tag = tag
+)
 
 fun contract(
-    contractKeyword: Node.Keyword.Contract = Node.Keyword.Contract(),
-    contractEffects: Node.PostModifier.Contract.ContractEffects
-) = Node.PostModifier.Contract(contractKeyword = contractKeyword, contractEffects = contractEffects)
+    lBracket: Node.Keyword.LBracket = Node.Keyword.LBracket(),
+    contractEffects: List<Node.Expression> = listOf(),
+    rBracket: Node.Keyword.RBracket = Node.Keyword.RBracket(),
+    tag: Any? = null
+) = Node.PostModifier.Contract(lBracket = lBracket, contractEffects = contractEffects, rBracket = rBracket, tag = tag)
 
-fun contractEffects(
-    elements: List<Node.PostModifier.Contract.ContractEffect> = listOf(), trailingComma: Node.Keyword.Comma? = null
-) = Node.PostModifier.Contract.ContractEffects(elements = elements, trailingComma = trailingComma)
-
-fun contractEffects(vararg elements: Node.PostModifier.Contract.ContractEffect) = contractEffects(elements.toList())
-fun contractEffect(expression: Node.Expression) = Node.PostModifier.Contract.ContractEffect(expression = expression)
-fun whitespace(text: String) = Node.Extra.Whitespace(text = text)
-fun comment(text: String) = Node.Extra.Comment(text = text)
-fun semicolon(text: String) = Node.Extra.Semicolon(text = text)
+fun whitespace(text: String, tag: Any? = null) = Node.Extra.Whitespace(text = text, tag = tag)
+fun comment(text: String, tag: Any? = null) = Node.Extra.Comment(text = text, tag = tag)
+fun semicolon(tag: Any? = null) = Node.Extra.Semicolon(tag = tag)
+fun trailingComma(tag: Any? = null) = Node.Extra.TrailingComma(tag = tag)

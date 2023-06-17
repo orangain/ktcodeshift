@@ -2,6 +2,7 @@ package ktcodeshift
 
 import ktast.ast.MutableVisitor
 import ktast.ast.Node
+import ktast.ast.NodePath
 import ktast.ast.Writer
 import ktast.ast.psi.ConverterWithMutableExtras
 import ktast.ast.psi.Parser
@@ -21,8 +22,8 @@ data class FileWithContext(
     val extrasMap: ConverterWithMutableExtras,
 )
 
-fun FileWithContext.preVisit(fn: (Node, Node?) -> Node): FileWithContext {
-    val changedFileNode = MutableVisitor.preVisit(fileNode, extrasMap, fn)
+fun FileWithContext.traverse(fn: (path: NodePath<*>) -> Node): FileWithContext {
+    val changedFileNode = MutableVisitor.traverse(fileNode, extrasMap, fn)
     return copy(fileNode = changedFileNode)
 }
 
@@ -35,41 +36,41 @@ inline fun <reified T : Node> FileWithContext.find(): NodeCollection<T> = find(T
 fun <T : Node> FileWithContext.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
 
 fun <T : Node> FileWithContext.find(javaClass: Class<T>): NodeCollection<T> {
-    val nodes = mutableListOf<NodeAndParent<T>>()
-    MutableVisitor.preVisit(fileNode, extrasMap) { v, parent ->
-        if (v::class.java == javaClass) {
-            nodes.add(NodeAndParent(v as T, parent))
+    val nodes = mutableListOf<NodePath<T>>()
+    MutableVisitor.traverse(fileNode, extrasMap) { path ->
+        if (path.node::class.java == javaClass) {
+            @Suppress("UNCHECKED_CAST")
+            nodes.add(path as NodePath<T>)
         }
-        v
+        path.node
     }
     return NodeCollection(nodes.toList(), this)
 }
 
-data class NodeAndParent<T : Node>(
-    val node: T,
-    val parent: Node?,
-)
+class NodeContext(path: NodePath<*>) {
+    val parent: Node? = path.parent?.node
+    val ancestors: Sequence<Node> = path.ancestors()
+}
 
 data class NodeCollection<T : Node>(
-    val nodeAndParents: List<NodeAndParent<T>>,
+    val nodePaths: List<NodePath<T>>,
     val fileWithContext: FileWithContext,
 ) {
-    fun filter(predicate: (T) -> Boolean): NodeCollection<T> = filter { v, _ -> predicate(v) }
-    fun filter(predicate: (T, Node?) -> Boolean): NodeCollection<T> {
+    fun filter(predicate: NodeContext.(T) -> Boolean): NodeCollection<T> {
         return copy(
-            nodeAndParents = nodeAndParents.filter { predicate(it.node, it.parent) }
+            nodePaths = nodePaths.filter { NodeContext(it).predicate(it.node) }
         )
     }
 
-    fun replaceWith(fn: (T) -> Node): FileWithContext = replaceWith { v, _ -> fn(v) }
-    fun replaceWith(fn: (T, Node?) -> Node): FileWithContext {
+    fun replaceWith(fn: NodeContext.(T) -> T): FileWithContext {
         val nodeMap = IdentityHashMap<T, Boolean>()
-        nodeAndParents.forEach { nodeMap[it.node] = true }
-        val newFileNode = MutableVisitor.preVisit(fileWithContext.fileNode, fileWithContext.extrasMap) { v, parent ->
-            if (nodeMap.contains(v)) {
-                fn(v as T, parent)
+        nodePaths.forEach { nodeMap[it.node] = true }
+        val newFileNode = MutableVisitor.traverse(fileWithContext.fileNode, fileWithContext.extrasMap) { path ->
+            if (nodeMap.contains(path.node)) {
+                @Suppress("UNCHECKED_CAST")
+                NodeContext(path).fn(path.node as T)
             } else {
-                v
+                path.node
             }
         }
         return FileWithContext(
