@@ -39,28 +39,25 @@ transform { fileInfo ->
             fun toFqNameType(type: Node.Type.SimpleType, nestedNames: List<String>): Node.Type.SimpleType {
 
                 // e.g. Make List<Expression> to List<Node.Expression>
-                if (type.pieces.last().name.text == "List") {
+                if (type.name.text == "List") {
                     return type.copy(
-                        pieces = type.pieces.map { piece ->
-                            piece.copy(
-                                typeArgs = piece.typeArgs.map { typeArg ->
-                                    typeArg.copy(
-                                        type = toFqNameType(
-                                            typeArg.type as Node.Type.SimpleType,
-                                            nestedNames
-                                        ),
-                                    )
-                                }
+                        typeArgs = type.typeArgs.map { typeArg ->
+                            typeArg.copy(
+                                type = toFqNameType(
+                                    typeArg.type as Node.Type.SimpleType,
+                                    nestedNames
+                                ),
                             )
                         }
                     )
                 }
 
                 generateSequence(nestedNames) { if (it.isNotEmpty()) it.dropLast(1) else null }.forEach { prefixNames ->
-                    val fqName = prefixNames + type.pieces.map { it.name.text }
+                    val fqName = prefixNames + type.qualifiers.map { it.name.text } + type.name.text
                     if (fqNames.contains(fqName)) {
                         return simpleType(
-                            pieces = fqName.map { simpleTypePiece(nameExpression(it)) },
+                            qualifiers = fqName.dropLast(1).map { simpleTypeQualifier(nameExpression(it)) },
+                            name = nameExpression(fqName.last()),
                         )
                     }
                 }
@@ -113,8 +110,8 @@ transform { fileInfo ->
                             if (firstParam?.name?.text == "statements") {
                                 val firstParamType = firstParam.type as? Node.Type.SimpleType
                                 if (firstParamType != null) {
-                                    if (firstParamType.pieces.last().name.text == "List") {
-                                        val listElementType = firstParamType.pieces.last().typeArgs[0].type
+                                    if (firstParamType.name.text == "List") {
+                                        val listElementType = firstParamType.typeArgs[0].type
                                         val varargFunc = functionDeclaration(
                                             name = nameExpression(functionName),
                                             params = listOf(
@@ -160,7 +157,7 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
     return if (type is Node.Type.NullableType) {
         nameExpression("null")
     } else if (type is Node.Type.SimpleType) {
-        val fqName = type.pieces.joinToString(".") { it.name.text }
+        val fqName = (type.qualifiers.map { it.name } + type.name).joinToString(".") { it.text }
         if (fqName == "List") {
             nameExpression("listOf()")
         } else if (fqName == "Boolean") {
