@@ -136,27 +136,27 @@ fun secondaryConstructor(
 
 fun classDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
-    classDeclarationKeyword: Node.Declaration.ClassDeclaration.ClassOrInterfaceKeyword,
+    declarationKeyword: Node.Declaration.ClassDeclaration.ClassOrInterfaceKeyword,
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
     typeParams: List<Node.TypeParam> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     primaryConstructor: Node.Declaration.ClassDeclaration.PrimaryConstructor? = null,
-    classParents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
+    parents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
     typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
-    classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
+    body: Node.Declaration.ClassOrObject.ClassBody? = null,
     tag: Any? = null
 ) = Node.Declaration.ClassDeclaration(
     modifiers = modifiers,
-    classDeclarationKeyword = classDeclarationKeyword,
+    declarationKeyword = declarationKeyword,
     name = name,
     lAngle = if (typeParams.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
     typeParams = typeParams,
     rAngle = if (typeParams.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     primaryConstructor = primaryConstructor,
-    classParents = classParents,
+    parents = parents,
     typeConstraintSet = typeConstraintSet,
-    classBody = classBody,
+    body = body,
     tag = tag
 )
 
@@ -178,17 +178,17 @@ fun primaryConstructor(
 
 fun objectDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
-    classDeclarationKeyword: Node.Keyword.Object = Node.Keyword.Object(),
+    declarationKeyword: Node.Keyword.Object = Node.Keyword.Object(),
     name: Node.Expression.NameExpression? = null,
-    classParents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
-    classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
+    parents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
+    body: Node.Declaration.ClassOrObject.ClassBody? = null,
     tag: Any? = null
 ) = Node.Declaration.ObjectDeclaration(
     modifiers = modifiers,
-    classDeclarationKeyword = classDeclarationKeyword,
+    declarationKeyword = declarationKeyword,
     name = name,
-    classParents = classParents,
-    classBody = classBody,
+    parents = parents,
+    body = body,
     tag = tag
 )
 
@@ -415,14 +415,13 @@ fun catchClause(
 fun whenExpression(
     whenKeyword: Node.Keyword.When = Node.Keyword.When(),
     subject: Node.Expression.WhenExpression.WhenSubject? = null,
-    whenBranches: List<Node.Expression.WhenExpression.WhenBranch> = listOf(),
+    branches: List<Node.Expression.WhenExpression.WhenBranch> = listOf(),
     tag: Any? = null
-) = Node.Expression.WhenExpression(whenKeyword = whenKeyword, subject = subject, whenBranches = whenBranches, tag = tag)
+) = Node.Expression.WhenExpression(whenKeyword = whenKeyword, subject = subject, branches = branches, tag = tag)
 
 fun whenSubject(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
-    valKeyword: Node.Keyword.Val? = null,
     variable: Node.Variable? = null,
     expression: Node.Expression,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
@@ -430,7 +429,6 @@ fun whenSubject(
 ) = Node.Expression.WhenExpression.WhenSubject(
     lPar = lPar,
     annotationSets = annotationSets,
-    valKeyword = valKeyword,
     variable = variable,
     expression = expression,
     rPar = rPar,
@@ -438,16 +436,11 @@ fun whenSubject(
 )
 
 fun conditionalWhenBranch(
-    whenConditions: List<Node.Expression.WhenExpression.WhenCondition> = listOf(),
+    conditions: List<Node.Expression.WhenExpression.WhenCondition> = listOf(),
     arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(),
     body: Node.Expression,
     tag: Any? = null
-) = Node.Expression.WhenExpression.ConditionalWhenBranch(
-    whenConditions = whenConditions,
-    arrow = arrow,
-    body = body,
-    tag = tag
-)
+) = Node.Expression.WhenExpression.ConditionalWhenBranch(conditions = conditions, arrow = arrow, body = body, tag = tag)
 
 fun elseWhenBranch(arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(), body: Node.Expression, tag: Any? = null) =
     Node.Expression.WhenExpression.ElseWhenBranch(arrow = arrow, body = body, tag = tag)
@@ -606,8 +599,8 @@ fun collectionLiteralExpression(expressions: List<Node.Expression> = listOf(), t
 fun thisExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
     Node.Expression.ThisExpression(label = label, tag = tag)
 
-fun superExpression(typeArgType: Node.Type? = null, label: Node.Expression.NameExpression? = null, tag: Any? = null) =
-    Node.Expression.SuperExpression(typeArgType = typeArgType, label = label, tag = tag)
+fun superExpression(typeArg: Node.TypeArg? = null, label: Node.Expression.NameExpression? = null, tag: Any? = null) =
+    Node.Expression.SuperExpression(typeArg = typeArg, label = label, tag = tag)
 
 fun nameExpression(text: String, tag: Any? = null) = Node.Expression.NameExpression(text = text, tag = tag)
 fun labeledExpression(label: Node.Expression.NameExpression, statement: Node.Statement, tag: Any? = null) =
