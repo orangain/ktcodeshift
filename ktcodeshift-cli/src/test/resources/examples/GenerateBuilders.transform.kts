@@ -23,7 +23,7 @@ transform { fileInfo ->
             object : Visitor() {
                 override fun visit(path: NodePath<*>) {
                     val node = path.node
-                    if (node is Node.Declaration.ClassDeclaration && node.name != null) {
+                    if (node is Node.Declaration.ClassDeclaration) {
                         fqNames.add(nestedClassNames(path))
                     }
                     super.visit(path)
@@ -72,7 +72,7 @@ transform { fileInfo ->
                         val nestedNames = nestedClassNames(path)
 
                         if (v.isDataClass && nestedNames[1] != "Keyword") {
-                            val name = v.name!!.text
+                            val name = v.name.text
                             val params = v.primaryConstructor?.params.orEmpty()
                             val functionName = name.decapitalizeSmart()
 
@@ -150,7 +150,7 @@ transform { fileInfo ->
 fun nestedClassNames(path: NodePath<*>): List<String> {
     val nestedClasses = (path.ancestors().toList().reversed() + path.node)
         .filterIsInstance<Node.Declaration.ClassDeclaration>()
-    return nestedClasses.mapNotNull { it.name?.text }
+    return nestedClasses.map { it.name.text }
 }
 
 fun defaultValueOf(type: Node.Type?): Node.Expression? {
