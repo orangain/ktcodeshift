@@ -43,8 +43,8 @@ transform { fileInfo ->
         .replaceWith { n ->
             val annotation = getAnnotationByName(n.annotations, "Test")!!
             val arg = getValueArgByName(annotation.args, "expected")!!
-            val exceptionType = (arg.expression as Node.Expression.ClassLiteralExpression).lhsAsType()!!
-            val originalStatements = (n.body as Node.Expression.BlockExpression).statements
+            val exceptionClassLiteral = arg.expression as Node.Expression.ClassLiteralExpression
+            val methodBody = n.body as Node.Expression.BlockExpression
 
             n.copy(
                 modifiers = n.modifiers.map { modifier ->
@@ -67,12 +67,12 @@ transform { fileInfo ->
                         calleeExpression = nameExpression("Assertions.assertThrows"),
                         typeArgs = listOf(
                             typeArg(
-                                type = exceptionType,
+                                type = exceptionClassLiteral.lhsAsType()!!,
                             )
                         ),
                         lambdaArg = lambdaArg(
                             expression = lambdaExpression(
-                                statements = originalStatements,
+                                statements = methodBody.statements,
                             ),
                         ),
                     )
