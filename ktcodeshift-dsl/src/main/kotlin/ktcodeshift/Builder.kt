@@ -539,7 +539,7 @@ fun callableReferenceExpression(
 ) = Node.Expression.CallableReferenceExpression(lhs = lhs, questionMarks = questionMarks, rhs = rhs, tag = tag)
 
 fun classLiteralExpression(
-    lhs: Node.Expression? = null,
+    lhs: Node.Expression,
     questionMarks: List<Node.Keyword.Question> = listOf(),
     tag: Any? = null
 ) = Node.Expression.ClassLiteralExpression(lhs = lhs, questionMarks = questionMarks, tag = tag)

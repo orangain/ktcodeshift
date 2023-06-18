@@ -43,7 +43,7 @@ transform { fileInfo ->
         .replaceWith { n ->
             val annotation = getAnnotationByName(n.annotations, "Test")!!
             val arg = getValueArgByName(annotation.args, "expected")!!
-            val exceptionType = expressionToSimpleType((arg.expression as Node.Expression.ClassLiteralExpression).lhs!!)
+            val exceptionType = (arg.expression as Node.Expression.ClassLiteralExpression).lhsAsType()!!
             val originalStatements = (n.body as Node.Expression.BlockExpression).statements
 
             n.copy(
@@ -93,15 +93,4 @@ fun getAnnotationByName(
 
 fun getValueArgByName(args: List<Node.ValueArg>?, name: String): Node.ValueArg? {
     return args.orEmpty().find { it.name?.text == name }
-}
-
-fun expressionToSimpleType(e: Node.Expression): Node.Type.SimpleType {
-    val names = generateSequence(e) { (it as? Node.Expression.BinaryExpression)?.lhs }
-        .map { (if (it is Node.Expression.BinaryExpression) it.rhs else it) as Node.Expression.NameExpression }
-        .toList()
-        .reversed()
-
-    return simpleType(
-        pieces = names.map { simpleTypePiece(it) }
-    )
 }
