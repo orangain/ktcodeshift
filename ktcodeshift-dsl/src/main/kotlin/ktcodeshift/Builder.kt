@@ -73,17 +73,78 @@ fun doWhileStatement(
     tag: Any? = null
 ) = Node.Statement.DoWhileStatement(body = body, lPar = lPar, condition = condition, rPar = rPar, tag = tag)
 
+fun constructorClassParent(
+    type: Node.Type.SimpleType,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
+    args: List<Node.ValueArg> = listOf(),
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
+    tag: Any? = null
+) = Node.Declaration.ClassOrObject.ConstructorClassParent(type = type, lPar = lPar, args = args, rPar = rPar, tag = tag)
+
+fun delegationClassParent(type: Node.Type, expression: Node.Expression, tag: Any? = null) =
+    Node.Declaration.ClassOrObject.DelegationClassParent(type = type, expression = expression, tag = tag)
+
+fun typeClassParent(type: Node.Type, tag: Any? = null) =
+    Node.Declaration.ClassOrObject.TypeClassParent(type = type, tag = tag)
+
+fun classBody(
+    enumEntries: List<Node.Declaration.ClassOrObject.ClassBody.EnumEntry> = listOf(),
+    declarations: List<Node.Declaration> = listOf(),
+    tag: Any? = null
+) = Node.Declaration.ClassOrObject.ClassBody(enumEntries = enumEntries, declarations = declarations, tag = tag)
+
+fun enumEntry(
+    modifiers: List<Node.Modifier> = listOf(),
+    name: Node.Expression.NameExpression,
+    lPar: Node.Keyword.LPar? = null,
+    args: List<Node.ValueArg> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
+    tag: Any? = null
+) = Node.Declaration.ClassOrObject.ClassBody.EnumEntry(
+    modifiers = modifiers,
+    name = name,
+    lPar = if (args.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    args = args,
+    rPar = if (args.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    classBody = classBody,
+    tag = tag
+)
+
+fun initializer(block: Node.Expression.BlockExpression, tag: Any? = null) =
+    Node.Declaration.ClassOrObject.ClassBody.Initializer(block = block, tag = tag)
+
+fun secondaryConstructor(
+    modifiers: List<Node.Modifier> = listOf(),
+    constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
+    lPar: Node.Keyword.LPar? = null,
+    params: List<Node.FunctionParam> = listOf(),
+    rPar: Node.Keyword.RPar? = null,
+    delegationCall: Node.Expression.CallExpression? = null,
+    block: Node.Expression.BlockExpression? = null,
+    tag: Any? = null
+) = Node.Declaration.ClassOrObject.ClassBody.SecondaryConstructor(
+    modifiers = modifiers,
+    constructorKeyword = constructorKeyword,
+    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    params = params,
+    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    delegationCall = delegationCall,
+    block = block,
+    tag = tag
+)
+
 fun classDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
-    classDeclarationKeyword: Node.Declaration.ClassDeclaration.ClassDeclarationKeyword,
-    name: Node.Expression.NameExpression? = null,
+    classDeclarationKeyword: Node.Declaration.ClassDeclaration.ClassOrInterfaceKeyword,
+    name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
     typeParams: List<Node.TypeParam> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     primaryConstructor: Node.Declaration.ClassDeclaration.PrimaryConstructor? = null,
-    classParents: List<Node.Declaration.ClassDeclaration.ClassParent> = listOf(),
+    classParents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
     typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
-    classBody: Node.Declaration.ClassDeclaration.ClassBody? = null,
+    classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
     tag: Any? = null
 ) = Node.Declaration.ClassDeclaration(
     modifiers = modifiers,
@@ -98,26 +159,6 @@ fun classDeclaration(
     classBody = classBody,
     tag = tag
 )
-
-fun constructorClassParent(
-    type: Node.Type.SimpleType,
-    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
-    args: List<Node.ValueArg> = listOf(),
-    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
-    tag: Any? = null
-) = Node.Declaration.ClassDeclaration.ConstructorClassParent(
-    type = type,
-    lPar = lPar,
-    args = args,
-    rPar = rPar,
-    tag = tag
-)
-
-fun delegationClassParent(type: Node.Type, expression: Node.Expression, tag: Any? = null) =
-    Node.Declaration.ClassDeclaration.DelegationClassParent(type = type, expression = expression, tag = tag)
-
-fun typeClassParent(type: Node.Type, tag: Any? = null) =
-    Node.Declaration.ClassDeclaration.TypeClassParent(type = type, tag = tag)
 
 fun primaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
@@ -135,50 +176,19 @@ fun primaryConstructor(
     tag = tag
 )
 
-fun classBody(
-    enumEntries: List<Node.Declaration.ClassDeclaration.ClassBody.EnumEntry> = listOf(),
-    declarations: List<Node.Declaration> = listOf(),
-    tag: Any? = null
-) = Node.Declaration.ClassDeclaration.ClassBody(enumEntries = enumEntries, declarations = declarations, tag = tag)
-
-fun enumEntry(
+fun objectDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
-    name: Node.Expression.NameExpression,
-    lPar: Node.Keyword.LPar? = null,
-    args: List<Node.ValueArg> = listOf(),
-    rPar: Node.Keyword.RPar? = null,
-    classBody: Node.Declaration.ClassDeclaration.ClassBody? = null,
+    classDeclarationKeyword: Node.Keyword.Object = Node.Keyword.Object(),
+    name: Node.Expression.NameExpression? = null,
+    classParents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
+    classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
     tag: Any? = null
-) = Node.Declaration.ClassDeclaration.ClassBody.EnumEntry(
+) = Node.Declaration.ObjectDeclaration(
     modifiers = modifiers,
+    classDeclarationKeyword = classDeclarationKeyword,
     name = name,
-    lPar = if (args.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    args = args,
-    rPar = if (args.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    classParents = classParents,
     classBody = classBody,
-    tag = tag
-)
-
-fun initializer(block: Node.Expression.BlockExpression, tag: Any? = null) =
-    Node.Declaration.ClassDeclaration.ClassBody.Initializer(block = block, tag = tag)
-
-fun secondaryConstructor(
-    modifiers: List<Node.Modifier> = listOf(),
-    constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
-    lPar: Node.Keyword.LPar? = null,
-    params: List<Node.FunctionParam> = listOf(),
-    rPar: Node.Keyword.RPar? = null,
-    delegationCall: Node.Expression.CallExpression? = null,
-    block: Node.Expression.BlockExpression? = null,
-    tag: Any? = null
-) = Node.Declaration.ClassDeclaration.ClassBody.SecondaryConstructor(
-    modifiers = modifiers,
-    constructorKeyword = constructorKeyword,
-    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    params = params,
-    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
-    delegationCall = delegationCall,
-    block = block,
     tag = tag
 )
 
@@ -315,21 +325,33 @@ fun nullableType(
 
 fun simpleType(
     modifiers: List<Node.Modifier> = listOf(),
-    pieces: List<Node.Type.SimpleType.SimpleTypePiece> = listOf(),
-    tag: Any? = null
-) = Node.Type.SimpleType(modifiers = modifiers, pieces = pieces, tag = tag)
-
-fun simpleTypePiece(
+    qualifiers: List<Node.Type.SimpleType.SimpleTypeQualifier> = listOf(),
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
     typeArgs: List<Node.TypeArg> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     tag: Any? = null
-) = Node.Type.SimpleType.SimpleTypePiece(
+) = Node.Type.SimpleType(
+    modifiers = modifiers,
+    qualifiers = qualifiers,
     name = name,
-    lAngle = if (typeArgs.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    lAngle = lAngle,
     typeArgs = typeArgs,
-    rAngle = if (typeArgs.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    rAngle = rAngle,
+    tag = tag
+)
+
+fun simpleTypeQualifier(
+    name: Node.Expression.NameExpression,
+    lAngle: Node.Keyword.Less? = null,
+    typeArgs: List<Node.TypeArg> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    tag: Any? = null
+) = Node.Type.SimpleType.SimpleTypeQualifier(
+    name = name,
+    lAngle = lAngle,
+    typeArgs = typeArgs,
+    rAngle = rAngle,
     tag = tag
 )
 
@@ -575,7 +597,7 @@ fun realLiteralExpression(text: String, tag: Any? = null) =
     Node.Expression.RealLiteralExpression(text = text, tag = tag)
 
 fun nullLiteralExpression(tag: Any? = null) = Node.Expression.NullLiteralExpression(tag = tag)
-fun objectLiteralExpression(declaration: Node.Declaration.ClassDeclaration, tag: Any? = null) =
+fun objectLiteralExpression(declaration: Node.Declaration.ObjectDeclaration, tag: Any? = null) =
     Node.Expression.ObjectLiteralExpression(declaration = declaration, tag = tag)
 
 fun collectionLiteralExpression(expressions: List<Node.Expression> = listOf(), tag: Any? = null) =
