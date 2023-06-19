@@ -4,22 +4,22 @@ import ktcodeshift.*
 transform { fileInfo ->
     Api
         .parse(fileInfo.source)
-        .find<Node.ValueArgs>()
-        .filter { _, p -> p is Node.Expression.Call && isListOf(p) }
-        .replaceWith { v ->
-            v.copy(elements = v.elements.flatMap { element ->
-                val expr = element.expression
-                if (expr is Node.Expression.Call && isListOf(expr)) {
-                    expr.args?.elements ?: listOf()
+        .find<Node.Expression.CallExpression>()
+        .filter { n -> isListOf(n) }
+        .replaceWith { n ->
+            n.copy(arguments = n.arguments.flatMap { argument ->
+                val expr = argument.expression
+                if (expr is Node.Expression.CallExpression && isListOf(expr)) {
+                    expr.arguments
                 } else {
-                    listOf(element)
+                    listOf(argument)
                 }
             })
         }
         .toSource()
 }
 
-fun isListOf(call: Node.Expression.Call): Boolean {
-    val expr = call.expression as? Node.Expression.Name ?: return false
-    return expr.name == "listOf"
+fun isListOf(call: Node.Expression.CallExpression): Boolean {
+    val expr = call.calleeExpression as? Node.Expression.NameExpression ?: return false
+    return expr.text == "listOf"
 }

@@ -4,12 +4,12 @@ import ktcodeshift.*
 transform { fileInfo ->
     Api
         .parse(fileInfo.source)
-        .find<Node.Expression.Name>()
-        .filter { v, parent ->
-            parent is Node.Declaration.Property.Variable && v.name == "foo"
+        .find<Node.Expression.NameExpression>()
+        .filter { n ->
+            parent is Node.Variable && n.text == "foo"
         }
-        .replaceWith { v ->
-            v.copy(name = "bar")
+        .replaceWith { n ->
+            n.copy(text = "bar")
         }
         .toSource()
 }

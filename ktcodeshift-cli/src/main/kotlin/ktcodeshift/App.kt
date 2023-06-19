@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
 
 fun process(args: CLIArgs) {
     println("Loading transform script ${args.transformFile}")
-    val transform = evalScriptSource(args.transformFile.toScriptSource())
+    val transform = evalScriptSource(args.transformFile.toScriptSource(), onError = { exitProcess(1) })
     if (args.dryRun) {
         println("Running in dry mode, no files will be written!")
     }
@@ -60,7 +60,7 @@ enum class TransformResult {
     SUCCEEDED, UNMODIFIED, FAILED
 }
 
-fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
+fun evalScriptSource(sourceCode: SourceCode, onError: () -> Unit = {}): TransformFunction {
     transformFunction = null
 
     val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<TransformScript>()
@@ -83,7 +83,7 @@ fun evalScriptSource(sourceCode: SourceCode): TransformFunction {
 
     val transform = transformFunction
     if (transform == null && res.reports.any { it.severity >= ScriptDiagnostic.Severity.ERROR }) {
-        exitProcess(1)
+        onError()
     }
     checkNotNull(transform) { "transform is not defined." }
     return transform
