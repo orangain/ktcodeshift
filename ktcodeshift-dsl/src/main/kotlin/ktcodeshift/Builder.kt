@@ -41,7 +41,7 @@ fun importDirective(
 
 fun forStatement(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
-    loopParam: Node.LambdaParam,
+    loopParameter: Node.LambdaParameter,
     inKeyword: Node.Keyword.In = Node.Keyword.In(),
     loopRange: Node.Expression,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
@@ -49,7 +49,7 @@ fun forStatement(
     tag: Any? = null
 ) = Node.Statement.ForStatement(
     lPar = lPar,
-    loopParam = loopParam,
+    loopParameter = loopParameter,
     inKeyword = inKeyword,
     loopRange = loopRange,
     rPar = rPar,
@@ -76,10 +76,16 @@ fun doWhileStatement(
 fun constructorClassParent(
     type: Node.Type.SimpleType,
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
-    args: List<Node.ValueArg> = listOf(),
+    arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     tag: Any? = null
-) = Node.Declaration.ClassOrObject.ConstructorClassParent(type = type, lPar = lPar, args = args, rPar = rPar, tag = tag)
+) = Node.Declaration.ClassOrObject.ConstructorClassParent(
+    type = type,
+    lPar = lPar,
+    arguments = arguments,
+    rPar = rPar,
+    tag = tag
+)
 
 fun delegationClassParent(type: Node.Type, expression: Node.Expression, tag: Any? = null) =
     Node.Declaration.ClassOrObject.DelegationClassParent(type = type, expression = expression, tag = tag)
@@ -97,16 +103,16 @@ fun enumEntry(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
     lPar: Node.Keyword.LPar? = null,
-    args: List<Node.ValueArg> = listOf(),
+    arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
     tag: Any? = null
 ) = Node.Declaration.ClassOrObject.ClassBody.EnumEntry(
     modifiers = modifiers,
     name = name,
-    lPar = if (args.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    args = args,
-    rPar = if (args.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (arguments.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    arguments = arguments,
+    rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     classBody = classBody,
     tag = tag
 )
@@ -118,7 +124,7 @@ fun secondaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
     lPar: Node.Keyword.LPar? = null,
-    params: List<Node.FunctionParam> = listOf(),
+    parameters: List<Node.FunctionParameter> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     delegationCall: Node.Expression.CallExpression? = null,
     block: Node.Expression.BlockExpression? = null,
@@ -126,9 +132,9 @@ fun secondaryConstructor(
 ) = Node.Declaration.ClassOrObject.ClassBody.SecondaryConstructor(
     modifiers = modifiers,
     constructorKeyword = constructorKeyword,
-    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    params = params,
-    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    parameters = parameters,
+    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     delegationCall = delegationCall,
     block = block,
     tag = tag
@@ -139,7 +145,7 @@ fun classDeclaration(
     declarationKeyword: Node.Declaration.ClassDeclaration.ClassOrInterfaceKeyword,
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
-    typeParams: List<Node.TypeParam> = listOf(),
+    typeParameters: List<Node.TypeParameter> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     primaryConstructor: Node.Declaration.ClassDeclaration.PrimaryConstructor? = null,
     parents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
@@ -150,9 +156,9 @@ fun classDeclaration(
     modifiers = modifiers,
     declarationKeyword = declarationKeyword,
     name = name,
-    lAngle = if (typeParams.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
-    typeParams = typeParams,
-    rAngle = if (typeParams.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    lAngle = if (typeParameters.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    typeParameters = typeParameters,
+    rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     primaryConstructor = primaryConstructor,
     parents = parents,
     typeConstraintSet = typeConstraintSet,
@@ -164,15 +170,15 @@ fun primaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor? = null,
     lPar: Node.Keyword.LPar? = null,
-    params: List<Node.FunctionParam> = listOf(),
+    parameters: List<Node.FunctionParameter> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     tag: Any? = null
 ) = Node.Declaration.ClassDeclaration.PrimaryConstructor(
     modifiers = modifiers,
     constructorKeyword = constructorKeyword,
-    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    params = params,
-    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    parameters = parameters,
+    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     tag = tag
 )
 
@@ -195,12 +201,12 @@ fun objectDeclaration(
 fun functionDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     lAngle: Node.Keyword.Less? = null,
-    typeParams: List<Node.TypeParam> = listOf(),
+    typeParameters: List<Node.TypeParameter> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     receiverType: Node.Type? = null,
     name: Node.Expression.NameExpression? = null,
     lPar: Node.Keyword.LPar? = null,
-    params: List<Node.FunctionParam> = listOf(),
+    parameters: List<Node.FunctionParameter> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     returnType: Node.Type? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
@@ -208,14 +214,14 @@ fun functionDeclaration(
     tag: Any? = null
 ) = Node.Declaration.FunctionDeclaration(
     modifiers = modifiers,
-    lAngle = if (typeParams.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
-    typeParams = typeParams,
-    rAngle = if (typeParams.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    lAngle = if (typeParameters.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    typeParameters = typeParameters,
+    rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     receiverType = receiverType,
     name = name,
-    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    params = params,
-    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    parameters = parameters,
+    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     returnType = returnType,
     postModifiers = postModifiers,
     body = body,
@@ -226,7 +232,7 @@ fun propertyDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     valOrVarKeyword: Node.Keyword.ValOrVarKeyword,
     lAngle: Node.Keyword.Less? = null,
-    typeParams: List<Node.TypeParam> = listOf(),
+    typeParameters: List<Node.TypeParameter> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     receiverType: Node.Type? = null,
     lPar: Node.Keyword.LPar? = null,
@@ -240,9 +246,9 @@ fun propertyDeclaration(
 ) = Node.Declaration.PropertyDeclaration(
     modifiers = modifiers,
     valOrVarKeyword = valOrVarKeyword,
-    lAngle = if (typeParams.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
-    typeParams = typeParams,
-    rAngle = if (typeParams.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    lAngle = if (typeParameters.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    typeParameters = typeParameters,
+    rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     receiverType = receiverType,
     lPar = if (variables.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
     variables = variables,
@@ -275,16 +281,16 @@ fun getter(
 fun setter(
     modifiers: List<Node.Modifier> = listOf(),
     lPar: Node.Keyword.LPar? = null,
-    params: List<Node.LambdaParam> = listOf(),
+    parameter: Node.FunctionParameter? = null,
     rPar: Node.Keyword.RPar? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
     body: Node.Expression? = null,
     tag: Any? = null
 ) = Node.Declaration.PropertyDeclaration.Setter(
     modifiers = modifiers,
-    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    params = params,
-    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (parameter != null) lPar ?: Node.Keyword.LPar() else lPar,
+    parameter = parameter,
+    rPar = if (parameter != null) rPar ?: Node.Keyword.RPar() else rPar,
     postModifiers = postModifiers,
     body = body,
     tag = tag
@@ -294,16 +300,16 @@ fun typeAliasDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
-    typeParams: List<Node.TypeParam> = listOf(),
+    typeParameters: List<Node.TypeParameter> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     type: Node.Type,
     tag: Any? = null
 ) = Node.Declaration.TypeAliasDeclaration(
     modifiers = modifiers,
     name = name,
-    lAngle = if (typeParams.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
-    typeParams = typeParams,
-    rAngle = if (typeParams.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    lAngle = if (typeParameters.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    typeParameters = typeParameters,
+    rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     type = type,
     tag = tag
 )
@@ -328,7 +334,7 @@ fun simpleType(
     qualifiers: List<Node.Type.SimpleType.SimpleTypeQualifier> = listOf(),
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
-    typeArgs: List<Node.TypeArg> = listOf(),
+    typeArguments: List<Node.TypeArgument> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     tag: Any? = null
 ) = Node.Type.SimpleType(
@@ -336,7 +342,7 @@ fun simpleType(
     qualifiers = qualifiers,
     name = name,
     lAngle = lAngle,
-    typeArgs = typeArgs,
+    typeArguments = typeArguments,
     rAngle = rAngle,
     tag = tag
 )
@@ -344,13 +350,13 @@ fun simpleType(
 fun simpleTypeQualifier(
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
-    typeArgs: List<Node.TypeArg> = listOf(),
+    typeArguments: List<Node.TypeArgument> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     tag: Any? = null
 ) = Node.Type.SimpleType.SimpleTypeQualifier(
     name = name,
     lAngle = lAngle,
-    typeArgs = typeArgs,
+    typeArguments = typeArguments,
     rAngle = rAngle,
     tag = tag
 )
@@ -363,7 +369,7 @@ fun functionType(
     contextReceiver: Node.ContextReceiver? = null,
     receiverType: Node.Type? = null,
     lPar: Node.Keyword.LPar? = null,
-    params: List<Node.Type.FunctionType.FunctionTypeParam> = listOf(),
+    parameters: List<Node.Type.FunctionType.FunctionTypeParameter> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     returnType: Node.Type,
     tag: Any? = null
@@ -371,15 +377,15 @@ fun functionType(
     modifiers = modifiers,
     contextReceiver = contextReceiver,
     receiverType = receiverType,
-    lPar = if (params.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    params = params,
-    rPar = if (params.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    parameters = parameters,
+    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     returnType = returnType,
     tag = tag
 )
 
-fun functionTypeParam(name: Node.Expression.NameExpression? = null, type: Node.Type, tag: Any? = null) =
-    Node.Type.FunctionType.FunctionTypeParam(name = name, type = type, tag = tag)
+fun functionTypeParameter(name: Node.Expression.NameExpression? = null, type: Node.Type, tag: Any? = null) =
+    Node.Type.FunctionType.FunctionTypeParameter(name = name, type = type, tag = tag)
 
 fun ifExpression(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -406,11 +412,17 @@ fun tryExpression(
 
 fun catchClause(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
-    params: List<Node.FunctionParam> = listOf(),
+    parameters: List<Node.FunctionParameter> = listOf(),
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     block: Node.Expression.BlockExpression,
     tag: Any? = null
-) = Node.Expression.TryExpression.CatchClause(lPar = lPar, params = params, rPar = rPar, block = block, tag = tag)
+) = Node.Expression.TryExpression.CatchClause(
+    lPar = lPar,
+    parameters = parameters,
+    rPar = rPar,
+    block = block,
+    tag = tag
+)
 
 fun whenExpression(
     whenKeyword: Node.Keyword.When = Node.Keyword.When(),
@@ -482,43 +494,31 @@ fun blockExpression(vararg statements: Node.Statement) = blockExpression(stateme
 fun callExpression(
     calleeExpression: Node.Expression,
     lAngle: Node.Keyword.Less? = null,
-    typeArgs: List<Node.TypeArg> = listOf(),
+    typeArguments: List<Node.TypeArgument> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     lPar: Node.Keyword.LPar? = null,
-    args: List<Node.ValueArg> = listOf(),
+    arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar? = null,
-    lambdaArg: Node.Expression.CallExpression.LambdaArg? = null,
+    lambdaArgument: Node.Expression? = null,
     tag: Any? = null
 ) = Node.Expression.CallExpression(
     calleeExpression = calleeExpression,
-    lAngle = if (typeArgs.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
-    typeArgs = typeArgs,
-    rAngle = if (typeArgs.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
-    lPar = if (args.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    args = args,
-    rPar = if (args.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
-    lambdaArg = lambdaArg,
-    tag = tag
-)
-
-fun lambdaArg(
-    annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
-    label: Node.Expression.NameExpression? = null,
-    expression: Node.Expression.LambdaExpression,
-    tag: Any? = null
-) = Node.Expression.CallExpression.LambdaArg(
-    annotationSets = annotationSets,
-    label = label,
-    expression = expression,
+    lAngle = if (typeArguments.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    typeArguments = typeArguments,
+    rAngle = if (typeArguments.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    lPar = if (arguments.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    arguments = arguments,
+    rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lambdaArgument = lambdaArgument,
     tag = tag
 )
 
 fun lambdaExpression(
-    params: List<Node.LambdaParam> = listOf(),
+    parameters: List<Node.LambdaParameter> = listOf(),
     arrow: Node.Keyword.Arrow? = null,
     statements: List<Node.Statement> = listOf(),
     tag: Any? = null
-) = Node.Expression.LambdaExpression(params = params, arrow = arrow, statements = statements, tag = tag)
+) = Node.Expression.LambdaExpression(parameters = parameters, arrow = arrow, statements = statements, tag = tag)
 
 fun binaryExpression(
     lhs: Node.Expression,
@@ -599,8 +599,11 @@ fun collectionLiteralExpression(expressions: List<Node.Expression> = listOf(), t
 fun thisExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
     Node.Expression.ThisExpression(label = label, tag = tag)
 
-fun superExpression(typeArg: Node.TypeArg? = null, label: Node.Expression.NameExpression? = null, tag: Any? = null) =
-    Node.Expression.SuperExpression(typeArg = typeArg, label = label, tag = tag)
+fun superExpression(
+    typeArgument: Node.TypeArgument? = null,
+    label: Node.Expression.NameExpression? = null,
+    tag: Any? = null
+) = Node.Expression.SuperExpression(typeArgument = typeArgument, label = label, tag = tag)
 
 fun nameExpression(text: String, tag: Any? = null) = Node.Expression.NameExpression(text = text, tag = tag)
 fun labeledExpression(label: Node.Expression.NameExpression, statement: Node.Statement, tag: Any? = null) =
@@ -618,21 +621,21 @@ fun indexedAccessExpression(expression: Node.Expression, indices: List<Node.Expr
 fun anonymousFunctionExpression(function: Node.Declaration.FunctionDeclaration, tag: Any? = null) =
     Node.Expression.AnonymousFunctionExpression(function = function, tag = tag)
 
-fun typeParam(
+fun typeParameter(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
     type: Node.Type? = null,
     tag: Any? = null
-) = Node.TypeParam(modifiers = modifiers, name = name, type = type, tag = tag)
+) = Node.TypeParameter(modifiers = modifiers, name = name, type = type, tag = tag)
 
-fun functionParam(
+fun functionParameter(
     modifiers: List<Node.Modifier> = listOf(),
     valOrVarKeyword: Node.Keyword.ValOrVarKeyword? = null,
     name: Node.Expression.NameExpression,
     type: Node.Type? = null,
     defaultValue: Node.Expression? = null,
     tag: Any? = null
-) = Node.FunctionParam(
+) = Node.FunctionParameter(
     modifiers = modifiers,
     valOrVarKeyword = valOrVarKeyword,
     name = name,
@@ -641,13 +644,19 @@ fun functionParam(
     tag = tag
 )
 
-fun lambdaParam(
+fun lambdaParameter(
     lPar: Node.Keyword.LPar? = null,
     variables: List<Node.Variable> = listOf(),
     rPar: Node.Keyword.RPar? = null,
-    destructType: Node.Type? = null,
+    destructuringType: Node.Type? = null,
     tag: Any? = null
-) = Node.LambdaParam(lPar = lPar, variables = variables, rPar = rPar, destructType = destructType, tag = tag)
+) = Node.LambdaParameter(
+    lPar = lPar,
+    variables = variables,
+    rPar = rPar,
+    destructuringType = destructuringType,
+    tag = tag
+)
 
 fun variable(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
@@ -656,15 +665,15 @@ fun variable(
     tag: Any? = null
 ) = Node.Variable(annotationSets = annotationSets, name = name, type = type, tag = tag)
 
-fun typeArg(modifiers: List<Node.Modifier> = listOf(), type: Node.Type, tag: Any? = null) =
-    Node.TypeArg(modifiers = modifiers, type = type, tag = tag)
+fun typeArgument(modifiers: List<Node.Modifier> = listOf(), type: Node.Type, tag: Any? = null) =
+    Node.TypeArgument(modifiers = modifiers, type = type, tag = tag)
 
-fun valueArg(
+fun valueArgument(
     name: Node.Expression.NameExpression? = null,
     spreadOperator: Node.Keyword.Asterisk? = null,
     expression: Node.Expression,
     tag: Any? = null
-) = Node.ValueArg(name = name, spreadOperator = spreadOperator, expression = expression, tag = tag)
+) = Node.ValueArgument(name = name, spreadOperator = spreadOperator, expression = expression, tag = tag)
 
 fun contextReceiver(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -690,14 +699,14 @@ fun annotationSet(
 fun annotation(
     type: Node.Type.SimpleType,
     lPar: Node.Keyword.LPar? = null,
-    args: List<Node.ValueArg> = listOf(),
+    arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     tag: Any? = null
 ) = Node.Modifier.AnnotationSet.Annotation(
     type = type,
-    lPar = if (args.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
-    args = args,
-    rPar = if (args.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    lPar = if (arguments.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    arguments = arguments,
+    rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     tag = tag
 )
 

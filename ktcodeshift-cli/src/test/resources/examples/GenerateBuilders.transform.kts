@@ -41,10 +41,10 @@ transform { fileInfo ->
                 // e.g. Make List<Expression> to List<Node.Expression>
                 if (type.name.text == "List") {
                     return type.copy(
-                        typeArgs = type.typeArgs.map { typeArg ->
-                            typeArg.copy(
+                        typeArguments = type.typeArguments.map { typeArgument ->
+                            typeArgument.copy(
                                 type = toFqNameType(
-                                    typeArg.type as Node.Type.SimpleType,
+                                    typeArgument.type as Node.Type.SimpleType,
                                     nestedNames
                                 ),
                             )
@@ -73,12 +73,12 @@ transform { fileInfo ->
 
                         if (v.isDataClass && nestedNames[1] != "Keyword") {
                             val name = v.name.text
-                            val params = v.primaryConstructor?.params.orEmpty()
+                            val parameters = v.primaryConstructor?.parameters.orEmpty()
                             val functionName = name.decapitalizeSmart()
 
                             val func = functionDeclaration(
                                 name = nameExpression(functionName),
-                                params = params.map { p ->
+                                parameters = parameters.map { p ->
                                     val fqType = when (val type = p.type) {
                                         is Node.Type.SimpleType -> toFqNameType(type, nestedNames)
                                         is Node.Type.NullableType -> type.copy(
@@ -89,7 +89,7 @@ transform { fileInfo ->
                                         )
                                         else -> type
                                     }
-                                    functionParam(
+                                    functionParameter(
                                         name = p.name,
                                         type = fqType,
                                         defaultValue = defaultValueOf(fqType),
@@ -97,8 +97,8 @@ transform { fileInfo ->
                                 },
                                 body = callExpression(
                                     calleeExpression = nameExpression(nestedNames.joinToString(".")),
-                                    args = params.map { p ->
-                                        valueArg(
+                                    arguments = parameters.map { p ->
+                                        valueArgument(
                                             name = p.name,
                                             expression = expressionOf(name, p.name),
                                         )
@@ -106,26 +106,26 @@ transform { fileInfo ->
                                 )
                             )
                             stringBuilder.appendLine(Writer.write(func))
-                            val firstParam = func.params.firstOrNull()
-                            if (firstParam?.name?.text == "statements") {
-                                val firstParamType = firstParam.type as? Node.Type.SimpleType
+                            val firstParameter = func.parameters.firstOrNull()
+                            if (firstParameter?.name?.text == "statements") {
+                                val firstParamType = firstParameter.type as? Node.Type.SimpleType
                                 if (firstParamType != null) {
                                     if (firstParamType.name.text == "List") {
-                                        val listElementType = firstParamType.typeArgs[0].type
+                                        val listElementType = firstParamType.typeArguments[0].type
                                         val varargFunc = functionDeclaration(
                                             name = nameExpression(functionName),
-                                            params = listOf(
-                                                functionParam(
+                                            parameters = listOf(
+                                                functionParameter(
                                                     modifiers = listOf(Node.Keyword.Vararg()),
-                                                    name = firstParam.name.copy(),
+                                                    name = firstParameter.name.copy(),
                                                     type = listElementType,
                                                 )
                                             ),
                                             body = callExpression(
                                                 calleeExpression = nameExpression(functionName),
-                                                args = listOf(
-                                                    valueArg(
-                                                        expression = nameExpression("${firstParam.name.text}.toList()"),
+                                                arguments = listOf(
+                                                    valueArgument(
+                                                        expression = nameExpression("${firstParameter.name.text}.toList()"),
                                                     )
                                                 ),
                                             )
@@ -175,25 +175,24 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
 }
 
 val parenthesizedParamNames = mapOf(
-    "PrimaryConstructor" to "params",
-    "EnumEntry" to "args",
-    "SecondaryConstructor" to "params",
-    "FunctionDeclaration" to "params",
+    "PrimaryConstructor" to "parameters",
+    "EnumEntry" to "arguments",
+    "SecondaryConstructor" to "parameters",
+    "FunctionDeclaration" to "parameters",
     "PropertyDeclaration" to "variables",
-    "Setter" to "params",
-    "FunctionType" to "params",
-    "CallExpression" to "args",
-    "LambdaParams" to "variables",
-    "Annotation" to "args",
+    "FunctionType" to "parameters",
+    "CallExpression" to "arguments",
+    "LambdaParameters" to "variables",
+    "Annotation" to "arguments",
 )
 
 val angledParamNames = mapOf(
-    "ClassDeclaration" to "typeParams",
-    "FunctionDeclaration" to "typeParams",
-    "PropertyDeclaration" to "typeParams",
-    "TypeAliasDeclaration" to "typeParams",
-    "SimpleTypePiece" to "typeArgs",
-    "CallExpression" to "typeArgs",
+    "ClassDeclaration" to "typeParameters",
+    "FunctionDeclaration" to "typeParameters",
+    "PropertyDeclaration" to "typeParameters",
+    "TypeAliasDeclaration" to "typeParameters",
+    "SimpleTypePiece" to "typeArguments",
+    "CallExpression" to "typeArguments",
 )
 
 val keywordTypes = mapOf(
@@ -210,6 +209,9 @@ fun expressionOf(className: String, paramName: Node.Expression.NameExpression): 
         "lPar", "rPar" -> {
             if (className == "Getter") {
                 return nameExpression("if (body != null) $name ?: ${keywordTypes[name]}() else $name")
+            }
+            if (className == "Setter") {
+                return nameExpression("if (parameter != null) $name ?: ${keywordTypes[name]}() else $name")
             }
             val parenthesizedParamName = parenthesizedParamNames[className]
             if (parenthesizedParamName != null) {
