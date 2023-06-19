@@ -1,6 +1,6 @@
 package ktcodeshift
 
-typealias TransformFunction = (FileInfo) -> String
+typealias TransformFunction = (FileInfo) -> String?
 
 var transformFunction: TransformFunction? = null
 

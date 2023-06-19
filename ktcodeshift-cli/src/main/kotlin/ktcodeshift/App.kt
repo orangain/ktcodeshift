@@ -90,5 +90,5 @@ fun evalScriptSource(sourceCode: SourceCode, onError: () -> Unit = {}): Transfor
 }
 
 fun applyTransform(transform: TransformFunction, fileInfo: FileInfo): String {
-    return transform(fileInfo)
+    return transform(fileInfo) ?: fileInfo.source
 }

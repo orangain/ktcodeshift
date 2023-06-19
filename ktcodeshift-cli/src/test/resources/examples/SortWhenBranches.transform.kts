@@ -13,7 +13,7 @@ transform { fileInfo ->
     val fileName = fileInfo.path.split("/").last()
     println("fileName: $fileName")
     if (!setOf("Visitor.kt", "MutableVisitor.kt", "Writer.kt").contains(fileName)) {
-        return@transform fileInfo.source
+        return@transform null
     }
 
     val nodeSource =
