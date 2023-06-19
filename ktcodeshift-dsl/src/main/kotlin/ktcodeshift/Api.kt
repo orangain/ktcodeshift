@@ -38,7 +38,7 @@ fun <T : Node> FileWithContext.find(kClass: KClass<T>): NodeCollection<T> = find
 fun <T : Node> FileWithContext.find(javaClass: Class<T>): NodeCollection<T> {
     val nodes = mutableListOf<NodePath<T>>()
     MutableVisitor.traverse(fileNode, extrasMap) { path ->
-        if (path.node::class.java == javaClass) {
+        if (javaClass.isAssignableFrom(path.node::class.java)) {
             @Suppress("UNCHECKED_CAST")
             nodes.add(path as NodePath<T>)
         }
