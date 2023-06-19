@@ -36,12 +36,12 @@ transform { fileInfo ->
         .find<Node.Declaration.FunctionDeclaration>()
         .filter { n ->
             val annotation = getAnnotationByName(n.annotations, "Test")
-            getValueArgByName(annotation?.args, "expected") != null
+            getValueArgumentByName(annotation?.arguments, "expected") != null
         }
         .replaceWith { n ->
             val annotation = getAnnotationByName(n.annotations, "Test")!!
-            val arg = getValueArgByName(annotation.args, "expected")!!
-            val exceptionClassLiteral = arg.expression as Node.Expression.ClassLiteralExpression
+            val argument = getValueArgumentByName(annotation.arguments, "expected")!!
+            val exceptionClassLiteral = argument.expression as Node.Expression.ClassLiteralExpression
             val methodBody = n.body as Node.Expression.BlockExpression
 
             n.copy(
@@ -51,7 +51,7 @@ transform { fileInfo ->
                             annotations = listOf(
                                 annotation.copy(
                                     lPar = null,
-                                    args = listOf(),
+                                    arguments = listOf(),
                                     rPar = null,
                                 )
                             )
@@ -63,15 +63,13 @@ transform { fileInfo ->
                 body = blockExpression(
                     callExpression(
                         calleeExpression = nameExpression("Assertions.assertThrows"),
-                        typeArgs = listOf(
-                            typeArg(
+                        typeArguments = listOf(
+                            typeArgument(
                                 type = exceptionClassLiteral.lhsAsType()!!,
                             )
                         ),
-                        lambdaArg = lambdaArg(
-                            expression = lambdaExpression(
-                                statements = methodBody.statements,
-                            ),
+                        lambdaArgument = lambdaExpression(
+                            statements = methodBody.statements,
                         ),
                     )
                 )
@@ -87,6 +85,6 @@ fun getAnnotationByName(
     return annotations.find { it.type.name.text == name }
 }
 
-fun getValueArgByName(args: List<Node.ValueArg>?, name: String): Node.ValueArg? {
+fun getValueArgumentByName(args: List<Node.ValueArgument>?, name: String): Node.ValueArgument? {
     return args.orEmpty().find { it.name?.text == name }
 }

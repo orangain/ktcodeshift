@@ -7,12 +7,12 @@ transform { fileInfo ->
         .find<Node.Expression.CallExpression>()
         .filter { n -> isListOf(n) }
         .replaceWith { n ->
-            n.copy(args = n.args.flatMap { arg ->
-                val expr = arg.expression
+            n.copy(arguments = n.arguments.flatMap { argument ->
+                val expr = argument.expression
                 if (expr is Node.Expression.CallExpression && isListOf(expr)) {
-                    expr.args
+                    expr.arguments
                 } else {
-                    listOf(arg)
+                    listOf(argument)
                 }
             })
         }
