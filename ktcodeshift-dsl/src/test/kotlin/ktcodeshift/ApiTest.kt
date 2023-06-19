@@ -49,7 +49,72 @@ class FileWithContextTest {
 
     @Test
     fun testFindByParent() {
-        val classOrObjects = fileWithContext.find<Node.Declaration.ClassOrObject>()
-        assertEquals(2, classOrObjects.nodePaths.size)
+        val result = fileWithContext.find<Node.Declaration.ClassOrObject>()
+        assertEquals(2, result.nodePaths.size)
+    }
+}
+
+class NodeCollectionTest {
+    private val nodeCollection = FileWithContext(
+        kotlinFile(
+            declarations = listOf(
+                classDeclaration(
+                    declarationKeyword = Node.Keyword.Class(),
+                    name = nameExpression("Foo"),
+                ),
+                objectDeclaration(
+                    name = nameExpression("Bar")
+                ),
+                functionDeclaration(
+                    name = nameExpression("baz")
+                )
+            )
+        ),
+        ConverterWithMutableExtras()
+    ).find<Node.Declaration>()
+
+    @Test
+    fun testFilter() {
+        assertEquals(3, nodeCollection.nodePaths.size)
+
+        val result = nodeCollection.filter { it is Node.Declaration.ClassOrObject }
+        assertEquals(2, result.nodePaths.size)
+    }
+
+    @Test
+    fun testFilterIndexed() {
+        assertEquals(3, nodeCollection.nodePaths.size)
+
+        var expectedIndex = 0
+        val result = nodeCollection.filterIndexed { i, node ->
+            assertEquals(expectedIndex++, i)
+            node is Node.Declaration.ClassOrObject
+        }
+        assertEquals(2, result.nodePaths.size)
+        assertEquals(3, expectedIndex)
+    }
+
+    @Test
+    fun testMap() {
+        assertEquals(3, nodeCollection.nodePaths.size)
+
+        val result = nodeCollection.map { it is Node.Declaration.ClassOrObject }
+        assertEquals(listOf(true, true, false), result)
+    }
+
+    @Test
+    fun testMapIndexed() {
+        assertEquals(3, nodeCollection.nodePaths.size)
+
+        val result = nodeCollection.mapIndexed { i, node ->
+            Pair(i, node is Node.Declaration.ClassOrObject)
+        }
+        assertEquals(
+            listOf(
+                Pair(0, true),
+                Pair(1, true),
+                Pair(2, false),
+            ), result
+        )
     }
 }

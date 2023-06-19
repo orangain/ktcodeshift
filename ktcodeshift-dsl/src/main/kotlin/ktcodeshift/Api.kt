@@ -57,9 +57,21 @@ data class NodeCollection<T : Node>(
     val fileWithContext: FileWithContext,
 ) {
     fun filter(predicate: NodeContext.(T) -> Boolean): NodeCollection<T> {
+        return filterIndexed { _, node -> predicate(node) }
+    }
+
+    fun filterIndexed(predicate: NodeContext.(Int, T) -> Boolean): NodeCollection<T> {
         return copy(
-            nodePaths = nodePaths.filter { NodeContext(it).predicate(it.node) }
+            nodePaths = nodePaths.filterIndexed { i, path -> NodeContext(path).predicate(i, path.node) }
         )
+    }
+
+    fun <R> map(fn: NodeContext.(T) -> R): List<R> {
+        return mapIndexed { _, node -> fn(node) }
+    }
+
+    fun <R> mapIndexed(fn: NodeContext.(Int, T) -> R): List<R> {
+        return nodePaths.mapIndexed { i, path -> NodeContext(path).fn(i, path.node) }
     }
 
     fun replaceWith(fn: NodeContext.(T) -> T): FileWithContext {
