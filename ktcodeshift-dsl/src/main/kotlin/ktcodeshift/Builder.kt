@@ -1,19 +1,20 @@
 package ktcodeshift
 
 import ktast.ast.Node
+import ktast.ast.NodeSupplement
 
 fun kotlinFile(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     packageDirective: Node.PackageDirective? = null,
     importDirectives: List<Node.ImportDirective> = listOf(),
     declarations: List<Node.Declaration> = listOf(),
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.KotlinFile(
     annotationSets = annotationSets,
     packageDirective = packageDirective,
     importDirectives = importDirectives,
     declarations = declarations,
-    tag = tag
+    supplement = supplement
 )
 
 fun kotlinScript(
@@ -21,23 +22,25 @@ fun kotlinScript(
     packageDirective: Node.PackageDirective? = null,
     importDirectives: List<Node.ImportDirective> = listOf(),
     expressions: List<Node.Expression> = listOf(),
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.KotlinScript(
     annotationSets = annotationSets,
     packageDirective = packageDirective,
     importDirectives = importDirectives,
     expressions = expressions,
-    tag = tag
+    supplement = supplement
 )
 
-fun packageDirective(names: List<Node.Expression.NameExpression> = listOf(), tag: Any? = null) =
-    Node.PackageDirective(names = names, tag = tag)
+fun packageDirective(
+    names: List<Node.Expression.NameExpression> = listOf(),
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.PackageDirective(names = names, supplement = supplement)
 
 fun importDirective(
     names: List<Node.Expression.NameExpression> = listOf(),
     aliasName: Node.Expression.NameExpression? = null,
-    tag: Any? = null
-) = Node.ImportDirective(names = names, aliasName = aliasName, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.ImportDirective(names = names, aliasName = aliasName, supplement = supplement)
 
 fun forStatement(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -46,7 +49,7 @@ fun forStatement(
     loopRange: Node.Expression,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     body: Node.Expression,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Statement.ForStatement(
     lPar = lPar,
     loopParameter = loopParameter,
@@ -54,7 +57,7 @@ fun forStatement(
     loopRange = loopRange,
     rPar = rPar,
     body = body,
-    tag = tag
+    supplement = supplement
 )
 
 fun whileStatement(
@@ -62,42 +65,52 @@ fun whileStatement(
     condition: Node.Expression,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     body: Node.Expression,
-    tag: Any? = null
-) = Node.Statement.WhileStatement(lPar = lPar, condition = condition, rPar = rPar, body = body, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Statement.WhileStatement(lPar = lPar, condition = condition, rPar = rPar, body = body, supplement = supplement)
 
 fun doWhileStatement(
     body: Node.Expression,
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     condition: Node.Expression,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
-    tag: Any? = null
-) = Node.Statement.DoWhileStatement(body = body, lPar = lPar, condition = condition, rPar = rPar, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Statement.DoWhileStatement(
+    body = body,
+    lPar = lPar,
+    condition = condition,
+    rPar = rPar,
+    supplement = supplement
+)
 
 fun constructorClassParent(
     type: Node.Type.SimpleType,
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassOrObject.ConstructorClassParent(
     type = type,
     lPar = lPar,
     arguments = arguments,
     rPar = rPar,
-    tag = tag
+    supplement = supplement
 )
 
-fun delegationClassParent(type: Node.Type, expression: Node.Expression, tag: Any? = null) =
-    Node.Declaration.ClassOrObject.DelegationClassParent(type = type, expression = expression, tag = tag)
+fun delegationClassParent(type: Node.Type, expression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Declaration.ClassOrObject.DelegationClassParent(type = type, expression = expression, supplement = supplement)
 
-fun typeClassParent(type: Node.Type, tag: Any? = null) =
-    Node.Declaration.ClassOrObject.TypeClassParent(type = type, tag = tag)
+fun typeClassParent(type: Node.Type, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Declaration.ClassOrObject.TypeClassParent(type = type, supplement = supplement)
 
 fun classBody(
     enumEntries: List<Node.Declaration.ClassOrObject.ClassBody.EnumEntry> = listOf(),
     declarations: List<Node.Declaration> = listOf(),
-    tag: Any? = null
-) = Node.Declaration.ClassOrObject.ClassBody(enumEntries = enumEntries, declarations = declarations, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Declaration.ClassOrObject.ClassBody(
+    enumEntries = enumEntries,
+    declarations = declarations,
+    supplement = supplement
+)
 
 fun enumEntry(
     modifiers: List<Node.Modifier> = listOf(),
@@ -106,7 +119,7 @@ fun enumEntry(
     arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     classBody: Node.Declaration.ClassOrObject.ClassBody? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassOrObject.ClassBody.EnumEntry(
     modifiers = modifiers,
     name = name,
@@ -114,11 +127,11 @@ fun enumEntry(
     arguments = arguments,
     rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     classBody = classBody,
-    tag = tag
+    supplement = supplement
 )
 
-fun initializer(block: Node.Expression.BlockExpression, tag: Any? = null) =
-    Node.Declaration.ClassOrObject.ClassBody.Initializer(block = block, tag = tag)
+fun initializer(block: Node.Expression.BlockExpression, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Declaration.ClassOrObject.ClassBody.Initializer(block = block, supplement = supplement)
 
 fun secondaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
@@ -128,7 +141,7 @@ fun secondaryConstructor(
     rPar: Node.Keyword.RPar? = null,
     delegationCall: Node.Expression.CallExpression? = null,
     block: Node.Expression.BlockExpression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassOrObject.ClassBody.SecondaryConstructor(
     modifiers = modifiers,
     constructorKeyword = constructorKeyword,
@@ -137,7 +150,7 @@ fun secondaryConstructor(
     rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     delegationCall = delegationCall,
     block = block,
-    tag = tag
+    supplement = supplement
 )
 
 fun classDeclaration(
@@ -151,7 +164,7 @@ fun classDeclaration(
     parents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
     typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
     body: Node.Declaration.ClassOrObject.ClassBody? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassDeclaration(
     modifiers = modifiers,
     declarationKeyword = declarationKeyword,
@@ -163,7 +176,7 @@ fun classDeclaration(
     parents = parents,
     typeConstraintSet = typeConstraintSet,
     body = body,
-    tag = tag
+    supplement = supplement
 )
 
 fun primaryConstructor(
@@ -172,14 +185,14 @@ fun primaryConstructor(
     lPar: Node.Keyword.LPar? = null,
     parameters: List<Node.FunctionParameter> = listOf(),
     rPar: Node.Keyword.RPar? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassDeclaration.PrimaryConstructor(
     modifiers = modifiers,
     constructorKeyword = constructorKeyword,
     lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
     parameters = parameters,
     rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
-    tag = tag
+    supplement = supplement
 )
 
 fun objectDeclaration(
@@ -188,14 +201,14 @@ fun objectDeclaration(
     name: Node.Expression.NameExpression? = null,
     parents: List<Node.Declaration.ClassOrObject.ClassParent> = listOf(),
     body: Node.Declaration.ClassOrObject.ClassBody? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ObjectDeclaration(
     modifiers = modifiers,
     declarationKeyword = declarationKeyword,
     name = name,
     parents = parents,
     body = body,
-    tag = tag
+    supplement = supplement
 )
 
 fun functionDeclaration(
@@ -211,7 +224,7 @@ fun functionDeclaration(
     returnType: Node.Type? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
     body: Node.Expression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.FunctionDeclaration(
     modifiers = modifiers,
     lAngle = if (typeParameters.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
@@ -225,7 +238,7 @@ fun functionDeclaration(
     returnType = returnType,
     postModifiers = postModifiers,
     body = body,
-    tag = tag
+    supplement = supplement
 )
 
 fun propertyDeclaration(
@@ -242,7 +255,7 @@ fun propertyDeclaration(
     initializerExpression: Node.Expression? = null,
     delegateExpression: Node.Expression? = null,
     accessors: List<Node.Declaration.PropertyDeclaration.Accessor> = listOf(),
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.PropertyDeclaration(
     modifiers = modifiers,
     valOrVarKeyword = valOrVarKeyword,
@@ -257,7 +270,7 @@ fun propertyDeclaration(
     initializerExpression = initializerExpression,
     delegateExpression = delegateExpression,
     accessors = accessors,
-    tag = tag
+    supplement = supplement
 )
 
 fun getter(
@@ -267,7 +280,7 @@ fun getter(
     type: Node.Type? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
     body: Node.Expression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.PropertyDeclaration.Getter(
     modifiers = modifiers,
     lPar = if (body != null) lPar ?: Node.Keyword.LPar() else lPar,
@@ -275,7 +288,7 @@ fun getter(
     type = type,
     postModifiers = postModifiers,
     body = body,
-    tag = tag
+    supplement = supplement
 )
 
 fun setter(
@@ -285,7 +298,7 @@ fun setter(
     rPar: Node.Keyword.RPar? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
     body: Node.Expression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.PropertyDeclaration.Setter(
     modifiers = modifiers,
     lPar = if (parameter != null) lPar ?: Node.Keyword.LPar() else lPar,
@@ -293,7 +306,7 @@ fun setter(
     rPar = if (parameter != null) rPar ?: Node.Keyword.RPar() else rPar,
     postModifiers = postModifiers,
     body = body,
-    tag = tag
+    supplement = supplement
 )
 
 fun typeAliasDeclaration(
@@ -303,7 +316,7 @@ fun typeAliasDeclaration(
     typeParameters: List<Node.TypeParameter> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
     type: Node.Type,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.TypeAliasDeclaration(
     modifiers = modifiers,
     name = name,
@@ -311,7 +324,7 @@ fun typeAliasDeclaration(
     typeParameters = typeParameters,
     rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     type = type,
-    tag = tag
+    supplement = supplement
 )
 
 fun parenthesizedType(
@@ -319,15 +332,26 @@ fun parenthesizedType(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     innerType: Node.Type,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
-    tag: Any? = null
-) = Node.Type.ParenthesizedType(modifiers = modifiers, lPar = lPar, innerType = innerType, rPar = rPar, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Type.ParenthesizedType(
+    modifiers = modifiers,
+    lPar = lPar,
+    innerType = innerType,
+    rPar = rPar,
+    supplement = supplement
+)
 
 fun nullableType(
     modifiers: List<Node.Modifier> = listOf(),
     innerType: Node.Type,
     questionMark: Node.Keyword.Question = Node.Keyword.Question(),
-    tag: Any? = null
-) = Node.Type.NullableType(modifiers = modifiers, innerType = innerType, questionMark = questionMark, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Type.NullableType(
+    modifiers = modifiers,
+    innerType = innerType,
+    questionMark = questionMark,
+    supplement = supplement
+)
 
 fun simpleType(
     modifiers: List<Node.Modifier> = listOf(),
@@ -336,7 +360,7 @@ fun simpleType(
     lAngle: Node.Keyword.Less? = null,
     typeArguments: List<Node.TypeArgument> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Type.SimpleType(
     modifiers = modifiers,
     qualifiers = qualifiers,
@@ -344,7 +368,7 @@ fun simpleType(
     lAngle = lAngle,
     typeArguments = typeArguments,
     rAngle = rAngle,
-    tag = tag
+    supplement = supplement
 )
 
 fun simpleTypeQualifier(
@@ -352,17 +376,17 @@ fun simpleTypeQualifier(
     lAngle: Node.Keyword.Less? = null,
     typeArguments: List<Node.TypeArgument> = listOf(),
     rAngle: Node.Keyword.Greater? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Type.SimpleType.SimpleTypeQualifier(
     name = name,
     lAngle = lAngle,
     typeArguments = typeArguments,
     rAngle = rAngle,
-    tag = tag
+    supplement = supplement
 )
 
-fun dynamicType(modifiers: List<Node.Modifier> = listOf(), tag: Any? = null) =
-    Node.Type.DynamicType(modifiers = modifiers, tag = tag)
+fun dynamicType(modifiers: List<Node.Modifier> = listOf(), supplement: NodeSupplement = NodeSupplement()) =
+    Node.Type.DynamicType(modifiers = modifiers, supplement = supplement)
 
 fun functionType(
     modifiers: List<Node.Modifier> = listOf(),
@@ -372,7 +396,7 @@ fun functionType(
     parameters: List<Node.Type.FunctionType.FunctionTypeParameter> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     returnType: Node.Type,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Type.FunctionType(
     modifiers = modifiers,
     contextReceiver = contextReceiver,
@@ -381,11 +405,14 @@ fun functionType(
     parameters = parameters,
     rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     returnType = returnType,
-    tag = tag
+    supplement = supplement
 )
 
-fun functionTypeParameter(name: Node.Expression.NameExpression? = null, type: Node.Type, tag: Any? = null) =
-    Node.Type.FunctionType.FunctionTypeParameter(name = name, type = type, tag = tag)
+fun functionTypeParameter(
+    name: Node.Expression.NameExpression? = null,
+    type: Node.Type,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Type.FunctionType.FunctionTypeParameter(name = name, type = type, supplement = supplement)
 
 fun ifExpression(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -393,43 +420,53 @@ fun ifExpression(
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     body: Node.Expression,
     elseBody: Node.Expression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.IfExpression(
     lPar = lPar,
     condition = condition,
     rPar = rPar,
     body = body,
     elseBody = elseBody,
-    tag = tag
+    supplement = supplement
 )
 
 fun tryExpression(
     block: Node.Expression.BlockExpression,
     catchClauses: List<Node.Expression.TryExpression.CatchClause> = listOf(),
     finallyBlock: Node.Expression.BlockExpression? = null,
-    tag: Any? = null
-) = Node.Expression.TryExpression(block = block, catchClauses = catchClauses, finallyBlock = finallyBlock, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.TryExpression(
+    block = block,
+    catchClauses = catchClauses,
+    finallyBlock = finallyBlock,
+    supplement = supplement
+)
 
 fun catchClause(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     parameters: List<Node.FunctionParameter> = listOf(),
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     block: Node.Expression.BlockExpression,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.TryExpression.CatchClause(
     lPar = lPar,
     parameters = parameters,
     rPar = rPar,
     block = block,
-    tag = tag
+    supplement = supplement
 )
 
 fun whenExpression(
     whenKeyword: Node.Keyword.When = Node.Keyword.When(),
     subject: Node.Expression.WhenExpression.WhenSubject? = null,
     branches: List<Node.Expression.WhenExpression.WhenBranch> = listOf(),
-    tag: Any? = null
-) = Node.Expression.WhenExpression(whenKeyword = whenKeyword, subject = subject, branches = branches, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.WhenExpression(
+    whenKeyword = whenKeyword,
+    subject = subject,
+    branches = branches,
+    supplement = supplement
+)
 
 fun whenSubject(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -437,58 +474,70 @@ fun whenSubject(
     variable: Node.Variable? = null,
     expression: Node.Expression,
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.WhenExpression.WhenSubject(
     lPar = lPar,
     annotationSets = annotationSets,
     variable = variable,
     expression = expression,
     rPar = rPar,
-    tag = tag
+    supplement = supplement
 )
 
 fun conditionalWhenBranch(
     conditions: List<Node.Expression.WhenExpression.WhenCondition> = listOf(),
     arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(),
     body: Node.Expression,
-    tag: Any? = null
-) = Node.Expression.WhenExpression.ConditionalWhenBranch(conditions = conditions, arrow = arrow, body = body, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.WhenExpression.ConditionalWhenBranch(
+    conditions = conditions,
+    arrow = arrow,
+    body = body,
+    supplement = supplement
+)
 
-fun elseWhenBranch(arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(), body: Node.Expression, tag: Any? = null) =
-    Node.Expression.WhenExpression.ElseWhenBranch(arrow = arrow, body = body, tag = tag)
+fun elseWhenBranch(
+    arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(),
+    body: Node.Expression,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.WhenExpression.ElseWhenBranch(arrow = arrow, body = body, supplement = supplement)
 
-fun expressionWhenCondition(expression: Node.Expression, tag: Any? = null) =
-    Node.Expression.WhenExpression.ExpressionWhenCondition(expression = expression, tag = tag)
+fun expressionWhenCondition(expression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.WhenExpression.ExpressionWhenCondition(expression = expression, supplement = supplement)
 
 fun rangeWhenCondition(
     operator: Node.Expression.WhenExpression.WhenConditionRangeOperator,
     expression: Node.Expression,
-    tag: Any? = null
-) = Node.Expression.WhenExpression.RangeWhenCondition(operator = operator, expression = expression, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.WhenExpression.RangeWhenCondition(
+    operator = operator,
+    expression = expression,
+    supplement = supplement
+)
 
 fun typeWhenCondition(
     operator: Node.Expression.WhenExpression.WhenConditionTypeOperator,
     type: Node.Type,
-    tag: Any? = null
-) = Node.Expression.WhenExpression.TypeWhenCondition(operator = operator, type = type, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.WhenExpression.TypeWhenCondition(operator = operator, type = type, supplement = supplement)
 
-fun throwExpression(expression: Node.Expression, tag: Any? = null) =
-    Node.Expression.ThrowExpression(expression = expression, tag = tag)
+fun throwExpression(expression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.ThrowExpression(expression = expression, supplement = supplement)
 
 fun returnExpression(
     label: Node.Expression.NameExpression? = null,
     expression: Node.Expression? = null,
-    tag: Any? = null
-) = Node.Expression.ReturnExpression(label = label, expression = expression, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.ReturnExpression(label = label, expression = expression, supplement = supplement)
 
-fun continueExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
-    Node.Expression.ContinueExpression(label = label, tag = tag)
+fun continueExpression(label: Node.Expression.NameExpression? = null, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.ContinueExpression(label = label, supplement = supplement)
 
-fun breakExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
-    Node.Expression.BreakExpression(label = label, tag = tag)
+fun breakExpression(label: Node.Expression.NameExpression? = null, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.BreakExpression(label = label, supplement = supplement)
 
-fun blockExpression(statements: List<Node.Statement> = listOf(), tag: Any? = null) =
-    Node.Expression.BlockExpression(statements = statements, tag = tag)
+fun blockExpression(statements: List<Node.Statement> = listOf(), supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.BlockExpression(statements = statements, supplement = supplement)
 
 fun blockExpression(vararg statements: Node.Statement) = blockExpression(statements.toList())
 fun callExpression(
@@ -500,7 +549,7 @@ fun callExpression(
     arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     lambdaArgument: Node.Expression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.CallExpression(
     calleeExpression = calleeExpression,
     lAngle = if (typeArguments.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
@@ -510,123 +559,156 @@ fun callExpression(
     arguments = arguments,
     rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
     lambdaArgument = lambdaArgument,
-    tag = tag
+    supplement = supplement
 )
 
 fun lambdaExpression(
     parameters: List<Node.LambdaParameter> = listOf(),
     arrow: Node.Keyword.Arrow? = null,
     statements: List<Node.Statement> = listOf(),
-    tag: Any? = null
-) = Node.Expression.LambdaExpression(parameters = parameters, arrow = arrow, statements = statements, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.LambdaExpression(
+    parameters = parameters,
+    arrow = arrow,
+    statements = statements,
+    supplement = supplement
+)
 
 fun binaryExpression(
     lhs: Node.Expression,
     operator: Node.Expression.BinaryExpression.BinaryOperator,
     rhs: Node.Expression,
-    tag: Any? = null
-) = Node.Expression.BinaryExpression(lhs = lhs, operator = operator, rhs = rhs, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.BinaryExpression(lhs = lhs, operator = operator, rhs = rhs, supplement = supplement)
 
 fun prefixUnaryExpression(
     operator: Node.Expression.UnaryExpression.UnaryOperator,
     expression: Node.Expression,
-    tag: Any? = null
-) = Node.Expression.PrefixUnaryExpression(operator = operator, expression = expression, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.PrefixUnaryExpression(operator = operator, expression = expression, supplement = supplement)
 
 fun postfixUnaryExpression(
     expression: Node.Expression,
     operator: Node.Expression.UnaryExpression.UnaryOperator,
-    tag: Any? = null
-) = Node.Expression.PostfixUnaryExpression(expression = expression, operator = operator, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.PostfixUnaryExpression(expression = expression, operator = operator, supplement = supplement)
 
 fun binaryTypeExpression(
     lhs: Node.Expression,
     operator: Node.Expression.BinaryTypeExpression.BinaryTypeOperator,
     rhs: Node.Type,
-    tag: Any? = null
-) = Node.Expression.BinaryTypeExpression(lhs = lhs, operator = operator, rhs = rhs, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.BinaryTypeExpression(lhs = lhs, operator = operator, rhs = rhs, supplement = supplement)
 
 fun callableReferenceExpression(
     lhs: Node.Expression? = null,
     questionMarks: List<Node.Keyword.Question> = listOf(),
     rhs: Node.Expression.NameExpression,
-    tag: Any? = null
-) = Node.Expression.CallableReferenceExpression(lhs = lhs, questionMarks = questionMarks, rhs = rhs, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.CallableReferenceExpression(
+    lhs = lhs,
+    questionMarks = questionMarks,
+    rhs = rhs,
+    supplement = supplement
+)
 
 fun classLiteralExpression(
     lhs: Node.Expression,
     questionMarks: List<Node.Keyword.Question> = listOf(),
-    tag: Any? = null
-) = Node.Expression.ClassLiteralExpression(lhs = lhs, questionMarks = questionMarks, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.ClassLiteralExpression(lhs = lhs, questionMarks = questionMarks, supplement = supplement)
 
-fun parenthesizedExpression(innerExpression: Node.Expression, tag: Any? = null) =
-    Node.Expression.ParenthesizedExpression(innerExpression = innerExpression, tag = tag)
+fun parenthesizedExpression(innerExpression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.ParenthesizedExpression(innerExpression = innerExpression, supplement = supplement)
 
 fun stringLiteralExpression(
     entries: List<Node.Expression.StringLiteralExpression.StringEntry> = listOf(),
     raw: Boolean = false,
-    tag: Any? = null
-) = Node.Expression.StringLiteralExpression(entries = entries, raw = raw, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.StringLiteralExpression(entries = entries, raw = raw, supplement = supplement)
 
-fun literalStringEntry(text: String, tag: Any? = null) =
-    Node.Expression.StringLiteralExpression.LiteralStringEntry(text = text, tag = tag)
+fun literalStringEntry(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.StringLiteralExpression.LiteralStringEntry(text = text, supplement = supplement)
 
-fun escapeStringEntry(text: String, tag: Any? = null) =
-    Node.Expression.StringLiteralExpression.EscapeStringEntry(text = text, tag = tag)
+fun escapeStringEntry(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.StringLiteralExpression.EscapeStringEntry(text = text, supplement = supplement)
 
-fun templateStringEntry(expression: Node.Expression, short: Boolean = false, tag: Any? = null) =
-    Node.Expression.StringLiteralExpression.TemplateStringEntry(expression = expression, short = short, tag = tag)
+fun templateStringEntry(
+    expression: Node.Expression,
+    short: Boolean = false,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.StringLiteralExpression.TemplateStringEntry(
+    expression = expression,
+    short = short,
+    supplement = supplement
+)
 
-fun booleanLiteralExpression(text: String, tag: Any? = null) =
-    Node.Expression.BooleanLiteralExpression(text = text, tag = tag)
+fun booleanLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.BooleanLiteralExpression(text = text, supplement = supplement)
 
-fun characterLiteralExpression(text: String, tag: Any? = null) =
-    Node.Expression.CharacterLiteralExpression(text = text, tag = tag)
+fun characterLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.CharacterLiteralExpression(text = text, supplement = supplement)
 
-fun integerLiteralExpression(text: String, tag: Any? = null) =
-    Node.Expression.IntegerLiteralExpression(text = text, tag = tag)
+fun integerLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.IntegerLiteralExpression(text = text, supplement = supplement)
 
-fun realLiteralExpression(text: String, tag: Any? = null) =
-    Node.Expression.RealLiteralExpression(text = text, tag = tag)
+fun realLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.RealLiteralExpression(text = text, supplement = supplement)
 
-fun nullLiteralExpression(tag: Any? = null) = Node.Expression.NullLiteralExpression(tag = tag)
-fun objectLiteralExpression(declaration: Node.Declaration.ObjectDeclaration, tag: Any? = null) =
-    Node.Expression.ObjectLiteralExpression(declaration = declaration, tag = tag)
+fun nullLiteralExpression(supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.NullLiteralExpression(supplement = supplement)
 
-fun collectionLiteralExpression(expressions: List<Node.Expression> = listOf(), tag: Any? = null) =
-    Node.Expression.CollectionLiteralExpression(expressions = expressions, tag = tag)
+fun objectLiteralExpression(
+    declaration: Node.Declaration.ObjectDeclaration,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.ObjectLiteralExpression(declaration = declaration, supplement = supplement)
 
-fun thisExpression(label: Node.Expression.NameExpression? = null, tag: Any? = null) =
-    Node.Expression.ThisExpression(label = label, tag = tag)
+fun collectionLiteralExpression(
+    expressions: List<Node.Expression> = listOf(),
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.CollectionLiteralExpression(expressions = expressions, supplement = supplement)
+
+fun thisExpression(label: Node.Expression.NameExpression? = null, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.ThisExpression(label = label, supplement = supplement)
 
 fun superExpression(
     typeArgument: Node.TypeArgument? = null,
     label: Node.Expression.NameExpression? = null,
-    tag: Any? = null
-) = Node.Expression.SuperExpression(typeArgument = typeArgument, label = label, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.SuperExpression(typeArgument = typeArgument, label = label, supplement = supplement)
 
-fun nameExpression(text: String, tag: Any? = null) = Node.Expression.NameExpression(text = text, tag = tag)
-fun labeledExpression(label: Node.Expression.NameExpression, statement: Node.Statement, tag: Any? = null) =
-    Node.Expression.LabeledExpression(label = label, statement = statement, tag = tag)
+fun nameExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Expression.NameExpression(text = text, supplement = supplement)
+
+fun labeledExpression(
+    label: Node.Expression.NameExpression,
+    statement: Node.Statement,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.LabeledExpression(label = label, statement = statement, supplement = supplement)
 
 fun annotatedExpression(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     statement: Node.Statement,
-    tag: Any? = null
-) = Node.Expression.AnnotatedExpression(annotationSets = annotationSets, statement = statement, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.AnnotatedExpression(annotationSets = annotationSets, statement = statement, supplement = supplement)
 
-fun indexedAccessExpression(expression: Node.Expression, indices: List<Node.Expression> = listOf(), tag: Any? = null) =
-    Node.Expression.IndexedAccessExpression(expression = expression, indices = indices, tag = tag)
+fun indexedAccessExpression(
+    expression: Node.Expression,
+    indices: List<Node.Expression> = listOf(),
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.IndexedAccessExpression(expression = expression, indices = indices, supplement = supplement)
 
-fun anonymousFunctionExpression(function: Node.Declaration.FunctionDeclaration, tag: Any? = null) =
-    Node.Expression.AnonymousFunctionExpression(function = function, tag = tag)
+fun anonymousFunctionExpression(
+    function: Node.Declaration.FunctionDeclaration,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Expression.AnonymousFunctionExpression(function = function, supplement = supplement)
 
 fun typeParameter(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
     type: Node.Type? = null,
-    tag: Any? = null
-) = Node.TypeParameter(modifiers = modifiers, name = name, type = type, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.TypeParameter(modifiers = modifiers, name = name, type = type, supplement = supplement)
 
 fun functionParameter(
     modifiers: List<Node.Modifier> = listOf(),
@@ -634,14 +716,14 @@ fun functionParameter(
     name: Node.Expression.NameExpression,
     type: Node.Type? = null,
     defaultValue: Node.Expression? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.FunctionParameter(
     modifiers = modifiers,
     valOrVarKeyword = valOrVarKeyword,
     name = name,
     type = type,
     defaultValue = defaultValue,
-    tag = tag
+    supplement = supplement
 )
 
 fun lambdaParameter(
@@ -649,51 +731,54 @@ fun lambdaParameter(
     variables: List<Node.Variable> = listOf(),
     rPar: Node.Keyword.RPar? = null,
     destructuringType: Node.Type? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.LambdaParameter(
     lPar = lPar,
     variables = variables,
     rPar = rPar,
     destructuringType = destructuringType,
-    tag = tag
+    supplement = supplement
 )
 
 fun variable(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     name: Node.Expression.NameExpression,
     type: Node.Type? = null,
-    tag: Any? = null
-) = Node.Variable(annotationSets = annotationSets, name = name, type = type, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Variable(annotationSets = annotationSets, name = name, type = type, supplement = supplement)
 
-fun typeArgument(modifiers: List<Node.Modifier> = listOf(), type: Node.Type, tag: Any? = null) =
-    Node.TypeArgument(modifiers = modifiers, type = type, tag = tag)
+fun typeArgument(
+    modifiers: List<Node.Modifier> = listOf(),
+    type: Node.Type,
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.TypeArgument(modifiers = modifiers, type = type, supplement = supplement)
 
 fun valueArgument(
     name: Node.Expression.NameExpression? = null,
     spreadOperator: Node.Keyword.Asterisk? = null,
     expression: Node.Expression,
-    tag: Any? = null
-) = Node.ValueArgument(name = name, spreadOperator = spreadOperator, expression = expression, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.ValueArgument(name = name, spreadOperator = spreadOperator, expression = expression, supplement = supplement)
 
 fun contextReceiver(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     receiverTypes: List<Node.Type> = listOf(),
     rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
-    tag: Any? = null
-) = Node.ContextReceiver(lPar = lPar, receiverTypes = receiverTypes, rPar = rPar, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.ContextReceiver(lPar = lPar, receiverTypes = receiverTypes, rPar = rPar, supplement = supplement)
 
 fun annotationSet(
     target: Node.Modifier.AnnotationSet.AnnotationTarget? = null,
     lBracket: Node.Keyword.LBracket? = null,
     annotations: List<Node.Modifier.AnnotationSet.Annotation> = listOf(),
     rBracket: Node.Keyword.RBracket? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Modifier.AnnotationSet(
     target = target,
     lBracket = if (annotations.size >= 2) lBracket ?: Node.Keyword.LBracket() else lBracket,
     annotations = annotations,
     rBracket = if (annotations.size >= 2) rBracket ?: Node.Keyword.RBracket() else rBracket,
-    tag = tag
+    supplement = supplement
 )
 
 fun annotation(
@@ -701,40 +786,49 @@ fun annotation(
     lPar: Node.Keyword.LPar? = null,
     arguments: List<Node.ValueArgument> = listOf(),
     rPar: Node.Keyword.RPar? = null,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.Modifier.AnnotationSet.Annotation(
     type = type,
     lPar = if (arguments.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
     arguments = arguments,
     rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
-    tag = tag
+    supplement = supplement
 )
 
 fun typeConstraintSet(
     constraints: List<Node.PostModifier.TypeConstraintSet.TypeConstraint> = listOf(),
-    tag: Any? = null
-) = Node.PostModifier.TypeConstraintSet(constraints = constraints, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.PostModifier.TypeConstraintSet(constraints = constraints, supplement = supplement)
 
 fun typeConstraint(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     name: Node.Expression.NameExpression,
     type: Node.Type,
-    tag: Any? = null
+    supplement: NodeSupplement = NodeSupplement()
 ) = Node.PostModifier.TypeConstraintSet.TypeConstraint(
     annotationSets = annotationSets,
     name = name,
     type = type,
-    tag = tag
+    supplement = supplement
 )
 
 fun contract(
     lBracket: Node.Keyword.LBracket = Node.Keyword.LBracket(),
     contractEffects: List<Node.Expression> = listOf(),
     rBracket: Node.Keyword.RBracket = Node.Keyword.RBracket(),
-    tag: Any? = null
-) = Node.PostModifier.Contract(lBracket = lBracket, contractEffects = contractEffects, rBracket = rBracket, tag = tag)
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.PostModifier.Contract(
+    lBracket = lBracket,
+    contractEffects = contractEffects,
+    rBracket = rBracket,
+    supplement = supplement
+)
 
-fun whitespace(text: String, tag: Any? = null) = Node.Extra.Whitespace(text = text, tag = tag)
-fun comment(text: String, tag: Any? = null) = Node.Extra.Comment(text = text, tag = tag)
-fun semicolon(tag: Any? = null) = Node.Extra.Semicolon(tag = tag)
-fun trailingComma(tag: Any? = null) = Node.Extra.TrailingComma(tag = tag)
+fun whitespace(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Extra.Whitespace(text = text, supplement = supplement)
+
+fun comment(text: String, supplement: NodeSupplement = NodeSupplement()) =
+    Node.Extra.Comment(text = text, supplement = supplement)
+
+fun semicolon(supplement: NodeSupplement = NodeSupplement()) = Node.Extra.Semicolon(supplement = supplement)
+fun trailingComma(supplement: NodeSupplement = NodeSupplement()) = Node.Extra.TrailingComma(supplement = supplement)
