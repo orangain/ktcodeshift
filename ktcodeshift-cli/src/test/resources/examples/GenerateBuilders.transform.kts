@@ -35,6 +35,7 @@ transform { fileInfo ->
             stringBuilder.appendLine("package ktcodeshift")
             stringBuilder.appendLine()
             stringBuilder.appendLine("import ktast.ast.Node")
+            stringBuilder.appendLine("import ktast.ast.NodeSupplement")
 
             fun toFqNameType(type: Node.Type.SimpleType, nestedNames: List<String>): Node.Type.SimpleType {
 
@@ -161,6 +162,8 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
             nameExpression("listOf()")
         } else if (fqName == "Boolean") {
             nameExpression("false")
+        } else if (fqName == "NodeSupplement") {
+            nameExpression("NodeSupplement()")
         } else {
             if (fqName.startsWith("Node.Keyword.") && !fqName.contains(".ValOrVar")) {
                 nameExpression("$fqName()")
