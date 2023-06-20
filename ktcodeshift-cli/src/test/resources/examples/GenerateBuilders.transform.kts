@@ -140,11 +140,10 @@ transform { fileInfo ->
                 }
             }.traverse(ctx.fileNode)
         }
-        .toSource()
-        .also {
-            java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
-                .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
-        }
+    java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
+        .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
+
+    null
 }
 
 fun nestedClassNames(path: NodePath<*>): List<String> {
