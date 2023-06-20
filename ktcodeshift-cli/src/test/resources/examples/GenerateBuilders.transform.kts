@@ -17,7 +17,7 @@ transform { fileInfo ->
     val stringBuilder = StringBuilder()
     Api
         .parse(fileInfo.source)
-        .also { ctx ->
+        .also { fileNode ->
             val fqNames = mutableSetOf<List<String>>()
 
             object : Visitor() {
@@ -28,7 +28,7 @@ transform { fileInfo ->
                     }
                     super.visit(path)
                 }
-            }.traverse(ctx.fileNode)
+            }.traverse(fileNode)
 
             println(fqNames)
             println("-".repeat(40))
@@ -139,7 +139,7 @@ transform { fileInfo ->
                     }
                     super.visit(path)
                 }
-            }.traverse(ctx.fileNode)
+            }.traverse(fileNode)
         }
     java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
         .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
