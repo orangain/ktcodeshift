@@ -4,40 +4,31 @@ import ktast.ast.MutableVisitor
 import ktast.ast.Node
 import ktast.ast.NodePath
 import ktast.ast.Writer
-import ktast.ast.psi.ConverterWithMutableExtras
 import ktast.ast.psi.Parser
 import java.util.*
 import kotlin.reflect.KClass
 
 object Api {
-    fun parse(source: String): FileWithContext {
-        val extrasMap = ConverterWithMutableExtras()
-        val parser = Parser(extrasMap)
-        return FileWithContext(parser.parseFile(source), extrasMap)
+    fun parse(source: String): Node.KotlinFile {
+        return Parser.parseFile(source)
     }
 }
 
-data class FileWithContext(
-    val fileNode: Node.KotlinFile,
-    val extrasMap: ConverterWithMutableExtras,
-)
-
-fun FileWithContext.traverse(fn: (path: NodePath<*>) -> Node): FileWithContext {
-    val changedFileNode = MutableVisitor.traverse(fileNode, extrasMap, fn)
-    return copy(fileNode = changedFileNode)
+fun <T : Node> T.traverse(fn: (path: NodePath<*>) -> Node): T {
+    return MutableVisitor.traverse(this, fn)
 }
 
-fun FileWithContext.toSource(): String {
-    return Writer.write(fileNode, extrasMap)
+fun Node.toSource(): String {
+    return Writer.write(this)
 }
 
-inline fun <reified T : Node> FileWithContext.find(): NodeCollection<T> = find(T::class)
+inline fun <reified T : Node> Node.KotlinEntry.find(): NodeCollection<T> = find(T::class)
 
-fun <T : Node> FileWithContext.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
+fun <T : Node> Node.KotlinEntry.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
 
-fun <T : Node> FileWithContext.find(javaClass: Class<T>): NodeCollection<T> {
+fun <T : Node> Node.KotlinEntry.find(javaClass: Class<T>): NodeCollection<T> {
     val nodes = mutableListOf<NodePath<T>>()
-    MutableVisitor.traverse(fileNode, extrasMap) { path ->
+    MutableVisitor.traverse(this) { path ->
         if (javaClass.isAssignableFrom(path.node::class.java)) {
             @Suppress("UNCHECKED_CAST")
             nodes.add(path as NodePath<T>)
@@ -54,7 +45,7 @@ class NodeContext(path: NodePath<*>) {
 
 data class NodeCollection<T : Node>(
     val nodePaths: List<NodePath<T>>,
-    val fileWithContext: FileWithContext,
+    val rootNode: Node.KotlinEntry,
 ) {
     fun filter(predicate: NodeContext.(T) -> Boolean): NodeCollection<T> {
         return filterIndexed { _, node -> predicate(node) }
@@ -66,18 +57,18 @@ data class NodeCollection<T : Node>(
         )
     }
 
-    fun <R> map(fn: NodeContext.(T) -> R): List<R> {
+    fun <S> map(fn: NodeContext.(T) -> S): List<S> {
         return mapIndexed { _, node -> fn(node) }
     }
 
-    fun <R> mapIndexed(fn: NodeContext.(Int, T) -> R): List<R> {
+    fun <S> mapIndexed(fn: NodeContext.(Int, T) -> S): List<S> {
         return nodePaths.mapIndexed { i, path -> NodeContext(path).fn(i, path.node) }
     }
 
-    fun replaceWith(fn: NodeContext.(T) -> T): FileWithContext {
+    fun replaceWith(fn: NodeContext.(T) -> T): Node.KotlinEntry {
         val nodeMap = IdentityHashMap<T, Boolean>()
         nodePaths.forEach { nodeMap[it.node] = true }
-        val newFileNode = MutableVisitor.traverse(fileWithContext.fileNode, fileWithContext.extrasMap) { path ->
+        return MutableVisitor.traverse(rootNode) { path ->
             if (nodeMap.contains(path.node)) {
                 @Suppress("UNCHECKED_CAST")
                 NodeContext(path).fn(path.node as T)
@@ -85,9 +76,5 @@ data class NodeCollection<T : Node>(
                 path.node
             }
         }
-        return FileWithContext(
-            fileNode = newFileNode,
-            extrasMap = fileWithContext.extrasMap,
-        )
     }
 }

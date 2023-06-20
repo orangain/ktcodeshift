@@ -17,7 +17,7 @@ transform { fileInfo ->
     val stringBuilder = StringBuilder()
     Api
         .parse(fileInfo.source)
-        .also { ctx ->
+        .also { fileNode ->
             val fqNames = mutableSetOf<List<String>>()
 
             object : Visitor() {
@@ -28,13 +28,14 @@ transform { fileInfo ->
                     }
                     super.visit(path)
                 }
-            }.traverse(ctx.fileNode)
+            }.traverse(fileNode)
 
             println(fqNames)
             println("-".repeat(40))
             stringBuilder.appendLine("package ktcodeshift")
             stringBuilder.appendLine()
             stringBuilder.appendLine("import ktast.ast.Node")
+            stringBuilder.appendLine("import ktast.ast.NodeSupplement")
 
             fun toFqNameType(type: Node.Type.SimpleType, nestedNames: List<String>): Node.Type.SimpleType {
 
@@ -138,7 +139,7 @@ transform { fileInfo ->
                     }
                     super.visit(path)
                 }
-            }.traverse(ctx.fileNode)
+            }.traverse(fileNode)
         }
     java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
         .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
@@ -161,6 +162,8 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
             nameExpression("listOf()")
         } else if (fqName == "Boolean") {
             nameExpression("false")
+        } else if (fqName == "NodeSupplement") {
+            nameExpression("NodeSupplement()")
         } else {
             if (fqName.startsWith("Node.Keyword.") && !fqName.contains(".ValOrVar")) {
                 nameExpression("$fqName()")
