@@ -298,29 +298,39 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
   -t, --transform=TRANSFORM_PATH
                          Transform file
   -V, --version          Print version information and exit.</code></pre>
+      <p>For example:</p>
+      <pre><code>ktcodeshift -t RenameVariable.transform.kts src/main/kotlin</code></pre>
       <h2 id="transform-file">Transform file</h2>
       <p>
         A transform file is a Kotlin script file that defines a lambda function
-        <code>transform</code>. The <code>transform</code> function takes an
-        argument
+        <code>transform: (FileInfo) -&gt; String?</code>. The
+        <code>transform</code> function will be called for each file on the
+        target paths by the ktcodeshift.
+      </p>
+      <p>
+        The <code>transform</code> function takes an argument
         <a
           href="https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html"
           >FileInfo</a
-        >, information about the file, and returns the modified source code. The
-        filename should ends with <code>.transform.kts</code>.
+        >, which has <code>source: String</code> and
+        <code>path: String</code> of the target file, and must return the
+        modified source code or null. When the transform function return the
+        null or the same source code as the input, the ktcodeshift does not
+        modify the target file.
       </p>
+      <p>The script filename should end with <code>.transform.kts</code>.</p>
       <pre><code class="kts language-kts">import ktast.ast.Node
 import ktcodeshift.*
 
 transform { fileInfo -&gt;
     Api
         .parse(fileInfo.source)
-        .find&lt;Node.Expression.Name&gt;()
-        .filter { v, parent -&gt;
-            parent is Node.Declaration.Property.Variable &amp;&amp; v.name == "foo"
+        .find&lt;Node.Expression.NameExpression&gt;()
+        .filter { n -&gt;
+            parent is Node.Variable &amp;&amp; n.text == "foo"
         }
-        .replaceWith { v -&gt;
-            v.copy(name = "bar")
+        .replaceWith { n -&gt;
+            n.copy(text = "bar")
         }
         .toSource()
 }</code></pre>
