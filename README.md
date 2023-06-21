@@ -43,9 +43,24 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
   -V, --version          Print version information and exit.
 ```
 
+For example:
+
+```
+ktcodeshift -t RenameVariable.transform.kts src/main/kotlin
+```
+
 ## Transform file
 
-A transform file is a Kotlin script file that defines a lambda function `transform`. The `transform` function takes an argument [FileInfo](https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html), information about the file, and returns the modified source code. The filename should ends with `.transform.kts`.
+A transform file is a Kotlin script file that defines a lambda function `transform: (FileInfo) -> String?`.
+The `transform` function will be called for each file on the target paths by the ktcodeshift.
+
+The `transform` function takes an
+argument [FileInfo](https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html),
+which has `source: String` and `path: String` of the target file, and must return the modified source code or null. When
+the transform
+function return the null or the same source code as the input, the ktcodeshift does not modify the target file.
+
+The script filename should end with `.transform.kts`.
 
 ```kts
 import ktast.ast.Node
@@ -54,12 +69,12 @@ import ktcodeshift.*
 transform { fileInfo ->
     Api
         .parse(fileInfo.source)
-        .find<Node.Expression.Name>()
-        .filter { v, parent ->
-            parent is Node.Declaration.Property.Variable && v.name == "foo"
+        .find<Node.Expression.NameExpression>()
+        .filter { n ->
+            parent is Node.Variable && n.text == "foo"
         }
-        .replaceWith { v ->
-            v.copy(name = "bar")
+        .replaceWith { n ->
+            n.copy(text = "bar")
         }
         .toSource()
 }
@@ -74,6 +89,5 @@ The following API documents will be helpful to write a transform file.
 
 Example transform files are available
 under the [ktcodeshift-cli/src/test/resources/examples/](ktcodeshift-cli/src/test/resources/examples/) directory. The
-[\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) directory also contains pairs of their input
-and
-output.
+[\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) directory also contains pairs of
+their input and output.
