@@ -43,13 +43,24 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
   -V, --version          Print version information and exit.
 ```
 
+For example:
+
+```
+ktcodeshift -t RenameVariable.transform.kts src/main/kotlin
+```
+
 ## Transform file
 
 A transform file is a Kotlin script file that defines a lambda function `transform: (FileInfo) -> String?`.
+The `transform` function will be called for each file on the target paths by the ktcodeshift.
+
 The `transform` function takes an
 argument [FileInfo](https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html),
-which has `source` and `path` property, and returns the modified source code or null. When the transform function return
-the null, the file will be unmodified. The script filename should end with `.transform.kts`.
+which has `source: String` and `path: String` of the target file, and must return the modified source code or null. When
+the transform
+function return the null or the same source code as the input, the ktcodeshift does not modify the target file.
+
+The script filename should end with `.transform.kts`.
 
 ```kts
 import ktast.ast.Node
