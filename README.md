@@ -45,7 +45,9 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
 
 ## Transform file
 
-A transform file is a Kotlin script file that defines a lambda function `transform`. The `transform` function takes an argument [FileInfo](https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html), information about the file, and returns the modified source code. The filename should ends with `.transform.kts`.
+A transform file is a Kotlin script file that defines a lambda function `transform`. The `transform` function takes an
+argument [FileInfo](https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html),
+information about the file, and returns the modified source code. The filename should ends with `.transform.kts`.
 
 ```kts
 import ktast.ast.Node
@@ -74,6 +76,5 @@ The following API documents will be helpful to write a transform file.
 
 Example transform files are available
 under the [ktcodeshift-cli/src/test/resources/examples/](ktcodeshift-cli/src/test/resources/examples/) directory. The
-[\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) directory also contains pairs of their input
-and
-output.
+[\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) directory also contains pairs of
+their input and output.
