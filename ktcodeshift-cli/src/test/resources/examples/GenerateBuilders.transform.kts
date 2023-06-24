@@ -78,7 +78,7 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
 val parenthesizedParamNames = mapOf(
     "EnumEntry" to "arguments",
     "PropertyDeclaration" to "variables",
-    "LambdaParameters" to "variables",
+    "LambdaParameter" to "variables",
     "Annotation" to "arguments",
 )
 
@@ -113,9 +113,16 @@ fun expressionOf(className: String, paramName: Node.Expression.NameExpression): 
             if (className == "CallExpression") {
                 return nameExpression("if (arguments.isNotEmpty() || lambdaArgument == null) $name ?: $keywordType() else $name")
             }
-            val parenthesizedParamName = parenthesizedParamNames[className]
-            if (parenthesizedParamName != null) {
-                return nameExpression("if ($parenthesizedParamName.isNotEmpty()) $name ?: $keywordType() else $name")
+            when (val parenthesizedParamName = parenthesizedParamNames[className]) {
+                null -> {
+                    // do nothing
+                }
+                "variables" -> {
+                    return nameExpression("$name ?: $keywordType()")
+                }
+                else -> {
+                    return nameExpression("if ($parenthesizedParamName.isNotEmpty()) $name ?: $keywordType() else $name")
+                }
             }
         }
         "lAngle", "rAngle" -> {
@@ -159,6 +166,10 @@ class GeneratorVisitor(
                             stringBuilder.appendLine(Writer.write(varargFunc))
                         }
                     }
+                }
+                if (func.parameters.map { it.name.text }.containsAll(listOf("lPar", "variables", "rPar"))) {
+                    val singleVariableFunc = makeSingleVariableBuilderFunction(func)
+                    stringBuilder.appendLine(Writer.write(singleVariableFunc))
                 }
             }
         }
@@ -232,6 +243,43 @@ class GeneratorVisitor(
             ),
         )
     )
+
+    private fun makeSingleVariableBuilderFunction(func: Node.Declaration.FunctionDeclaration): Node.Declaration.FunctionDeclaration {
+        return func.copy(
+            parameters = func.parameters.map { param ->
+                if (param.name.text == "variables") {
+                    param.copy(
+                        name = nameExpression("variable"),
+                        type = (param.type as Node.Type.SimpleType).typeArguments[0].type,
+                        defaultValue = null,
+                    )
+                } else {
+                    param
+                }
+            }.filterNot {
+                setOf("lPar", "rPar", "destructuringType").contains(it.name.text)
+            },
+            body = (func.body as Node.Expression.CallExpression).copy(
+                arguments = (func.body as Node.Expression.CallExpression).arguments.map {
+                    when (it.name?.text) {
+                        "variables" -> {
+                            it.copy(
+                                expression = nameExpression("listOf(variable)"),
+                            )
+                        }
+                        "lPar", "rPar", "destructuringType" -> {
+                            it.copy(
+                                expression = nullLiteralExpression(),
+                            )
+                        }
+                        else -> {
+                            it
+                        }
+                    }
+                }
+            )
+        )
+    }
 
     private fun toFqNameType(type: Node.Type.SimpleType, nestedNames: List<String>): Node.Type.SimpleType {
         // e.g. Make List<Expression> to List<Node.Expression>
