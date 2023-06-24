@@ -1,4 +1,4 @@
-package ktcodeshift
+package ktcodeshift.script
 
 import kotlinx.coroutines.runBlocking
 import kotlin.script.experimental.annotations.KotlinScript

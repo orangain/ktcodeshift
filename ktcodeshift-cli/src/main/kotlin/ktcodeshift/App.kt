@@ -1,5 +1,6 @@
 package ktcodeshift
 
+import ktcodeshift.script.TransformScript
 import picocli.CommandLine
 import kotlin.io.path.Path
 import kotlin.io.path.extension
