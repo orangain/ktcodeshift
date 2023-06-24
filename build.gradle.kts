@@ -8,6 +8,7 @@ plugins {
 val gitVersion: groovy.lang.Closure<String> by extra
 
 allprojects {
+    group = "com.github.orangain.ktcodeshift"
     version = gitVersion()
 
     repositories {
