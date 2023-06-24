@@ -193,12 +193,8 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
 }
 
 val parenthesizedParamNames = mapOf(
-    "PrimaryConstructor" to "parameters",
     "EnumEntry" to "arguments",
-    "SecondaryConstructor" to "parameters",
-    "FunctionDeclaration" to "parameters",
     "PropertyDeclaration" to "variables",
-    "FunctionType" to "parameters",
     "CallExpression" to "arguments",
     "LambdaParameters" to "variables",
     "Annotation" to "arguments",
