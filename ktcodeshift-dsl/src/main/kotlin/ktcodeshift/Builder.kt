@@ -306,7 +306,7 @@ fun propertyDeclaration(
     rAngle: Node.Keyword.Greater? = null,
     receiverType: Node.Type? = null,
     lPar: Node.Keyword.LPar? = null,
-    variables: List<Node.Variable> = listOf(),
+    variables: List<Node.Variable>,
     rPar: Node.Keyword.RPar? = null,
     typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
     initializerExpression: Node.Expression? = null,
@@ -987,7 +987,7 @@ fun functionParameter(
  */
 fun lambdaParameter(
     lPar: Node.Keyword.LPar? = null,
-    variables: List<Node.Variable> = listOf(),
+    variables: List<Node.Variable>,
     rPar: Node.Keyword.RPar? = null,
     destructuringType: Node.Type? = null,
     supplement: NodeSupplement = NodeSupplement()
