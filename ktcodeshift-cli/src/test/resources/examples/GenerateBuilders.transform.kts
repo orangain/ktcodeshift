@@ -52,13 +52,17 @@ fun functionNameOf(className: String): String {
     return className.decapitalizeSmart()
 }
 
-fun defaultValueOf(type: Node.Type?): Node.Expression? {
+fun defaultValueOf(parameterName: String, type: Node.Type?): Node.Expression? {
     return if (type is Node.Type.NullableType) {
         nameExpression("null")
     } else if (type is Node.Type.SimpleType) {
         val fqName = (type.qualifiers.map { it.name } + type.name).joinToString(".") { it.text }
         if (fqName == "List") {
-            nameExpression("listOf()")
+            if (parameterName == "variables") {
+                null
+            } else {
+                nameExpression("listOf()")
+            }
         } else if (fqName == "Boolean") {
             nameExpression("false")
         } else if (fqName == "NodeSupplement") {
@@ -208,7 +212,7 @@ class GeneratorVisitor(
             functionParameter(
                 name = p.name,
                 type = fqType,
-                defaultValue = defaultValueOf(fqType),
+                defaultValue = defaultValueOf(p.name.text, fqType),
             )
         },
         body = callExpression(
