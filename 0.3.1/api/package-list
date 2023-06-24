@@ -1,0 +1,8 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:ktcodeshift-cli
+ktcodeshift
+module:ktcodeshift-dsl
+ktcodeshift
+ktcodeshift.script
