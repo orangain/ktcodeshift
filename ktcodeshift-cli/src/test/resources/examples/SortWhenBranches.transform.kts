@@ -10,7 +10,7 @@ import ktcodeshift.*
 import java.nio.charset.StandardCharsets
 
 transform { fileInfo ->
-    val fileName = fileInfo.path.split("/").last()
+    val fileName = fileInfo.path.fileName.toString()
     println("fileName: $fileName")
     if (!setOf("Visitor.kt", "MutableVisitor.kt", "Writer.kt").contains(fileName)) {
         return@transform null
