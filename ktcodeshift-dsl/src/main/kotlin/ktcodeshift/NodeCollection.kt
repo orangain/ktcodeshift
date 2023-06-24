@@ -3,38 +3,7 @@ package ktcodeshift
 import ktast.ast.MutableVisitor
 import ktast.ast.Node
 import ktast.ast.NodePath
-import ktast.ast.Writer
 import java.util.*
-import kotlin.reflect.KClass
-
-fun <T : Node> T.traverse(fn: (path: NodePath<*>) -> Node): T {
-    return MutableVisitor.traverse(this, fn)
-}
-
-fun Node.toSource(): String {
-    return Writer.write(this)
-}
-
-inline fun <reified T : Node> Node.KotlinEntry.find(): NodeCollection<T> = find(T::class)
-
-fun <T : Node> Node.KotlinEntry.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
-
-fun <T : Node> Node.KotlinEntry.find(javaClass: Class<T>): NodeCollection<T> {
-    val nodes = mutableListOf<NodePath<T>>()
-    MutableVisitor.traverse(this) { path ->
-        if (javaClass.isAssignableFrom(path.node::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            nodes.add(path as NodePath<T>)
-        }
-        path.node
-    }
-    return NodeCollection(nodes.toList(), this)
-}
-
-class NodeContext(path: NodePath<*>) {
-    val parent: Node? = path.parent?.node
-    val ancestors: Sequence<Node> = path.ancestors()
-}
 
 data class NodeCollection<T : Node>(
     val nodePaths: List<NodePath<T>>,
@@ -70,4 +39,9 @@ data class NodeCollection<T : Node>(
             }
         }
     }
+}
+
+class NodeContext(path: NodePath<*>) {
+    val parent: Node? = path.parent?.node
+    val ancestors: Sequence<Node> = path.ancestors()
 }
