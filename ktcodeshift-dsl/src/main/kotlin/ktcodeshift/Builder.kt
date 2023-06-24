@@ -3,6 +3,9 @@ package ktcodeshift
 import ktast.ast.Node
 import ktast.ast.NodeSupplement
 
+/**
+ * Creates a new [Node.KotlinFile] instance.
+ */
 fun kotlinFile(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     packageDirective: Node.PackageDirective? = null,
@@ -17,6 +20,9 @@ fun kotlinFile(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.KotlinScript] instance.
+ */
 fun kotlinScript(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     packageDirective: Node.PackageDirective? = null,
@@ -31,17 +37,26 @@ fun kotlinScript(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.PackageDirective] instance.
+ */
 fun packageDirective(
     names: List<Node.Expression.NameExpression> = listOf(),
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.PackageDirective(names = names, supplement = supplement)
 
+/**
+ * Creates a new [Node.ImportDirective] instance.
+ */
 fun importDirective(
     names: List<Node.Expression.NameExpression> = listOf(),
     aliasName: Node.Expression.NameExpression? = null,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.ImportDirective(names = names, aliasName = aliasName, supplement = supplement)
 
+/**
+ * Creates a new [Node.Statement.ForStatement] instance.
+ */
 fun forStatement(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     loopParameter: Node.LambdaParameter,
@@ -60,6 +75,9 @@ fun forStatement(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Statement.WhileStatement] instance.
+ */
 fun whileStatement(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     condition: Node.Expression,
@@ -68,6 +86,9 @@ fun whileStatement(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Statement.WhileStatement(lPar = lPar, condition = condition, rPar = rPar, body = body, supplement = supplement)
 
+/**
+ * Creates a new [Node.Statement.DoWhileStatement] instance.
+ */
 fun doWhileStatement(
     body: Node.Expression,
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -82,6 +103,9 @@ fun doWhileStatement(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.ConstructorClassParent] instance.
+ */
 fun constructorClassParent(
     type: Node.Type.SimpleType,
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -96,12 +120,21 @@ fun constructorClassParent(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.DelegationClassParent] instance.
+ */
 fun delegationClassParent(type: Node.Type, expression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
     Node.Declaration.ClassOrObject.DelegationClassParent(type = type, expression = expression, supplement = supplement)
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.TypeClassParent] instance.
+ */
 fun typeClassParent(type: Node.Type, supplement: NodeSupplement = NodeSupplement()) =
     Node.Declaration.ClassOrObject.TypeClassParent(type = type, supplement = supplement)
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.ClassBody] instance.
+ */
 fun classBody(
     enumEntries: List<Node.Declaration.ClassOrObject.ClassBody.EnumEntry> = listOf(),
     declarations: List<Node.Declaration> = listOf(),
@@ -112,6 +145,9 @@ fun classBody(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.ClassBody.EnumEntry] instance.
+ */
 fun enumEntry(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
@@ -130,9 +166,15 @@ fun enumEntry(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.ClassBody.Initializer] instance.
+ */
 fun initializer(block: Node.Expression.BlockExpression, supplement: NodeSupplement = NodeSupplement()) =
     Node.Declaration.ClassOrObject.ClassBody.Initializer(block = block, supplement = supplement)
 
+/**
+ * Creates a new [Node.Declaration.ClassOrObject.ClassBody.SecondaryConstructor] instance.
+ */
 fun secondaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
@@ -153,6 +195,9 @@ fun secondaryConstructor(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ClassDeclaration] instance.
+ */
 fun classDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     declarationKeyword: Node.Declaration.ClassDeclaration.ClassOrInterfaceKeyword,
@@ -179,6 +224,9 @@ fun classDeclaration(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ClassDeclaration.PrimaryConstructor] instance.
+ */
 fun primaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor? = null,
@@ -195,6 +243,9 @@ fun primaryConstructor(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.ObjectDeclaration] instance.
+ */
 fun objectDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     declarationKeyword: Node.Keyword.Object = Node.Keyword.Object(),
@@ -211,6 +262,9 @@ fun objectDeclaration(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.FunctionDeclaration] instance.
+ */
 fun functionDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     lAngle: Node.Keyword.Less? = null,
@@ -241,6 +295,9 @@ fun functionDeclaration(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.PropertyDeclaration] instance.
+ */
 fun propertyDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     valOrVarKeyword: Node.Keyword.ValOrVarKeyword,
@@ -273,6 +330,9 @@ fun propertyDeclaration(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.PropertyDeclaration.Getter] instance.
+ */
 fun getter(
     modifiers: List<Node.Modifier> = listOf(),
     lPar: Node.Keyword.LPar? = null,
@@ -291,6 +351,9 @@ fun getter(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.PropertyDeclaration.Setter] instance.
+ */
 fun setter(
     modifiers: List<Node.Modifier> = listOf(),
     lPar: Node.Keyword.LPar? = null,
@@ -309,6 +372,9 @@ fun setter(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Declaration.TypeAliasDeclaration] instance.
+ */
 fun typeAliasDeclaration(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
@@ -327,6 +393,9 @@ fun typeAliasDeclaration(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Type.ParenthesizedType] instance.
+ */
 fun parenthesizedType(
     modifiers: List<Node.Modifier> = listOf(),
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
@@ -341,6 +410,9 @@ fun parenthesizedType(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Type.NullableType] instance.
+ */
 fun nullableType(
     modifiers: List<Node.Modifier> = listOf(),
     innerType: Node.Type,
@@ -353,6 +425,9 @@ fun nullableType(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Type.SimpleType] instance.
+ */
 fun simpleType(
     modifiers: List<Node.Modifier> = listOf(),
     qualifiers: List<Node.Type.SimpleType.SimpleTypeQualifier> = listOf(),
@@ -371,6 +446,9 @@ fun simpleType(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Type.SimpleType.SimpleTypeQualifier] instance.
+ */
 fun simpleTypeQualifier(
     name: Node.Expression.NameExpression,
     lAngle: Node.Keyword.Less? = null,
@@ -385,9 +463,15 @@ fun simpleTypeQualifier(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Type.DynamicType] instance.
+ */
 fun dynamicType(modifiers: List<Node.Modifier> = listOf(), supplement: NodeSupplement = NodeSupplement()) =
     Node.Type.DynamicType(modifiers = modifiers, supplement = supplement)
 
+/**
+ * Creates a new [Node.Type.FunctionType] instance.
+ */
 fun functionType(
     modifiers: List<Node.Modifier> = listOf(),
     contextReceiver: Node.ContextReceiver? = null,
@@ -408,12 +492,18 @@ fun functionType(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Type.FunctionType.FunctionTypeParameter] instance.
+ */
 fun functionTypeParameter(
     name: Node.Expression.NameExpression? = null,
     type: Node.Type,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Type.FunctionType.FunctionTypeParameter(name = name, type = type, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.IfExpression] instance.
+ */
 fun ifExpression(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     condition: Node.Expression,
@@ -430,6 +520,9 @@ fun ifExpression(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.TryExpression] instance.
+ */
 fun tryExpression(
     block: Node.Expression.BlockExpression,
     catchClauses: List<Node.Expression.TryExpression.CatchClause> = listOf(),
@@ -442,6 +535,9 @@ fun tryExpression(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.TryExpression.CatchClause] instance.
+ */
 fun catchClause(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     parameters: List<Node.FunctionParameter> = listOf(),
@@ -456,6 +552,9 @@ fun catchClause(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.WhenExpression] instance.
+ */
 fun whenExpression(
     whenKeyword: Node.Keyword.When = Node.Keyword.When(),
     subject: Node.Expression.WhenExpression.WhenSubject? = null,
@@ -468,6 +567,9 @@ fun whenExpression(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.WhenExpression.WhenSubject] instance.
+ */
 fun whenSubject(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
@@ -484,6 +586,9 @@ fun whenSubject(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.WhenExpression.ConditionalWhenBranch] instance.
+ */
 fun conditionalWhenBranch(
     conditions: List<Node.Expression.WhenExpression.WhenCondition> = listOf(),
     arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(),
@@ -496,15 +601,24 @@ fun conditionalWhenBranch(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.WhenExpression.ElseWhenBranch] instance.
+ */
 fun elseWhenBranch(
     arrow: Node.Keyword.Arrow = Node.Keyword.Arrow(),
     body: Node.Expression,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.WhenExpression.ElseWhenBranch(arrow = arrow, body = body, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.WhenExpression.ExpressionWhenCondition] instance.
+ */
 fun expressionWhenCondition(expression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.WhenExpression.ExpressionWhenCondition(expression = expression, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.WhenExpression.RangeWhenCondition] instance.
+ */
 fun rangeWhenCondition(
     operator: Node.Expression.WhenExpression.WhenConditionRangeOperator,
     expression: Node.Expression,
@@ -515,31 +629,53 @@ fun rangeWhenCondition(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.WhenExpression.TypeWhenCondition] instance.
+ */
 fun typeWhenCondition(
     operator: Node.Expression.WhenExpression.WhenConditionTypeOperator,
     type: Node.Type,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.WhenExpression.TypeWhenCondition(operator = operator, type = type, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.ThrowExpression] instance.
+ */
 fun throwExpression(expression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.ThrowExpression(expression = expression, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.ReturnExpression] instance.
+ */
 fun returnExpression(
     label: Node.Expression.NameExpression? = null,
     expression: Node.Expression? = null,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.ReturnExpression(label = label, expression = expression, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.ContinueExpression] instance.
+ */
 fun continueExpression(label: Node.Expression.NameExpression? = null, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.ContinueExpression(label = label, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.BreakExpression] instance.
+ */
 fun breakExpression(label: Node.Expression.NameExpression? = null, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.BreakExpression(label = label, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.BlockExpression] instance.
+ */
 fun blockExpression(statements: List<Node.Statement> = listOf(), supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.BlockExpression(statements = statements, supplement = supplement)
 
 fun blockExpression(vararg statements: Node.Statement) = blockExpression(statements.toList())
+
+/**
+ * Creates a new [Node.Expression.CallExpression] instance.
+ */
 fun callExpression(
     calleeExpression: Node.Expression,
     lAngle: Node.Keyword.Less? = null,
@@ -562,6 +698,9 @@ fun callExpression(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.LambdaExpression] instance.
+ */
 fun lambdaExpression(
     parameters: List<Node.LambdaParameter> = listOf(),
     arrow: Node.Keyword.Arrow? = null,
@@ -574,6 +713,9 @@ fun lambdaExpression(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.BinaryExpression] instance.
+ */
 fun binaryExpression(
     lhs: Node.Expression,
     operator: Node.Expression.BinaryExpression.BinaryOperator,
@@ -581,18 +723,27 @@ fun binaryExpression(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.BinaryExpression(lhs = lhs, operator = operator, rhs = rhs, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.PrefixUnaryExpression] instance.
+ */
 fun prefixUnaryExpression(
     operator: Node.Expression.UnaryExpression.UnaryOperator,
     expression: Node.Expression,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.PrefixUnaryExpression(operator = operator, expression = expression, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.PostfixUnaryExpression] instance.
+ */
 fun postfixUnaryExpression(
     expression: Node.Expression,
     operator: Node.Expression.UnaryExpression.UnaryOperator,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.PostfixUnaryExpression(expression = expression, operator = operator, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.BinaryTypeExpression] instance.
+ */
 fun binaryTypeExpression(
     lhs: Node.Expression,
     operator: Node.Expression.BinaryTypeExpression.BinaryTypeOperator,
@@ -600,6 +751,9 @@ fun binaryTypeExpression(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.BinaryTypeExpression(lhs = lhs, operator = operator, rhs = rhs, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.CallableReferenceExpression] instance.
+ */
 fun callableReferenceExpression(
     lhs: Node.Expression? = null,
     questionMarks: List<Node.Keyword.Question> = listOf(),
@@ -612,27 +766,45 @@ fun callableReferenceExpression(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.ClassLiteralExpression] instance.
+ */
 fun classLiteralExpression(
     lhs: Node.Expression,
     questionMarks: List<Node.Keyword.Question> = listOf(),
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.ClassLiteralExpression(lhs = lhs, questionMarks = questionMarks, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.ParenthesizedExpression] instance.
+ */
 fun parenthesizedExpression(innerExpression: Node.Expression, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.ParenthesizedExpression(innerExpression = innerExpression, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.StringLiteralExpression] instance.
+ */
 fun stringLiteralExpression(
     entries: List<Node.Expression.StringLiteralExpression.StringEntry> = listOf(),
     raw: Boolean = false,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.StringLiteralExpression(entries = entries, raw = raw, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.StringLiteralExpression.LiteralStringEntry] instance.
+ */
 fun literalStringEntry(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.StringLiteralExpression.LiteralStringEntry(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.StringLiteralExpression.EscapeStringEntry] instance.
+ */
 fun escapeStringEntry(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.StringLiteralExpression.EscapeStringEntry(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.StringLiteralExpression.TemplateStringEntry] instance.
+ */
 fun templateStringEntry(
     expression: Node.Expression,
     short: Boolean = false,
@@ -643,66 +815,111 @@ fun templateStringEntry(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Expression.BooleanLiteralExpression] instance.
+ */
 fun booleanLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.BooleanLiteralExpression(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.CharacterLiteralExpression] instance.
+ */
 fun characterLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.CharacterLiteralExpression(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.IntegerLiteralExpression] instance.
+ */
 fun integerLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.IntegerLiteralExpression(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.RealLiteralExpression] instance.
+ */
 fun realLiteralExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.RealLiteralExpression(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.NullLiteralExpression] instance.
+ */
 fun nullLiteralExpression(supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.NullLiteralExpression(supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.ObjectLiteralExpression] instance.
+ */
 fun objectLiteralExpression(
     declaration: Node.Declaration.ObjectDeclaration,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.ObjectLiteralExpression(declaration = declaration, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.CollectionLiteralExpression] instance.
+ */
 fun collectionLiteralExpression(
     expressions: List<Node.Expression> = listOf(),
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.CollectionLiteralExpression(expressions = expressions, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.ThisExpression] instance.
+ */
 fun thisExpression(label: Node.Expression.NameExpression? = null, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.ThisExpression(label = label, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.SuperExpression] instance.
+ */
 fun superExpression(
     typeArgument: Node.TypeArgument? = null,
     label: Node.Expression.NameExpression? = null,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.SuperExpression(typeArgument = typeArgument, label = label, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.NameExpression] instance.
+ */
 fun nameExpression(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.NameExpression(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.LabeledExpression] instance.
+ */
 fun labeledExpression(
     label: Node.Expression.NameExpression,
     statement: Node.Statement,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.LabeledExpression(label = label, statement = statement, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.AnnotatedExpression] instance.
+ */
 fun annotatedExpression(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     statement: Node.Statement,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.AnnotatedExpression(annotationSets = annotationSets, statement = statement, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.IndexedAccessExpression] instance.
+ */
 fun indexedAccessExpression(
     expression: Node.Expression,
     indices: List<Node.Expression> = listOf(),
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.IndexedAccessExpression(expression = expression, indices = indices, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.AnonymousFunctionExpression] instance.
+ */
 fun anonymousFunctionExpression(
     function: Node.Declaration.FunctionDeclaration,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Expression.AnonymousFunctionExpression(function = function, supplement = supplement)
 
+/**
+ * Creates a new [Node.TypeParameter] instance.
+ */
 fun typeParameter(
     modifiers: List<Node.Modifier> = listOf(),
     name: Node.Expression.NameExpression,
@@ -710,6 +927,9 @@ fun typeParameter(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.TypeParameter(modifiers = modifiers, name = name, type = type, supplement = supplement)
 
+/**
+ * Creates a new [Node.FunctionParameter] instance.
+ */
 fun functionParameter(
     modifiers: List<Node.Modifier> = listOf(),
     valOrVarKeyword: Node.Keyword.ValOrVarKeyword? = null,
@@ -726,6 +946,9 @@ fun functionParameter(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.LambdaParameter] instance.
+ */
 fun lambdaParameter(
     lPar: Node.Keyword.LPar? = null,
     variables: List<Node.Variable> = listOf(),
@@ -740,6 +963,9 @@ fun lambdaParameter(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Variable] instance.
+ */
 fun variable(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     name: Node.Expression.NameExpression,
@@ -747,12 +973,18 @@ fun variable(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Variable(annotationSets = annotationSets, name = name, type = type, supplement = supplement)
 
+/**
+ * Creates a new [Node.TypeArgument] instance.
+ */
 fun typeArgument(
     modifiers: List<Node.Modifier> = listOf(),
     type: Node.Type,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.TypeArgument(modifiers = modifiers, type = type, supplement = supplement)
 
+/**
+ * Creates a new [Node.ValueArgument] instance.
+ */
 fun valueArgument(
     name: Node.Expression.NameExpression? = null,
     spreadOperator: Node.Keyword.Asterisk? = null,
@@ -760,6 +992,9 @@ fun valueArgument(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.ValueArgument(name = name, spreadOperator = spreadOperator, expression = expression, supplement = supplement)
 
+/**
+ * Creates a new [Node.ContextReceiver] instance.
+ */
 fun contextReceiver(
     lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     receiverTypes: List<Node.Type> = listOf(),
@@ -767,6 +1002,9 @@ fun contextReceiver(
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.ContextReceiver(lPar = lPar, receiverTypes = receiverTypes, rPar = rPar, supplement = supplement)
 
+/**
+ * Creates a new [Node.Modifier.AnnotationSet] instance.
+ */
 fun annotationSet(
     target: Node.Modifier.AnnotationSet.AnnotationTarget? = null,
     lBracket: Node.Keyword.LBracket? = null,
@@ -781,6 +1019,9 @@ fun annotationSet(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Modifier.AnnotationSet.Annotation] instance.
+ */
 fun annotation(
     type: Node.Type.SimpleType,
     lPar: Node.Keyword.LPar? = null,
@@ -795,11 +1036,17 @@ fun annotation(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.PostModifier.TypeConstraintSet] instance.
+ */
 fun typeConstraintSet(
     constraints: List<Node.PostModifier.TypeConstraintSet.TypeConstraint> = listOf(),
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.PostModifier.TypeConstraintSet(constraints = constraints, supplement = supplement)
 
+/**
+ * Creates a new [Node.PostModifier.TypeConstraintSet.TypeConstraint] instance.
+ */
 fun typeConstraint(
     annotationSets: List<Node.Modifier.AnnotationSet> = listOf(),
     name: Node.Expression.NameExpression,
@@ -812,6 +1059,9 @@ fun typeConstraint(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.PostModifier.Contract] instance.
+ */
 fun contract(
     lBracket: Node.Keyword.LBracket = Node.Keyword.LBracket(),
     contractEffects: List<Node.Expression> = listOf(),
@@ -824,11 +1074,24 @@ fun contract(
     supplement = supplement
 )
 
+/**
+ * Creates a new [Node.Extra.Whitespace] instance.
+ */
 fun whitespace(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Extra.Whitespace(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Extra.Comment] instance.
+ */
 fun comment(text: String, supplement: NodeSupplement = NodeSupplement()) =
     Node.Extra.Comment(text = text, supplement = supplement)
 
+/**
+ * Creates a new [Node.Extra.Semicolon] instance.
+ */
 fun semicolon(supplement: NodeSupplement = NodeSupplement()) = Node.Extra.Semicolon(supplement = supplement)
+
+/**
+ * Creates a new [Node.Extra.TrailingComma] instance.
+ */
 fun trailingComma(supplement: NodeSupplement = NodeSupplement()) = Node.Extra.TrailingComma(supplement = supplement)
