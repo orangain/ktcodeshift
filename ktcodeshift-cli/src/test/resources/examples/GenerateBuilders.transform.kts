@@ -5,11 +5,7 @@ ktcodeshift -t ktcodeshift-cli/src/test/resources/examples/GenerateBuilders.tran
 
 */
 
-import ktast.ast.Node
-import ktast.ast.NodePath
-import ktast.ast.NodeSupplement
-import ktast.ast.Visitor
-import ktast.ast.Writer
+import ktast.ast.*
 import ktcodeshift.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
@@ -38,120 +34,7 @@ transform { fileInfo ->
             stringBuilder.appendLine("import ktast.ast.Node")
             stringBuilder.appendLine("import ktast.ast.NodeSupplement")
 
-            fun toFqNameType(type: Node.Type.SimpleType, nestedNames: List<String>): Node.Type.SimpleType {
-
-                // e.g. Make List<Expression> to List<Node.Expression>
-                if (type.name.text == "List") {
-                    return type.copy(
-                        typeArguments = type.typeArguments.map { typeArgument ->
-                            typeArgument.copy(
-                                type = toFqNameType(
-                                    typeArgument.type as Node.Type.SimpleType,
-                                    nestedNames
-                                ),
-                            )
-                        }
-                    )
-                }
-
-                generateSequence(nestedNames) { if (it.isNotEmpty()) it.dropLast(1) else null }.forEach { prefixNames ->
-                    val fqName = prefixNames + type.qualifiers.map { it.name.text } + type.name.text
-                    if (fqNames.contains(fqName)) {
-                        return simpleType(
-                            qualifiers = fqName.dropLast(1).map { simpleTypeQualifier(nameExpression(it)) },
-                            name = nameExpression(fqName.last()),
-                        )
-                    }
-                }
-
-                return type
-            }
-
-            object : Visitor() {
-                override fun visit(path: NodePath<*>) {
-                    val v = path.node
-                    if (v is Node.Declaration.ClassDeclaration) {
-                        val nestedNames = nestedClassNames(path)
-
-                        if (v.isDataClass && nestedNames[1] != "Keyword") {
-                            val name = v.name.text
-                            val parameters = v.primaryConstructor?.parameters.orEmpty()
-                            val functionName = functionNameOf(name)
-
-                            val func = functionDeclaration(
-                                supplement = NodeSupplement(
-                                    extrasBefore = listOf(
-                                        comment(
-                                            """
-                                                /**
-                                                 * Creates a new [${nestedNames.joinToString(".")}] instance.
-                                                 */
-                                            """.trimIndent()
-                                        )
-                                    )
-                                ),
-                                name = nameExpression(functionName),
-                                parameters = parameters.map { p ->
-                                    val fqType = when (val type = p.type) {
-                                        is Node.Type.SimpleType -> toFqNameType(type, nestedNames)
-                                        is Node.Type.NullableType -> type.copy(
-                                            innerType = toFqNameType(
-                                                type.innerType as Node.Type.SimpleType,
-                                                nestedNames
-                                            )
-                                        )
-                                        else -> type
-                                    }
-                                    functionParameter(
-                                        name = p.name,
-                                        type = fqType,
-                                        defaultValue = defaultValueOf(fqType),
-                                    )
-                                },
-                                body = callExpression(
-                                    calleeExpression = nameExpression(nestedNames.joinToString(".")),
-                                    arguments = parameters.map { p ->
-                                        valueArgument(
-                                            name = p.name,
-                                            expression = expressionOf(name, p.name),
-                                        )
-                                    },
-                                )
-                            )
-                            stringBuilder.appendLine(Writer.write(func))
-                            val firstParameter = func.parameters.firstOrNull()
-                            if (firstParameter?.name?.text == "statements") {
-                                val firstParamType = firstParameter.type as? Node.Type.SimpleType
-                                if (firstParamType != null) {
-                                    if (firstParamType.name.text == "List") {
-                                        val listElementType = firstParamType.typeArguments[0].type
-                                        val varargFunc = functionDeclaration(
-                                            name = nameExpression(functionName),
-                                            parameters = listOf(
-                                                functionParameter(
-                                                    modifiers = listOf(Node.Keyword.Vararg()),
-                                                    name = firstParameter.name.copy(),
-                                                    type = listElementType,
-                                                )
-                                            ),
-                                            body = callExpression(
-                                                calleeExpression = nameExpression(functionName),
-                                                arguments = listOf(
-                                                    valueArgument(
-                                                        expression = nameExpression("${firstParameter.name.text}.toList()"),
-                                                    )
-                                                ),
-                                            )
-                                        )
-                                        stringBuilder.appendLine(Writer.write(varargFunc))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    super.visit(path)
-                }
-            }.traverse(fileNode)
+            GeneratorVisitor(stringBuilder, fqNames).traverse(fileNode)
         }
     java.io.File("ktcodeshift-dsl/src/main/kotlin/ktcodeshift/Builder.kt")
         .writeText(stringBuilder.toString(), StandardCharsets.UTF_8)
@@ -248,4 +131,133 @@ fun expressionOf(className: String, paramName: Node.Expression.NameExpression): 
         }
     }
     return paramName.copy()
+}
+
+class GeneratorVisitor(
+    private val stringBuilder: StringBuilder,
+    private val fqNames: Set<List<String>>,
+) : Visitor() {
+    override fun visit(path: NodePath<*>) {
+        val v = path.node
+        if (v is Node.Declaration.ClassDeclaration) {
+            val nestedNames = nestedClassNames(path)
+
+            if (v.isDataClass && nestedNames[1] != "Keyword") {
+                val name = v.name.text
+                val parameters = v.primaryConstructor?.parameters.orEmpty()
+                val functionName = functionNameOf(name)
+
+                val func = makeBuilderFunction(nestedNames, functionName, parameters, name)
+                stringBuilder.appendLine(Writer.write(func))
+                val firstParameter = func.parameters.firstOrNull()
+                if (firstParameter?.name?.text == "statements") {
+                    val firstParamType = firstParameter.type as? Node.Type.SimpleType
+                    if (firstParamType != null) {
+                        if (firstParamType.name.text == "List") {
+                            val listElementType = firstParamType.typeArguments[0].type
+                            val varargFunc = makeVarargBuilderFunction(func, firstParameter.name.text, listElementType)
+                            stringBuilder.appendLine(Writer.write(varargFunc))
+                        }
+                    }
+                }
+            }
+        }
+        super.visit(path)
+    }
+
+    private fun makeBuilderFunction(
+        nestedNames: List<String>,
+        functionName: String,
+        parameters: List<Node.FunctionParameter>,
+        name: String
+    ) = functionDeclaration(
+        supplement = NodeSupplement(
+            extrasBefore = listOf(
+                comment(
+                    """
+                        /**
+                         * Creates a new [${nestedNames.joinToString(".")}] instance.
+                         */
+                    """.trimIndent()
+                )
+            )
+        ),
+        name = nameExpression(functionName),
+        parameters = parameters.map { p ->
+            val fqType = when (val type = p.type) {
+                is Node.Type.SimpleType -> toFqNameType(type, nestedNames)
+                is Node.Type.NullableType -> type.copy(
+                    innerType = toFqNameType(
+                        type.innerType as Node.Type.SimpleType,
+                        nestedNames
+                    )
+                )
+                else -> type
+            }
+            functionParameter(
+                name = p.name,
+                type = fqType,
+                defaultValue = defaultValueOf(fqType),
+            )
+        },
+        body = callExpression(
+            calleeExpression = nameExpression(nestedNames.joinToString(".")),
+            arguments = parameters.map { p ->
+                valueArgument(
+                    name = p.name,
+                    expression = expressionOf(name, p.name),
+                )
+            },
+        )
+    )
+
+    private fun makeVarargBuilderFunction(
+        func: Node.Declaration.FunctionDeclaration,
+        firstParameterName: String,
+        listElementType: Node.Type
+    ) = func.copy(
+        parameters = listOf(
+            functionParameter(
+                modifiers = listOf(Node.Keyword.Vararg()),
+                name = nameExpression(firstParameterName),
+                type = listElementType,
+            )
+        ),
+        body = callExpression(
+            calleeExpression = func.name!!.copy(),
+            arguments = listOf(
+                valueArgument(
+                    expression = nameExpression("$firstParameterName.toList()"),
+                )
+            ),
+        )
+    )
+
+    private fun toFqNameType(type: Node.Type.SimpleType, nestedNames: List<String>): Node.Type.SimpleType {
+        // e.g. Make List<Expression> to List<Node.Expression>
+        if (type.name.text == "List") {
+            return type.copy(
+                typeArguments = type.typeArguments.map { typeArgument ->
+                    typeArgument.copy(
+                        type = toFqNameType(
+                            typeArgument.type as Node.Type.SimpleType,
+                            nestedNames
+                        ),
+                    )
+                }
+            )
+        }
+
+        generateSequence(nestedNames) { if (it.isNotEmpty()) it.dropLast(1) else null }.forEach { prefixNames ->
+            val fqName = prefixNames + type.qualifiers.map { it.name.text } + type.name.text
+            if (fqNames.contains(fqName)) {
+                return simpleType(
+                    qualifiers = fqName.dropLast(1).map { simpleTypeQualifier(nameExpression(it)) },
+                    name = nameExpression(fqName.last()),
+                )
+            }
+        }
+
+        return type
+    }
 }
