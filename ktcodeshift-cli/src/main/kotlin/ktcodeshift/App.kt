@@ -1,6 +1,7 @@
 package ktcodeshift
 
 import picocli.CommandLine
+import kotlin.io.path.Path
 import kotlin.io.path.extension
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
@@ -29,7 +30,7 @@ fun process(args: CLIArgs) {
                 val originalSource = targetFile.readText(charset)
                 val changedSource = try {
                     applyTransform(transform, object : FileInfo {
-                        override val path = targetFile.absolutePath
+                        override val path = Path(targetFile.absolutePath)
                         override val source = originalSource
                     })
                 } catch (ex: Exception) {

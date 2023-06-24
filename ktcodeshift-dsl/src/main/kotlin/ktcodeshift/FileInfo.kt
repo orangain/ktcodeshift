@@ -1,6 +1,8 @@
 package ktcodeshift
 
+import java.nio.file.Path
+
 interface FileInfo {
-    val path: String
     val source: String
+    val path: Path
 }
