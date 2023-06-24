@@ -4,15 +4,8 @@ import ktast.ast.MutableVisitor
 import ktast.ast.Node
 import ktast.ast.NodePath
 import ktast.ast.Writer
-import ktast.ast.psi.Parser
 import java.util.*
 import kotlin.reflect.KClass
-
-object Api {
-    fun parse(source: String): Node.KotlinFile {
-        return Parser.parseFile(source)
-    }
-}
 
 fun <T : Node> T.traverse(fn: (path: NodePath<*>) -> Node): T {
     return MutableVisitor.traverse(this, fn)
