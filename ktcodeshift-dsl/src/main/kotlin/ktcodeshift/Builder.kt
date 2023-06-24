@@ -178,18 +178,18 @@ fun initializer(block: Node.Expression.BlockExpression, supplement: NodeSuppleme
 fun secondaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor = Node.Keyword.Constructor(),
-    lPar: Node.Keyword.LPar? = null,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     parameters: List<Node.FunctionParameter> = listOf(),
-    rPar: Node.Keyword.RPar? = null,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     delegationCall: Node.Expression.CallExpression? = null,
     block: Node.Expression.BlockExpression? = null,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassOrObject.ClassBody.SecondaryConstructor(
     modifiers = modifiers,
     constructorKeyword = constructorKeyword,
-    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = lPar,
     parameters = parameters,
-    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = rPar,
     delegationCall = delegationCall,
     block = block,
     supplement = supplement
@@ -230,16 +230,16 @@ fun classDeclaration(
 fun primaryConstructor(
     modifiers: List<Node.Modifier> = listOf(),
     constructorKeyword: Node.Keyword.Constructor? = null,
-    lPar: Node.Keyword.LPar? = null,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     parameters: List<Node.FunctionParameter> = listOf(),
-    rPar: Node.Keyword.RPar? = null,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Declaration.ClassDeclaration.PrimaryConstructor(
     modifiers = modifiers,
     constructorKeyword = constructorKeyword,
-    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = lPar,
     parameters = parameters,
-    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = rPar,
     supplement = supplement
 )
 
@@ -272,9 +272,9 @@ fun functionDeclaration(
     rAngle: Node.Keyword.Greater? = null,
     receiverType: Node.Type? = null,
     name: Node.Expression.NameExpression? = null,
-    lPar: Node.Keyword.LPar? = null,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     parameters: List<Node.FunctionParameter> = listOf(),
-    rPar: Node.Keyword.RPar? = null,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     returnType: Node.Type? = null,
     postModifiers: List<Node.PostModifier> = listOf(),
     body: Node.Expression? = null,
@@ -286,9 +286,9 @@ fun functionDeclaration(
     rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     receiverType = receiverType,
     name = name,
-    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = lPar,
     parameters = parameters,
-    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = rPar,
     returnType = returnType,
     postModifiers = postModifiers,
     body = body,
@@ -476,18 +476,18 @@ fun functionType(
     modifiers: List<Node.Modifier> = listOf(),
     contextReceiver: Node.ContextReceiver? = null,
     receiverType: Node.Type? = null,
-    lPar: Node.Keyword.LPar? = null,
+    lPar: Node.Keyword.LPar = Node.Keyword.LPar(),
     parameters: List<Node.Type.FunctionType.FunctionTypeParameter> = listOf(),
-    rPar: Node.Keyword.RPar? = null,
+    rPar: Node.Keyword.RPar = Node.Keyword.RPar(),
     returnType: Node.Type,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.Type.FunctionType(
     modifiers = modifiers,
     contextReceiver = contextReceiver,
     receiverType = receiverType,
-    lPar = if (parameters.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = lPar,
     parameters = parameters,
-    rPar = if (parameters.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = rPar,
     returnType = returnType,
     supplement = supplement
 )
@@ -691,9 +691,9 @@ fun callExpression(
     lAngle = if (typeArguments.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
     typeArguments = typeArguments,
     rAngle = if (typeArguments.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
-    lPar = if (arguments.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = if (arguments.isNotEmpty() || lambdaArgument == null) lPar ?: Node.Keyword.LPar() else lPar,
     arguments = arguments,
-    rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = if (arguments.isNotEmpty() || lambdaArgument == null) rPar ?: Node.Keyword.RPar() else rPar,
     lambdaArgument = lambdaArgument,
     supplement = supplement
 )

@@ -193,13 +193,8 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
 }
 
 val parenthesizedParamNames = mapOf(
-    "PrimaryConstructor" to "parameters",
     "EnumEntry" to "arguments",
-    "SecondaryConstructor" to "parameters",
-    "FunctionDeclaration" to "parameters",
     "PropertyDeclaration" to "variables",
-    "FunctionType" to "parameters",
-    "CallExpression" to "arguments",
     "LambdaParameters" to "variables",
     "Annotation" to "arguments",
 )
@@ -223,28 +218,32 @@ val keywordTypes = mapOf(
 )
 
 fun expressionOf(className: String, paramName: Node.Expression.NameExpression): Node.Expression {
+    val keywordType = keywordTypes[paramName.text]
     when (val name = paramName.text) {
         "lPar", "rPar" -> {
             if (className == "Getter") {
-                return nameExpression("if (body != null) $name ?: ${keywordTypes[name]}() else $name")
+                return nameExpression("if (body != null) $name ?: $keywordType() else $name")
             }
             if (className == "Setter") {
-                return nameExpression("if (parameter != null) $name ?: ${keywordTypes[name]}() else $name")
+                return nameExpression("if (parameter != null) $name ?: $keywordType() else $name")
+            }
+            if (className == "CallExpression") {
+                return nameExpression("if (arguments.isNotEmpty() || lambdaArgument == null) $name ?: $keywordType() else $name")
             }
             val parenthesizedParamName = parenthesizedParamNames[className]
             if (parenthesizedParamName != null) {
-                return nameExpression("if ($parenthesizedParamName.isNotEmpty()) $name ?: ${keywordTypes[name]}() else $name")
+                return nameExpression("if ($parenthesizedParamName.isNotEmpty()) $name ?: $keywordType() else $name")
             }
         }
         "lAngle", "rAngle" -> {
             val angledParamName = angledParamNames[className]
             if (angledParamName != null) {
-                return nameExpression("if ($angledParamName.isNotEmpty()) $name ?: ${keywordTypes[name]}() else $name")
+                return nameExpression("if ($angledParamName.isNotEmpty()) $name ?: $keywordType() else $name")
             }
         }
         "lBracket", "rBracket" -> {
             if (className == "AnnotationSet") {
-                return nameExpression("if (annotations.size >= 2) $name ?: ${keywordTypes[name]}() else $name")
+                return nameExpression("if (annotations.size >= 2) $name ?: $keywordType() else $name")
             }
         }
     }
