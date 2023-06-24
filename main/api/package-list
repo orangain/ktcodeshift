@@ -5,3 +5,4 @@ module:ktcodeshift-cli
 ktcodeshift
 module:ktcodeshift-dsl
 ktcodeshift
+ktcodeshift.script
