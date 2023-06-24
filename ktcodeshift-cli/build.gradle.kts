@@ -5,13 +5,9 @@ plugins {
     kotlin("jvm")
     // Add support for building a CLI application in Java.
     application
-    // Add support for generating version number from Git status.
-    id("com.palantir.git-version") version "3.0.0"
+    // Add support for generating document.
     id("org.jetbrains.dokka")
 }
-
-val gitVersion: groovy.lang.Closure<String> by extra
-version = gitVersion()
 
 dependencies {
     // Align versions of all Kotlin components
