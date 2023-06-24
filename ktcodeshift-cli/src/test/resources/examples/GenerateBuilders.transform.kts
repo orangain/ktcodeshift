@@ -195,7 +195,6 @@ fun defaultValueOf(type: Node.Type?): Node.Expression? {
 val parenthesizedParamNames = mapOf(
     "EnumEntry" to "arguments",
     "PropertyDeclaration" to "variables",
-    "CallExpression" to "arguments",
     "LambdaParameters" to "variables",
     "Annotation" to "arguments",
 )
@@ -226,6 +225,9 @@ fun expressionOf(className: String, paramName: Node.Expression.NameExpression): 
             }
             if (className == "Setter") {
                 return nameExpression("if (parameter != null) $name ?: ${keywordTypes[name]}() else $name")
+            }
+            if (className == "CallExpression") {
+                return nameExpression("if (arguments.isNotEmpty() || lambdaArgument == null) $name ?: ${keywordTypes[name]}() else $name")
             }
             val parenthesizedParamName = parenthesizedParamNames[className]
             if (parenthesizedParamName != null) {
