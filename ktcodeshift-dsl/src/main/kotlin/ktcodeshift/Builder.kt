@@ -320,9 +320,42 @@ fun propertyDeclaration(
     typeParameters = typeParameters,
     rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
     receiverType = receiverType,
-    lPar = if (variables.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = lPar ?: Node.Keyword.LPar(),
     variables = variables,
-    rPar = if (variables.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = rPar ?: Node.Keyword.RPar(),
+    typeConstraintSet = typeConstraintSet,
+    initializerExpression = initializerExpression,
+    delegateExpression = delegateExpression,
+    accessors = accessors,
+    supplement = supplement
+)
+
+/**
+ * Creates a new [Node.Declaration.PropertyDeclaration] instance.
+ */
+fun propertyDeclaration(
+    modifiers: List<Node.Modifier> = listOf(),
+    valOrVarKeyword: Node.Keyword.ValOrVarKeyword,
+    lAngle: Node.Keyword.Less? = null,
+    typeParameters: List<Node.TypeParameter> = listOf(),
+    rAngle: Node.Keyword.Greater? = null,
+    receiverType: Node.Type? = null,
+    variable: Node.Variable,
+    typeConstraintSet: Node.PostModifier.TypeConstraintSet? = null,
+    initializerExpression: Node.Expression? = null,
+    delegateExpression: Node.Expression? = null,
+    accessors: List<Node.Declaration.PropertyDeclaration.Accessor> = listOf(),
+    supplement: NodeSupplement = NodeSupplement()
+) = Node.Declaration.PropertyDeclaration(
+    modifiers = modifiers,
+    valOrVarKeyword = valOrVarKeyword,
+    lAngle = if (typeParameters.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
+    typeParameters = typeParameters,
+    rAngle = if (typeParameters.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
+    receiverType = receiverType,
+    lPar = null,
+    variables = listOf(variable),
+    rPar = null,
     typeConstraintSet = typeConstraintSet,
     initializerExpression = initializerExpression,
     delegateExpression = delegateExpression,
@@ -671,6 +704,9 @@ fun breakExpression(label: Node.Expression.NameExpression? = null, supplement: N
 fun blockExpression(statements: List<Node.Statement> = listOf(), supplement: NodeSupplement = NodeSupplement()) =
     Node.Expression.BlockExpression(statements = statements, supplement = supplement)
 
+/**
+ * Creates a new [Node.Expression.BlockExpression] instance.
+ */
 fun blockExpression(vararg statements: Node.Statement) = blockExpression(statements.toList())
 
 /**
@@ -956,10 +992,21 @@ fun lambdaParameter(
     destructuringType: Node.Type? = null,
     supplement: NodeSupplement = NodeSupplement()
 ) = Node.LambdaParameter(
-    lPar = lPar,
+    lPar = lPar ?: Node.Keyword.LPar(),
     variables = variables,
-    rPar = rPar,
+    rPar = rPar ?: Node.Keyword.RPar(),
     destructuringType = destructuringType,
+    supplement = supplement
+)
+
+/**
+ * Creates a new [Node.LambdaParameter] instance.
+ */
+fun lambdaParameter(variable: Node.Variable, supplement: NodeSupplement = NodeSupplement()) = Node.LambdaParameter(
+    lPar = null,
+    variables = listOf(variable),
+    rPar = null,
+    destructuringType = null,
     supplement = supplement
 )
 
