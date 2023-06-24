@@ -691,9 +691,9 @@ fun callExpression(
     lAngle = if (typeArguments.isNotEmpty()) lAngle ?: Node.Keyword.Less() else lAngle,
     typeArguments = typeArguments,
     rAngle = if (typeArguments.isNotEmpty()) rAngle ?: Node.Keyword.Greater() else rAngle,
-    lPar = if (arguments.isNotEmpty()) lPar ?: Node.Keyword.LPar() else lPar,
+    lPar = if (arguments.isNotEmpty() || lambdaArgument == null) lPar ?: Node.Keyword.LPar() else lPar,
     arguments = arguments,
-    rPar = if (arguments.isNotEmpty()) rPar ?: Node.Keyword.RPar() else rPar,
+    rPar = if (arguments.isNotEmpty() || lambdaArgument == null) rPar ?: Node.Keyword.RPar() else rPar,
     lambdaArgument = lambdaArgument,
     supplement = supplement
 )
