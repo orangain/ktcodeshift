@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets
 
 transform { fileInfo ->
     val stringBuilder = StringBuilder()
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .also { fileNode ->
             val fqNames = mutableSetOf<List<String>>()

@@ -10,7 +10,7 @@ val annotationNameMap = mapOf(
 )
 
 transform { fileInfo ->
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .find<Node.ImportDirective>()
         .filter { n ->
