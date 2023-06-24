@@ -1,6 +1,8 @@
 package ktcodeshift
 
+import ktcodeshift.script.TransformScript
 import picocli.CommandLine
+import kotlin.io.path.Path
 import kotlin.io.path.extension
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.SourceCode
@@ -14,7 +16,7 @@ fun main(args: Array<String>) {
     exitProcess(exitCode)
 }
 
-fun process(args: CLIArgs) {
+private fun process(args: CLIArgs) {
     println("Loading transform script ${args.transformFile}")
     val transform = evalScriptSource(args.transformFile.toScriptSource(), onError = { exitProcess(1) })
     if (args.dryRun) {
@@ -29,7 +31,7 @@ fun process(args: CLIArgs) {
                 val originalSource = targetFile.readText(charset)
                 val changedSource = try {
                     applyTransform(transform, object : FileInfo {
-                        override val path = targetFile.absolutePath
+                        override val path = Path(targetFile.absolutePath)
                         override val source = originalSource
                     })
                 } catch (ex: Exception) {
@@ -56,11 +58,11 @@ fun process(args: CLIArgs) {
     println("${transformResults[TransformResult.SUCCEEDED] ?: 0} ok")
 }
 
-enum class TransformResult {
+private enum class TransformResult {
     SUCCEEDED, UNMODIFIED, FAILED
 }
 
-fun evalScriptSource(sourceCode: SourceCode, onError: () -> Unit = {}): TransformFunction {
+internal fun evalScriptSource(sourceCode: SourceCode, onError: () -> Unit = {}): TransformFunction {
     transformFunction = null
 
     val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<TransformScript>()
@@ -89,6 +91,6 @@ fun evalScriptSource(sourceCode: SourceCode, onError: () -> Unit = {}): Transfor
     return transform
 }
 
-fun applyTransform(transform: TransformFunction, fileInfo: FileInfo): String {
+internal fun applyTransform(transform: TransformFunction, fileInfo: FileInfo): String {
     return transform(fileInfo) ?: fileInfo.source
 }

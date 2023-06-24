@@ -10,7 +10,7 @@ import ktcodeshift.*
 import java.nio.charset.StandardCharsets
 
 transform { fileInfo ->
-    val fileName = fileInfo.path.split("/").last()
+    val fileName = fileInfo.path.fileName.toString()
     println("fileName: $fileName")
     if (!setOf("Visitor.kt", "MutableVisitor.kt", "Writer.kt").contains(fileName)) {
         return@transform null
@@ -18,14 +18,14 @@ transform { fileInfo ->
 
     val nodeSource =
         java.io.File("../ktast/ast/src/commonMain/kotlin/ktast/ast/Node.kt").readText(StandardCharsets.UTF_8)
-    val nodeIndexes = Api.parse(nodeSource)
+    val nodeIndexes = Ktcodeshift.parse(nodeSource)
         .find<Node.Declaration.ClassDeclaration>()
         .map { nestedClassNames(it, ancestors) }
         .mapIndexed { index, names -> names to index }
         .toMap()
 //    println(nodeIndexes)
 
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .find<Node.Expression.WhenExpression>()
         .filterIndexed { index, _ ->

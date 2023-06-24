@@ -2,7 +2,7 @@ import ktast.ast.Node
 import ktcodeshift.*
 
 transform { fileInfo ->
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .find<Node.Expression.NameExpression>()
         .filter { n ->

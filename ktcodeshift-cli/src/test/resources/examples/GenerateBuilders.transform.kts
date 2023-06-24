@@ -7,6 +7,7 @@ ktcodeshift -t ktcodeshift-cli/src/test/resources/examples/GenerateBuilders.tran
 
 import ktast.ast.Node
 import ktast.ast.NodePath
+import ktast.ast.NodeSupplement
 import ktast.ast.Visitor
 import ktast.ast.Writer
 import ktcodeshift.*
@@ -15,7 +16,7 @@ import java.nio.charset.StandardCharsets
 
 transform { fileInfo ->
     val stringBuilder = StringBuilder()
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .also { fileNode ->
             val fqNames = mutableSetOf<List<String>>()
@@ -75,9 +76,20 @@ transform { fileInfo ->
                         if (v.isDataClass && nestedNames[1] != "Keyword") {
                             val name = v.name.text
                             val parameters = v.primaryConstructor?.parameters.orEmpty()
-                            val functionName = name.decapitalizeSmart()
+                            val functionName = functionNameOf(name)
 
                             val func = functionDeclaration(
+                                supplement = NodeSupplement(
+                                    extrasBefore = listOf(
+                                        comment(
+                                            """
+                                                /**
+                                                 * Creates a new [${nestedNames.joinToString(".")}] instance.
+                                                 */
+                                            """.trimIndent()
+                                        )
+                                    )
+                                ),
                                 name = nameExpression(functionName),
                                 parameters = parameters.map { p ->
                                     val fqType = when (val type = p.type) {
@@ -151,6 +163,10 @@ fun nestedClassNames(path: NodePath<*>): List<String> {
     val nestedClasses = (path.ancestors().toList().reversed() + path.node)
         .filterIsInstance<Node.Declaration.ClassDeclaration>()
     return nestedClasses.map { it.name.text }
+}
+
+fun functionNameOf(className: String): String {
+    return className.decapitalizeSmart()
 }
 
 fun defaultValueOf(type: Node.Type?): Node.Expression? {

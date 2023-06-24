@@ -1,6 +1,7 @@
 package ktcodeshift.testing
 
 import ktcodeshift.*
+import kotlin.io.path.Path
 import kotlin.reflect.KClass
 import kotlin.script.experimental.host.UrlScriptSource
 import kotlin.test.assertEquals
@@ -17,7 +18,7 @@ fun testTransform(testClass: KClass<*>, transformName: String, fixtureName: Stri
     val transform = evalScriptSource(UrlScriptSource(scriptUrl))
 
     val changedSource = applyTransform(transform, object : FileInfo {
-        override val path = inputPath
+        override val path = Path(inputPath)
         override val source = inputSource
     })
 

@@ -56,9 +56,9 @@ The `transform` function will be called for each file on the target paths by the
 
 The `transform` function takes an
 argument [FileInfo](https://orangain.github.io/ktcodeshift/main/api/ktcodeshift-dsl/ktcodeshift/-file-info/index.html),
-which has `source: String` and `path: String` of the target file, and must return the modified source code or null. When
-the transform
-function return the null or the same source code as the input, the ktcodeshift does not modify the target file.
+which has `source: String` and `path: java.nio.file.Path` of the target file, and must return the modified source code
+or null. When the transform function return the null or the same source code as the input, the ktcodeshift does not
+modify the target file.
 
 The script filename should end with `.transform.kts`.
 
@@ -67,7 +67,7 @@ import ktast.ast.Node
 import ktcodeshift.*
 
 transform { fileInfo ->
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .find<Node.Expression.NameExpression>()
         .filter { n ->
