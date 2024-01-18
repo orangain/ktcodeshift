@@ -364,6 +364,38 @@ transform { fileInfo -&gt;
         >
         directory also contains pairs of their input and output.
       </p>
+      <h2 id="development-tips">Development Tips</h2>
+      <h3 id="dumping-ast">Dumping AST</h3>
+      <p>
+        You can dump the AST of a Kotlin file using the
+        <a
+          href="https://orangain.github.io/ktast/latest/api/ast/ktast.ast/-dumper/index.html"
+          >ktast.ast.Dumper</a
+        >. This is useful to understand the structure of the AST. For example:
+      </p>
+      <pre><code class="kts language-kts">import ktast.ast.*
+import ktcodeshift.*
+
+transform { fileInfo -&gt;
+    Ktcodeshift
+        .parse(fileInfo.source)
+        .also { println(Dumper.dump(it)) } // This line dumps the AST.
+        .toSource()
+}</code></pre>
+      <h3 id="builder-functions">Builder Functions</h3>
+      <p>
+        The
+        <a
+          href="https://orangain.github.io/ktcodeshift/latest/api/ktcodeshift-dsl/ktcodeshift/index.html"
+          >ktcodeshift</a
+        >
+        package provides a number of builder functions to create AST nodes. The
+        function name corresponds to the class name of the AST node, i.e.
+        <code>Node.Expression.NameExpression</code> is created by
+        <code>nameExpression()</code> function. Unlike the parameters of the
+        constructor of the AST node class, many of the parameters of the builder
+        functions are optional and have sensible default values.
+      </p>
     </main>
   </body>
 </html>
