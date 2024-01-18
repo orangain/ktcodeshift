@@ -323,7 +323,7 @@ Apply transform logic in TRANSFORM_PATH (recursively) to every PATH.
 import ktcodeshift.*
 
 transform { fileInfo -&gt;
-    Api
+    Ktcodeshift
         .parse(fileInfo.source)
         .find&lt;Node.Expression.NameExpression&gt;()
         .filter { n -&gt;
