@@ -92,3 +92,25 @@ Example transform files are available
 under the [ktcodeshift-cli/src/test/resources/examples/](ktcodeshift-cli/src/test/resources/examples/) directory. The
 [\_\_testfixtures\_\_](ktcodeshift-cli/src/test/resources/examples/__testfixtures__) directory also contains pairs of
 their input and output.
+
+## Development Tips
+
+### Dumping AST
+
+You can dump the AST of a Kotlin file using the [ktast.ast.Dumper](https://orangain.github.io/ktast/latest/api/ast/ktast.ast/-dumper/index.html). This is useful to understand the structure of the AST. For example:
+
+```kts
+import ktast.ast.*
+import ktcodeshift.*
+
+transform { fileInfo ->
+    Ktcodeshift
+        .parse(fileInfo.source)
+        .also { println(Dumper.dump(it)) } // This line dumps the AST.
+        .toSource()
+}
+```
+
+### Builder Functions
+
+The [ktcodeshift](https://orangain.github.io/ktcodeshift/latest/api/ktcodeshift-dsl/ktcodeshift/index.html) package provides a number of builder functions to create AST nodes. The function name corresponds to the class name of the AST node, i.e. `Node.Expression.NameExpression` is created by `nameExpression()` function. Unlike the parameters of the constructor of the AST node class, many of the parameters of the builder functions are optional and have sensible default values.
