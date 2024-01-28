@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "1.9.22"
     id("org.jetbrains.dokka") version "1.9.10"
     // Add support for generating version number from Git status.
     id("com.palantir.git-version") version "3.0.0"
