@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - dokka
+      - spike-update-document-action
 
 jobs:
   build:
@@ -26,9 +27,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Build document
         run: ./gradlew dokkaHtmlMultiModule
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./build/dokka/htmlMultiModule
-          destination_dir: ./${{ github.ref_name }}/api
+      # - name: Deploy
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      #     publish_dir: ./build/dokka/htmlMultiModule
+      #     destination_dir: ./${{ github.ref_name }}/api
