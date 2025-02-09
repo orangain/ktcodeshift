@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -21,11 +22,13 @@ dependencies {
     implementation("info.picocli:picocli:4.7.6")
     implementation(project(":ktcodeshift-dsl")) // the script definition module
     implementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("com.github.orangain.ktast:ast-psi:0.9.3")
+    testImplementation("com.github.orangain.ktast:ast-psi:0.9.4")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
 }
 
 java {
