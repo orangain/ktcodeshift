@@ -114,3 +114,11 @@ transform { fileInfo ->
 ### Builder Functions
 
 The [ktcodeshift](https://orangain.github.io/ktcodeshift/latest/api/ktcodeshift-dsl/ktcodeshift/index.html) package provides a number of builder functions to create AST nodes. The function name corresponds to the class name of the AST node, i.e. `Node.Expression.NameExpression` is created by `nameExpression()` function. Unlike the parameters of the constructor of the AST node class, many of the parameters of the builder functions are optional and have sensible default values.
+
+## Internal
+
+### How to release
+
+1. Update the version in `{ktcodeshift-cli,ktcodeshift-dsl}/build.gradle.kts` on main branch.
+2. Create and push a tag with the version, e.g. `0.1.0`.
+3. CI will publish a release note to GitHub and update the Homebrew formula in the [orangain/homebrew-tap](https://github.com/orangain/homebrew-tap) repository.
