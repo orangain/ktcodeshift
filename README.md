@@ -64,9 +64,6 @@ modify the target file.
 The script filename should end with `.transform.kts`.
 
 ```kts
-import ktast.ast.Node
-import ktcodeshift.*
-
 transform { fileInfo ->
     Ktcodeshift
         .parse(fileInfo.source)
@@ -85,6 +82,16 @@ The following API documents will be helpful to write a transform file.
 
 - [API document of ktcodeshift](https://orangain.github.io/ktcodeshift/latest/api/ktcodeshift-dsl/ktcodeshift/index.html)
 - [API document of ktast](https://orangain.github.io/ktast/latest/api/ast/ktast.ast/index.html)
+
+### Implicit imports
+
+The following imports are implicitly available in the transform file:
+
+```kts
+import ktast.ast.*
+import ktast.builder.*
+import ktcodeshift.*
+```
 
 ### Annotations
 
@@ -111,9 +118,6 @@ their input and output.
 You can dump the AST of a Kotlin file using the [ktast.ast.Dumper](https://orangain.github.io/ktast/latest/api/ast/ktast.ast/-dumper/index.html). This is useful to understand the structure of the AST. For example:
 
 ```kts
-import ktast.ast.*
-import ktcodeshift.*
-
 transform { fileInfo ->
     Ktcodeshift
         .parse(fileInfo.source)
