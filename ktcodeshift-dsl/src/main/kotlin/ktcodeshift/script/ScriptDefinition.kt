@@ -23,7 +23,14 @@ abstract class TransformScript
 
 object TransformScriptCompilationConfiguration : ScriptCompilationConfiguration({
     // Implicit imports for all scripts of this type
-    defaultImports(DependsOn::class, Repository::class, Import::class)
+    defaultImports(
+        DependsOn::class.qualifiedName!!,
+        Repository::class.qualifiedName!!,
+        Import::class.qualifiedName!!,
+        "ktcodeshift.*",
+        "ktast.ast.*",
+        "ktast.builder.*",
+    )
     jvm {
         // Extract the whole classpath from context classloader and use it as dependencies
         dependenciesFromCurrentContext(wholeClasspath = true)
