@@ -5,8 +5,6 @@ ktcodeshift -t ktcodeshift-cli/src/test/resources/examples/SortWhenBranches.tran
 
 */
 
-import ktast.ast.Node
-import ktcodeshift.*
 import java.nio.charset.StandardCharsets
 
 transform { fileInfo ->

@@ -1,6 +1,3 @@
-import ktast.ast.Node
-import ktcodeshift.*
-
 transform { fileInfo ->
     Ktcodeshift
         .parse(fileInfo.source)
