@@ -93,8 +93,8 @@ The following annotations can be used in the transform file:
 | Annotation         | Description                                                                                                                                                                    |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `@file:Repository` | URL of the repository where the library specified in `@file:DependsOn` is hosted.<br>e.g.: `@file:Repository("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")` |
-| `@file:DependsOn`  | Depending library of the transform file. <br>e.g.: `@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")`                                                           |
-| `@file:Import`     | Script file path imported from the transform file. <br>e.g.: `@file:Import("./common.transform.kts")`                                                                          |
+| `@file:DependsOn`  | Dependent library of the transform file. <br>e.g.: `@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")`                                                           |
+| `@file:Import`     | Script file path(s) to import into the transform file. <br>e.g.: `@file:Import("./common.transform.kts")`                                                                      |
 
 
 ## Examples
