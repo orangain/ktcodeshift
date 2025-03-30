@@ -42,16 +42,17 @@ object TransformScriptEvaluationConfiguration : ScriptEvaluationConfiguration({
 fun configureMavenDepsOnAnnotations(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
     val annotations = context.collectedData?.get(ScriptCollectedData.collectedAnnotations)?.takeIf { it.isNotEmpty() }
         ?: return context.compilationConfiguration.asSuccess()
+    val (importAnnotations, otherAnnotations) = annotations.partition { it.annotation is Import }
 
     val scriptBaseDir = (context.script as? FileBasedScriptSource)?.file?.parentFile
-    val importedSources = annotations.flatMap {
-        (it.annotation as? Import)?.paths?.map { sourceName ->
+    val importedSources = importAnnotations.flatMap {
+        (it.annotation as Import).paths.map { sourceName ->
             FileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
-        } ?: emptyList()
+        }
     }
 
     return runBlocking {
-        resolver.resolveFromScriptSourceAnnotations(annotations.filter { it.annotation is DependsOn || it.annotation is Repository })
+        resolver.resolveFromScriptSourceAnnotations(otherAnnotations)
     }.onSuccess {
         context.compilationConfiguration.with {
             dependencies.append(JvmDependency(it))
