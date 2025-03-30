@@ -12,4 +12,7 @@ class TransformTest {
 
     @Test
     fun testRenameVariable() = testTransform(this::class, "RenameVariable")
+
+    @Test
+    fun testAnnotations() = testTransform(this::class, "Annotations")
 }
