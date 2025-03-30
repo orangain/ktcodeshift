@@ -16,17 +16,17 @@ fun Node.toSource(): String {
 /**
  * Returns [NodeCollection] of all nodes of type [T] under this node.
  */
-inline fun <reified T : Node> Node.KotlinEntry.find(): NodeCollection<T> = find(T::class)
+inline fun <reified T : Node> Node.KotlinFile.find(): NodeCollection<T> = find(T::class)
 
 /**
  * Returns [NodeCollection] of all nodes of type [T] under this node.
  */
-fun <T : Node> Node.KotlinEntry.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
+fun <T : Node> Node.KotlinFile.find(kClass: KClass<T>): NodeCollection<T> = find(kClass.java)
 
 /**
  * Returns [NodeCollection] of all nodes of type [T] under this node.
  */
-fun <T : Node> Node.KotlinEntry.find(javaClass: Class<T>): NodeCollection<T> {
+fun <T : Node> Node.KotlinFile.find(javaClass: Class<T>): NodeCollection<T> {
     val nodes = mutableListOf<NodePath<T>>()
     MutableVisitor.traverse(this) { path ->
         if (javaClass.isAssignableFrom(path.node::class.java)) {

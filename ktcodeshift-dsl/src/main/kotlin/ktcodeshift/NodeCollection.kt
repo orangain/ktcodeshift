@@ -13,7 +13,7 @@ import java.util.*
  */
 data class NodeCollection<T : Node>(
     val nodePaths: List<NodePath<T>>,
-    val rootNode: Node.KotlinEntry,
+    val rootNode: Node.KotlinFile,
 ) {
     /**
      * Returns a new collection containing only elements matching the given [predicate].
@@ -48,7 +48,7 @@ data class NodeCollection<T : Node>(
     /**
      * Returns a new AST root node with the nodes in this collection replaced with the result of the given [transform] function applied to each node.
      */
-    fun replaceWith(fn: NodeContext.(T) -> T): Node.KotlinEntry {
+    fun replaceWith(fn: NodeContext.(T) -> T): Node.KotlinFile {
         val nodeMap = IdentityHashMap<T, Boolean>()
         nodePaths.forEach { nodeMap[it.node] = true }
         return MutableVisitor.traverse(rootNode) { path ->
