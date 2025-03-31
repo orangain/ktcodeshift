@@ -86,6 +86,17 @@ The following API documents will be helpful to write a transform file.
 - [API document of ktcodeshift](https://orangain.github.io/ktcodeshift/latest/api/ktcodeshift-dsl/ktcodeshift/index.html)
 - [API document of ktast](https://orangain.github.io/ktast/latest/api/ast/ktast.ast/index.html)
 
+### Annotations
+
+The following annotations can be used in the transform file:
+
+| Annotation         | Description                                                                                                                                                                    |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `@file:Repository` | URL of the repository where the library specified in `@file:DependsOn` is hosted.<br>e.g.: `@file:Repository("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")` |
+| `@file:DependsOn`  | Dependent library of the transform file. <br>e.g.: `@file:DependsOn("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")`                                                           |
+| `@file:Import`     | Script file path(s) to import into the transform file. <br>e.g.: `@file:Import("./common.transform.kts")`                                                                      |
+
+
 ## Examples
 
 Example transform files are available

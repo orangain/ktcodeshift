@@ -1,10 +1,13 @@
 package ktcodeshift.script
 
 import kotlinx.coroutines.runBlocking
+import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.dependencies.*
 import kotlin.script.experimental.dependencies.maven.MavenDependenciesResolver
+import kotlin.script.experimental.host.FileBasedScriptSource
+import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jvm
@@ -20,7 +23,7 @@ abstract class TransformScript
 
 object TransformScriptCompilationConfiguration : ScriptCompilationConfiguration({
     // Implicit imports for all scripts of this type
-    defaultImports(DependsOn::class, Repository::class)
+    defaultImports(DependsOn::class, Repository::class, Import::class)
     jvm {
         // Extract the whole classpath from context classloader and use it as dependencies
         dependenciesFromCurrentContext(wholeClasspath = true)
@@ -28,7 +31,7 @@ object TransformScriptCompilationConfiguration : ScriptCompilationConfiguration(
     // Callbacks
     refineConfiguration {
         // Process specified annotations with the provided handler
-        onAnnotations(DependsOn::class, Repository::class, handler = ::configureMavenDepsOnAnnotations)
+        onAnnotations(DependsOn::class, Repository::class, Import::class, handler = ::configureMavenDepsOnAnnotations)
     }
 })
 
@@ -39,11 +42,21 @@ object TransformScriptEvaluationConfiguration : ScriptEvaluationConfiguration({
 fun configureMavenDepsOnAnnotations(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
     val annotations = context.collectedData?.get(ScriptCollectedData.collectedAnnotations)?.takeIf { it.isNotEmpty() }
         ?: return context.compilationConfiguration.asSuccess()
+    val (importAnnotations, otherAnnotations) = annotations.partition { it.annotation is Import }
+
+    val scriptBaseDir = (context.script as? FileBasedScriptSource)?.file?.parentFile
+    val importedSources = importAnnotations.flatMap {
+        (it.annotation as Import).paths.map { sourceName ->
+            FileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
+        }
+    }
+
     return runBlocking {
-        resolver.resolveFromScriptSourceAnnotations(annotations)
+        resolver.resolveFromScriptSourceAnnotations(otherAnnotations)
     }.onSuccess {
         context.compilationConfiguration.with {
             dependencies.append(JvmDependency(it))
+            if (importedSources.isNotEmpty()) importScripts.append(importedSources)
         }.asSuccess()
     }
 }
