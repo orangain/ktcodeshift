@@ -134,6 +134,5 @@ The [ktcodeshift](https://orangain.github.io/ktcodeshift/latest/api/ktcodeshift-
 
 ### How to release
 
-1. Update the version in `{ktcodeshift-cli,ktcodeshift-dsl}/build.gradle.kts` on main branch.
-2. Create and push a tag with the version, e.g. `0.1.0`.
-3. CI will publish a release note to GitHub and update the Homebrew formula in the [orangain/homebrew-tap](https://github.com/orangain/homebrew-tap) repository.
+1. Create and push a tag with the version, e.g. `git tag 0.1.0 && git push --tags`.
+2. CI will publish a release note to GitHub and update the Homebrew formula in the [orangain/homebrew-tap](https://github.com/orangain/homebrew-tap) repository.
