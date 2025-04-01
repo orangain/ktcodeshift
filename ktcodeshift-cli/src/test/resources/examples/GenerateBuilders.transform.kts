@@ -5,8 +5,6 @@ ktcodeshift -t ktcodeshift-cli/src/test/resources/examples/GenerateBuilders.tran
 
 */
 
-import ktast.ast.*
-import ktcodeshift.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.decapitalizeSmart
 import java.nio.charset.StandardCharsets
 
