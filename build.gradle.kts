@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.1.20"
     id("org.jetbrains.dokka") version "2.0.0"
     // Add support for generating version number from Git status.
-    id("com.palantir.git-version") version "3.2.0"
+    id("com.palantir.git-version") version "3.3.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
