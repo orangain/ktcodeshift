@@ -11,6 +11,7 @@ import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jvm
+import kotlin.script.experimental.jvm.jvmTarget
 
 @Suppress("unused")
 @KotlinScript(
@@ -34,6 +35,8 @@ object TransformScriptCompilationConfiguration : ScriptCompilationConfiguration(
     jvm {
         // Extract the whole classpath from context classloader and use it as dependencies
         dependenciesFromCurrentContext(wholeClasspath = true)
+        // jvmTarget should be the same as the one used in the project
+        jvmTarget.put("11")
     }
     // Callbacks
     refineConfiguration {
